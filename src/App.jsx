@@ -1,5 +1,5 @@
-import WealthMindset from "./WealthMindset";
+import GGC from "./GGC";
 
 export default function App() {
-  return <WealthMindset />;
+  return <GGC />;
 }

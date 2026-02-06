@@ -1,0 +1,398 @@
+{
+    "philosophy": {
+        "quote": "Education comes before action. Understanding comes before investment.",
+        "problems": [
+            {
+                "id": 1,
+                "text": "Lack of financial literacy & disciplined habits"
+            },
+            {
+                "id": 2,
+                "text": "Emotional spending & misinformation"
+            },
+            {
+                "id": 3,
+                "text": "Short-term thinking prevents sustainable wealth"
+            }
+        ],
+        "solutions": [
+            {
+                "id": 1,
+                "title": "Wealth Psychology",
+                "desc": "Transforming mindset to think like the 1%."
+            },
+            {
+                "id": 2,
+                "title": "Asset Awareness",
+                "desc": "Understanding real assets vs perceived assets."
+            },
+            {
+                "id": 3,
+                "title": "Legacy Planning",
+                "desc": "Building wealth that lasts for generations."
+            }
+        ],
+        "impact": {
+            "title": "Community Legacy & Outreach",
+            "stat": "50+ Students Awarded",
+            "initiatives": [
+                {
+                    "id": 1,
+                    "title": "Water Security",
+                    "desc": "Installation of sustainable water wells in local villages."
+                },
+                {
+                    "id": 2,
+                    "title": "Educational Support",
+                    "desc": "Awarding school kids with book bags and academic grants."
+                },
+                {
+                    "id": 3,
+                    "title": "Generational Care",
+                    "desc": "Supporting daycare centers and frail elderly homes."
+                }
+            ]
+        }
+    },
+    "services": [
+        {
+            "id": 1,
+            "title": "Live Zoom Trainings",
+            "desc": "Weekly interactive sessions covering the core curriculum.",
+            "icon": "Video",
+            "link": "https://zoom.us/j/your-meeting-id"
+        },
+        {
+            "id": 2,
+            "title": "Recorded Masterclasses",
+            "desc": "Access our full library of wealth-building education on-demand.",
+            "icon": "PlayCircle",
+            "link": "#academy"
+        },
+        {
+            "id": 3,
+            "title": "Subscription Community",
+            "desc": "Join a tribe of like-minded individuals building legacy.",
+            "icon": "Users",
+            "link": "#contact"
+        },
+        {
+            "id": 4,
+            "title": "One-on-One Coaching",
+            "desc": "Personalized wealth roadmap tailored to your specific goals.",
+            "icon": "UserCheck",
+            "link": "#contact"
+        }
+    ],
+    "trainings": {
+        "nextSession": {
+            "title": "Week 3: Financial Literacy Foundations",
+            "date": "2026-02-10T19:00:00",
+            "description": "Deep dive into Income, Expenses, Assets, and the basics of Cash Flow.",
+            "meetingLink": "https://zoom.us/j/your-meeting-id",
+            "worksheetUrl": "/worksheets/week-3-literacy.pdf"
+        },
+        "schedule": "Every Tuesday at 19:00 CAT",
+        "upcoming": [
+            {
+                "id": 4,
+                "title": "Week 4: Wealth Habits & Discipline",
+                "date": "2026-02-17",
+                "time": "19:00"
+            },
+            {
+                "id": 5,
+                "title": "Week 5: Understanding Assets",
+                "date": "2026-02-24",
+                "time": "19:00"
+            }
+        ],
+        "past": [
+            {
+                "id": 1,
+                "title": "Week 1: Wealth Consciousness",
+                "recorded": true
+            },
+            {
+                "id": 2,
+                "title": "Week 2: Scarcity vs Abundance",
+                "recorded": true
+            }
+        ]
+    },
+    "events": [
+        {
+            "id": 1,
+            "title": "Royal Welcome Luncheon",
+            "city": "Johannesburg",
+            "date": "2026-04-18",
+            "displayDate": "Sat. April 18, 2026",
+            "time": "17:00 - Late",
+            "venue": "PLM Private Estate",
+            "address": "Johannesburg, RSA",
+            "capacity": 100,
+            "registered": 85,
+            "image": "/images/lunch.jpg",
+            "status": "vip-access",
+            "description": "An exclusive luncheon to welcome GGC Leadership and celebrate the launch of the heritage tour."
+        },
+        {
+            "id": 2,
+            "title": "Mzilikazi Royal Monarch Gala",
+            "city": "Johannesburg",
+            "date": "2026-04-19",
+            "displayDate": "Sun. April 19, 2026",
+            "time": "18:00 - 00:00",
+            "venue": "TBD (Premium Venue)",
+            "address": "Sandton / CBD",
+            "capacity": 300,
+            "registered": 240,
+            "image": "/images/gala.jpg",
+            "status": "black-tie",
+            "description": "A prestigious Black Tie GALA welcoming the GGC Owner and Global Leaders in royal tradition."
+        },
+        {
+            "id": 3,
+            "title": "Community Legacy Day",
+            "city": "Village Outreach",
+            "date": "2026-04-20",
+            "displayDate": "Mon. April 20, 2026",
+            "time": "08:00 - 17:00",
+            "venue": "Local Communities",
+            "address": "Rural Regions, RSA",
+            "capacity": 500,
+            "registered": 420,
+            "image": "/images/outreach.jpg",
+            "status": "impact",
+            "description": "Charity outreach: Well installations, school awards, and support for the elderly and frail."
+        },
+        {
+            "id": 4,
+            "title": "GGC Midrand Masterclass",
+            "city": "Midrand",
+            "date": "2026-04-21",
+            "displayDate": "Tue. April 21, 2026",
+            "time": "09:00 - 20:00",
+            "venue": "Midrand Convention Hub",
+            "address": "Midrand, Johannesburg",
+            "capacity": 400,
+            "registered": 156,
+            "image": "/images/midrand.jpg",
+            "status": "double-session",
+            "description": "Two intensive sessions in one day covering wealth mindset and gold-backed digital assets."
+        },
+        {
+            "id": 5,
+            "title": "Durban & Zulu Nation Tour",
+            "city": "Durban",
+            "date": "2026-04-22",
+            "displayDate": "Wed. April 22, 2026",
+            "time": "06:00 - Late",
+            "venue": "Beachfront & Zulu Kingdom",
+            "address": "Durban, KZN",
+            "capacity": 200,
+            "registered": 110,
+            "image": "/images/durban.jpg",
+            "status": "cultural",
+            "description": "Travel to Durban to experience the Zulu Kingdom and expand GGC's coastal presence."
+        }
+    ],
+    "leadership": [
+        {
+            "id": 1,
+            "name": "Prince Lethukukhanya",
+            "role": "Founder & Author",
+            "image": "/Prince_Lethukukhanya.jpeg",
+            "bio": "A royal visionary and author dedicated to economic empowerment and legacy building. Prince Lethukukhanya leads the Wealth Mindset initiative, bridging traditional wealth preservation with modern digital assets."
+        },
+        {
+            "id": 2,
+            "name": "Prophet Oxbert Mintah",
+            "role": "Strategic Leader",
+            "image": "/Prophet Oxbert Mintah.jpeg",
+            "bio": "A spiritual and strategic advisor committed to the GGC movement, providing wisdom and leadership to the global community in their pursuit of financial freedom and purposeful living."
+        }
+    ],
+    "book": {
+        "title": "The Process",
+        "tagline": "The Royal Roadmap to Sovereign Wealth",
+        "releaseDate": "Coming 2026",
+        "preface": "Before anything meaningful takes shape, there is a season where nothing looks impressive.\nNo titles. No applause. No certainty that the effort will amount to anything visible. Only repetition, responsibility, and the quiet decision to continue.\n\nThis is the portion of the journey most people omit when they tell their story. Not because it lacked importance, but because it resists simple explanation. Becoming does not announce itself. It works beneath the surface. It reshapes posture, thought, and patience long before the world recognizes a change.\n\nThe process begins when survival stops feeling sufficient. There comes a moment when living reactively no longer satisfies the deeper pull within. Something asks to be ordered. Something demands discipline, direction, and intentionality. Not because life has collapsed, but because potential has become too loud to ignore.\n\nI did not begin with clarity. I began with questions. There were years where progress felt slow and identity felt unfinished. Where responsibility came before recognition and lessons arrived without language.\n\nI learned that growth rarely feels like elevation while it is happening. More often, it feels like dismantling. The process removes excess, sharpens what is essential, and tests what is genuine.\n\nThis book is for anyone standing between who they have been and who they sense they are becoming. For those who feel the weight of responsibility before the privilege of recognition. For those learning that leadership begins internally, long before it is acknowledged externally.\n\nNo one steps into greater roles by accident. People are shaped for them. Slowly. Deliberately. Often uncomfortably.\n\nThis is not a promise of ease. It is an invitation to endurance.\n\nThis is The Process."
+    },
+    "globalGoldCoin": {
+        "title": "Global Gold Coin (GGC)",
+        "tagline": "The world's first cryptocurrency backed by a real, producing gold mine.",
+        "about": "GGC Coin is a groundbreaking gold-backed digital asset that transforms pure gold from the trusted mines of Nelson, Nevada into powerful, secure tokens. This innovative fusion bridges the timeless value of precious metals with the cutting-edge advantages of blockchain technology.",
+        "stats": [
+            {
+                "label": "$15 Billion",
+                "desc": "Gold Backing"
+            },
+            {
+                "label": "2,000%",
+                "desc": "Growth Since Launch"
+            },
+            {
+                "label": "500,000+",
+                "desc": "Wallets Created"
+            },
+            {
+                "label": "$100",
+                "desc": "Current Coin Value"
+            }
+        ],
+        "benefits": [
+            {
+                "title": "Stability You Can Trust",
+                "desc": "Anchored to a real, tangible store of value—helping reduce extreme price swings."
+            },
+            {
+                "title": "Backed by Physical Gold",
+                "desc": "Supported by allocated gold held in secure storage, provided by a Nevada mine."
+            },
+            {
+                "title": "Built for Long-Term Value",
+                "desc": "Ideal solution for preserving value across generations through gold's enduring role."
+            }
+        ],
+        "multiplierProgram": {
+            "title": "Multiplier Bonuses",
+            "desc": "Double, Triple, or even 10x your money with our exclusive pre-launch multiplier program.",
+            "notice": "Limited time promotion extended! Contact support@globalgoldcoin.net to apply."
+        },
+        "referralPlan": {
+            "direct": "10% Commission",
+            "level2": "5% Commission",
+            "note": "Share your referral link and earn as your network grows."
+        },
+        "testimonials": [
+            {
+                "author": "R.B.",
+                "quote": "I started with $600 literally last weekend, now with added bonuses my account is over $2,600."
+            },
+            {
+                "author": "J.D.",
+                "quote": "I funded my account with $10,000 and now I'm on the road to becoming a multi-millionaire."
+            },
+            {
+                "author": "L.J.",
+                "quote": "Profit of over $1500 overnight. This is like getting in at the early stages of Bitcoin."
+            }
+        ],
+        "faqs": [
+            {
+                "q": "What makes GGC different?",
+                "a": "Backed by $15 billion in verified gold reserves in a Nevada mine, providing tangible value."
+            },
+            {
+                "q": "How do I get the $100 gift?",
+                "a": "Create a free account on CryptoGoldExchange; the 2 GGC coins will be deposited instantly."
+            }
+        ]
+    },
+    "news": [
+        {
+            "id": 1,
+            "title": "Royal Mzilikazi Gala: A Night of Tradition",
+            "date": "Feb 06, 2026",
+            "tag": "Events",
+            "excerpt": "GGC prepares for the prestigious Black Tie Gala in Johannesburg, celebrating the intersection of royalty and wealth."
+        },
+        {
+            "id": 2,
+            "title": "Legacy Project: Water Wells for Villages",
+            "date": "Feb 04, 2026",
+            "tag": "Impact",
+            "excerpt": "Discover how the South African tour is bringing sustainable water security to rural communities."
+        },
+        {
+            "id": 3,
+            "title": "Wealth Mindset Curriculum Released",
+            "date": "Feb 01, 2026",
+            "tag": "Academy",
+            "excerpt": "Our comprehensive 12-week roadmap to financial freedom is now officially part of the Academy syllabus."
+        }
+    ],
+    "curriculum": [
+        {
+            "week": 1,
+            "title": "Wealth Consciousness",
+            "focus": "Money psychology & belief systems"
+        },
+        {
+            "week": 2,
+            "title": "Scarcity vs Abundance",
+            "focus": "Rewriting legacy financial narratives"
+        },
+        {
+            "week": 3,
+            "title": "Literacy Foundations",
+            "focus": "Income, assets, and cash flow basics"
+        },
+        {
+            "week": 4,
+            "title": "Habits & Discipline",
+            "focus": "Budgeting and delayed gratification"
+        },
+        {
+            "week": 5,
+            "title": "Understanding Assets",
+            "focus": "Real assets vs perceived assets"
+        },
+        {
+            "week": 6,
+            "title": "Risk & Timing",
+            "focus": "Patience and emotional decision traps"
+        },
+        {
+            "week": 7,
+            "title": "Global Wealth Mindset",
+            "focus": "Understanding global markets & currencies"
+        },
+        {
+            "week": 8,
+            "title": "Protection & Preservation",
+            "focus": "Risk management and ethical hedging"
+        },
+        {
+            "week": 9,
+            "title": "Legacy Thinking",
+            "focus": "Wealth beyond self and community impact"
+        },
+        {
+            "week": 10,
+            "title": "Ethics & Responsibility",
+            "focus": "Integrity, compliance and stewardship"
+        },
+        {
+            "week": 11,
+            "title": "Strategic Planning",
+            "focus": "Personal wealth roadmap and timelines"
+        },
+        {
+            "week": 12,
+            "title": "Review & Expansion",
+            "focus": "Reflections and advanced program paths"
+        }
+    ],
+    "lessons": [
+        {
+            "id": 1,
+            "title": "Welcome to Wealth Mindset",
+            "description": "Introduction to the 12-week journey and what to expect from the boardrooms.",
+            "videoUrl": "https://www.youtube.com/embed/bBC-nXj3Ng4",
+            "duration": "15:20",
+            "level": "Orientation",
+            "category": "Curriculum"
+        },
+        {
+            "id": 2,
+            "title": "The Power of Gold Backing",
+            "description": "Why physical asset backing is critical in the digital economy.",
+            "videoUrl": "https://www.youtube.com/embed/isq1Wk658pE",
+            "duration": "12:45",
+            "level": "Intermediate",
+            "category": "Gold Education"
+        }
+    ]
+}
