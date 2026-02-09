@@ -26,6 +26,7 @@ import Partners from './components/Partners';
 import GlobalGoldCoin from './components/GlobalGoldCoin';
 import Leadership from './components/Leadership';
 import BookShowcase from './components/BookShowcase';
+import AboutUs from './components/AboutUs';
 
 // Import data
 import siteData from './data.json';
@@ -85,7 +86,7 @@ export default function GGC() {
     setFormSubmitted(true);
   };
 
-  const navItems = ["Philosophy", "GGC", "Leadership", "Trainings", "Events", "Tutorials", "News", "Contact"];
+  const navItems = ["About", "Philosophy", "GGC", "Leadership", "Trainings", "Events", "Tutorials", "News", "Contact"];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0b0f2b] to-[#05060f] text-[#eef2f6] font-[Poppins]">
@@ -187,42 +188,8 @@ export default function GGC() {
       {/* Book Showcase Section */}
       <BookShowcase book={siteData.book} />
 
-      {/* About Section */}
-      <section id="about" className="grid md:grid-cols-2 gap-16 px-6 md:px-10 pb-32 items-center max-w-7xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-        >
-          <span className="inline-block px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm font-semibold uppercase tracking-wider mb-4">
-            Our Foundation
-          </span>
-          <h2 className="text-4xl font-bold mb-6">About Wealth Mindset</h2>
-          <p className="text-gray-400 leading-relaxed mb-6">
-            Wealth Mindset is a financial education and mindset development company designed to empower individuals and communities with the knowledge, discipline, and strategic thinking required to build sustainable wealth and long-term legacy.
-          </p>
-          <p className="text-gray-400 leading-relaxed mb-6">
-            Focusing on transforming financial behavior by addressing mindset, education, and access to ethical wealth-building tools, Wealth Mindset operates through live trainings, digital education, community engagement, and strategic partnerships.
-          </p>
-          <div className="bg-indigo-500/5 border border-indigo-500/20 p-6 rounded-2xl italic text-gray-300">
-            "Education comes before action. Understanding comes before investment. We believe in providing the roadmap before you take the first step."
-          </div>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          className="rounded-2xl overflow-hidden border border-white/10"
-        >
-          <iframe
-            className="w-full h-64 md:h-80"
-            src="https://www.youtube.com/embed/bBC-nXj3Ng4"
-            title="How does Bitcoin actually work? - 3Blue1Brown"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-        </motion.div>
-      </section>
+      {/* About Us Section */}
+      <AboutUs about={siteData.about} />
 
 
       {/* News Section */}

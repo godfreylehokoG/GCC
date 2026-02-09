@@ -1,2 +1,9 @@
-# Auto detect text files and perform LF normalization
+# Auto detect text files and normalize line endings to LF
 * text=auto
+
+# Preserve execute permissions for shell scripts and binaries
+*.sh eol=lf diff=bash
+node_modules/.bin/* eol=lf
+
+# Preserve permissions for node modules
+*.js eol=lf

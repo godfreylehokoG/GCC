@@ -203,14 +203,16 @@
             "name": "Prince Lethukukhanya",
             "role": "Founder & Author",
             "image": "/Prince_Lethukukhanya.jpeg",
-            "bio": "A royal visionary and author dedicated to economic empowerment and legacy building. Prince Lethukukhanya leads the Wealth Mindset initiative, bridging traditional wealth preservation with modern digital assets."
+            "bio": "Prince Lethukukhanya is a royal visionary and author dedicated to economic empowerment and legacy building. He leads the Wealth Mindset initiative, bridging traditional wealth preservation with modern digital assets.",
+            "longBio": "Prince Lethukukhanya is a royal visionary and author dedicated to economic empowerment and legacy building. As the founder of the Wealth Mindset initiative, he is committed to bridging the gap between traditional royal heritage and modern financial structures. His leadership focuses on creating sustainable pathways for community development and personal financial freedom.\n\nHe is the author of 'The Process,' a roadmap to sovereign wealth that emphasizes the importance of internal transformation before external success. Through his work, he continues to advocate for the preservation of African tradition while embracing the opportunities of the digital age, ensuring that legacy and innovation move forward hand in hand."
         },
         {
             "id": 2,
             "name": "Prophet Oxbert Mintah",
-            "role": "Strategic Leader",
+            "role": "Strategic Leader & Prophet",
             "image": "/Prophet Oxbert Mintah.jpeg",
-            "bio": "A spiritual and strategic advisor committed to the GGC movement, providing wisdom and leadership to the global community in their pursuit of financial freedom and purposeful living."
+            "bio": "Prophet Oxbert Mintah is a dynamic minister, prayer intercessor, and entrepreneur based in Johannesburg. Known for catalyzing revivals and empowering youth to fulfill their kingdom mandate, he is the convener of The Clarion Call and Co-Visioneer of the Ipray Conference.",
+            "longBio": "Prophet Oxbert Mintah, a Ghanaian national based in Johannesburg, South Africa, is a dynamic minister characterized by his diverse gifts. As a youthful preacher, teacher, prayer intercessor, writer, entrepreneur, and ordained Reverend minister, he operates under the influence of a distinctive prophetic unction. Noted for his impactful conferences and international speaking engagements, he has consistently demonstrated his ability to catalyze revivals and lead souls to Christ. His ministry prioritizes the revitalization of the body of Christ and the empowerment of the end-time youth to fulfill their kingdom mandate and accomplish notable spiritual feats. Additionally, he is a skilled psalmist, worshipper, and published author.\n\nHe is the convener of The Clarion Call, a global, interdenominational prayer platform that connects intercessors, prayer warriors, believers, and ministers of the Gospel across Africa, Europe, Asia, and the Americas. The Clarion Call's vision is to raise kingdom militants who will stand in the gap in prayer for churches, nations, families, and other entities. The aim is to cultivate men and women with a strong thirst for the things of God through His unadulterated word by grooming, nurturing, and tutoring them in the act of prayer. He is also the Co-Visioneer of Ipray Conference, an annual, interdenominational prayer summit in Polokwane, South Africa, aimed at raising intercessors for the body of Christ. Additionally, he serves at Power Zone Ministry International in Polokwane, South Africa.\n\nHe holds a diploma in Ministerial Leadership Ethics, Biblical Hermeneutics, Pentecostal and Charismatic Studies from W.W.A.C.C.E.I & THRONE-ROOM APOSTOLIC COLLEGE IN COLLABORATION WITH UNITED FELLOWSHIP ASSEMBLIES INT. His language proficiency in English is excellent, with skills in speaking, reading, and writing. He is also skilled in computer literacy, including Microsoft Office and Internet Explorer. His key skills and competencies include excellent analytical, oratory, and interpersonal skills, as well as problem-solving skills and the ability to work with a team."
         }
     ],
     "book": {
@@ -394,5 +396,33 @@
             "level": "Intermediate",
             "category": "Gold Education"
         }
-    ]
+    ],
+    "about": {
+        "wealthMindset": {
+            "title": "The Wealth Mindset",
+            "description": "Wealth is not just about the numbers in your bank account; it is a state of consciousness. At Wealth Mindset, we focus on the psychological transformation required to move from scarcity to abundance. We believe that true financial freedom starts with a disciplined mind and a commitment to lifelong learning.",
+            "quote": "Your mind is your most valuable asset. Invest in it first."
+        },
+        "mission": {
+            "title": "Our Mission",
+            "description": "To democratize financial intelligence and provide individuals with the ethical, asset-backed tools necessary to build generational wealth and lasting community impact."
+        },
+        "objectives": [
+            {
+                "id": 1,
+                "title": "Financial Literacy",
+                "desc": "Educate 1 million individuals on the fundamentals of asset preservation and wealth building."
+            },
+            {
+                "id": 2,
+                "title": "Ethical Inclusion",
+                "desc": "Provide access to gold-backed digital assets that bridge traditional value with modern technology."
+            },
+            {
+                "id": 3,
+                "title": "Community Legacy",
+                "desc": "Build sustainable infrastructure and educational support for underprivileged communities through strategic partnerships."
+            }
+        ]
+    }
 }

@@ -10,9 +10,27 @@ export default function Hero() {
             </div>
 
             <div className="relative z-10 grid md:grid-cols-2 gap-16 items-center max-w-7xl mx-auto w-full">
-                {/* Left Content */}
+                {/* Left - Logo Animation */}
                 <motion.div
-                    initial={{ opacity: 0, x: -50 }}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8, delay: 0.3 }}
+                    className="relative flex items-center justify-center"
+                >
+                    {/* Glow Ring */}
+                    <div className="absolute w-80 h-80 md:w-96 md:h-96 rounded-full border border-indigo-500/20 animate-pulse" />
+                    <div className="absolute w-64 h-64 md:w-80 md:h-80 rounded-full border border-purple-500/20 animate-pulse" style={{ animationDelay: '0.5s' }} />
+
+                    <img
+                        src="/WealthMindset-removebg.png"
+                        alt="GGC Logo"
+                        className="relative z-10 w-64 md:w-80 lg:w-96 h-auto animate-float drop-shadow-[0_20px_50px_rgba(99,102,241,0.4)]"
+                    />
+                </motion.div>
+
+                {/* Right Content */}
+                <motion.div
+                    initial={{ opacity: 0, x: 50 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.8 }}
                 >
@@ -86,24 +104,6 @@ export default function Hero() {
                             </div>
                         ))}
                     </motion.div>
-                </motion.div>
-
-                {/* Right - Logo Animation */}
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.8, delay: 0.3 }}
-                    className="relative flex items-center justify-center"
-                >
-                    {/* Glow Ring */}
-                    <div className="absolute w-80 h-80 md:w-96 md:h-96 rounded-full border border-indigo-500/20 animate-pulse" />
-                    <div className="absolute w-64 h-64 md:w-80 md:h-80 rounded-full border border-purple-500/20 animate-pulse" style={{ animationDelay: '0.5s' }} />
-
-                    <img
-                        src="/WealthMindset-removebg.png"
-                        alt="GGC Logo"
-                        className="relative z-10 w-64 md:w-80 lg:w-96 h-auto animate-float drop-shadow-[0_20px_50px_rgba(99,102,241,0.4)]"
-                    />
                 </motion.div>
             </div>
         </section>
