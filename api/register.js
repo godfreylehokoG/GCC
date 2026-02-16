@@ -1,60 +1,98 @@
-// Vercel Serverless Function - Lead Registration
-// This endpoint handles lead capture for the GGC website
+import { createClient } from '@supabase/supabase-js';
+
+// Initialize Supabase client
+const supabaseUrl = process.env.VITE_SUPABASE_URL;
+// In a server-side API, we should use the Service Role Key to bypass RLS
+// If it's not available, we fall back to the Anon Key
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+    console.error('CRITICAL: Supabase environment variables are missing in .env');
+}
+
+const supabase = (supabaseUrl && supabaseKey)
+    ? createClient(supabaseUrl, supabaseKey)
+    : null;
 
 export default async function handler(req, res) {
+    if (!supabase) {
+        return res.status(500).json({ error: 'Database connection not configured. Check your .env file.' });
+    }
     // Only allow POST requests
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
     try {
-        const { firstName, lastName, email, phone, interest, eventId } = req.body;
+        const {
+            firstName, lastName, email, phone, fullPhone,
+            country, city, stateProvince, postalCode,
+            interest, referralSource, reasonForAttending,
+            occupation, experienceLevel, marketingConsent,
+            eventId, eventTitle
+        } = req.body;
 
         // Validate required fields
-        if (!firstName || !lastName || !email) {
+        if (!firstName || !lastName || !email || !fullPhone) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
 
-        // Log the lead (In Phase 2, this will save to Supabase)
-        const lead = {
-            id: Date.now(),
-            firstName,
-            lastName,
-            email,
-            phone: phone || null,
+        // Prepare the lead data for Supabase
+        const registrationData = {
+            first_name: firstName,
+            last_name: lastName,
+            email: email,
+            phone: fullPhone || phone,
+            country: country || null,
+            city: city || null,
+            state_province: stateProvince || null,
+            postal_code: postalCode || null,
             interest: interest || 'general',
-            eventId: eventId || null,
-            createdAt: new Date().toISOString(),
+            referral_source: referralSource || null,
+            reason_for_attending: reasonForAttending || null,
+            occupation: occupation || null,
+            experience_level: experienceLevel || null,
+            marketing_consent: marketingConsent || false,
+            event_id: eventId || null,
+            event_title: eventTitle || null,
             source: 'website'
         };
 
-        console.log('New Lead Captured:', lead);
+        // Save to Supabase
+        const { data, error: sbError } = await supabase
+            .from('event_registrations')
+            .insert([registrationData])
+            .select();
 
-        // TODO: Phase 2 - Save to Supabase
-        // const { data, error } = await supabase
-        //   .from('leads')
-        //   .insert([lead]);
+        if (sbError) {
+            console.error('--- SUPABASE INSERT ERROR ---');
+            console.error('Error Code:', sbError.code);
+            console.error('Message:', sbError.message);
+            console.error('Details:', sbError.details);
+            console.error('Hint:', sbError.hint);
+            return res.status(500).json({
+                error: `Database Error: ${sbError.message}`,
+                details: sbError.details
+            });
+        }
 
-        // TODO: Phase 2 - Send confirmation email via Resend
-        // await resend.emails.send({
-        //   from: 'noreply@ggc.com',
-        //   to: email,
-        //   subject: 'Welcome to GGC!',
-        //   html: `<p>Hi ${firstName}, thank you for registering...</p>`
-        // });
+        // Log the lead
+        console.log('New Lead Registered in Supabase:', data[0]);
 
         return res.status(200).json({
             success: true,
             message: 'Registration successful',
             lead: {
-                id: lead.id,
-                firstName: lead.firstName,
-                email: lead.email
+                id: data[0].id,
+                firstName: data[0].first_name,
+                email: data[0].email
             }
         });
 
     } catch (error) {
-        console.error('Registration error:', error);
+        console.error('--- INTERNAL SERVER ERROR ---');
+        console.error(error);
         return res.status(500).json({ error: 'Internal server error' });
     }
 }
+
