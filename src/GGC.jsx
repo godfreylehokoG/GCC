@@ -40,6 +40,8 @@ export default function GGC() {
   ]);
   const [chatInput, setChatInput] = useState('');
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formLoading, setFormLoading] = useState(false);
+  const [formError, setFormError] = useState('');
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -80,10 +82,33 @@ export default function GGC() {
     setFormData(prev => ({ ...prev, [id]: value }));
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    console.log('Lead Captured:', formData);
-    setFormSubmitted(true);
+    setFormLoading(true);
+    setFormError('');
+
+    try {
+      const response = await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Something went wrong. Please try again.');
+      }
+
+      console.log('Lead Captured:', result);
+      setFormSubmitted(true);
+      setFormData({ firstName: '', lastName: '', email: '', phone: '', interest: 'seminar' });
+    } catch (err) {
+      console.error('Lead form error:', err);
+      setFormError(err.message || 'Failed to submit. Please try again.');
+    } finally {
+      setFormLoading(false);
+    }
   };
 
   const navItems = ["About", "Philosophy", "GGC", "Leadership", "Trainings", "Events", "Tutorials", "News", "Contact"];
@@ -272,11 +297,17 @@ export default function GGC() {
                     <option value="updates" className="bg-slate-900">General Updates</option>
                   </select>
                 </div>
+                {formError && (
+                  <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-4 py-3 rounded-xl">
+                    {formError}
+                  </div>
+                )}
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-4 rounded-xl shadow-lg transform transition-all active:scale-95"
+                  disabled={formLoading}
+                  className={`w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-4 rounded-xl shadow-lg transform transition-all active:scale-95 ${formLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
                 >
-                  SIGN UP NOW
+                  {formLoading ? 'SUBMITTING...' : 'SIGN UP NOW'}
                 </button>
               </form>
             </div>
