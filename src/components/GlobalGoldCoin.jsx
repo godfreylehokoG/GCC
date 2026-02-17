@@ -70,7 +70,7 @@ export default function GlobalGoldCoin({ data }) {
                                 Get Your Gifted Global Gold Coin just for creating your wallet. Limited time offer.
                             </p>
                             <a
-                                href="https://cryptogoldexchange.com"
+                                href="https://cryptogold.exchange/registration?ref_code=3TdYYHU"
                                 target="_blank"
                                 rel="noreferrer"
                                 className="block w-full text-center py-3 bg-yellow-500 hover:bg-yellow-400 text-black text-xs font-bold rounded-xl transition-all uppercase tracking-wider"
