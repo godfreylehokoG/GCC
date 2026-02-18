@@ -186,8 +186,8 @@ export default function GGC() {
       {/* Partners Section - Strategic Alliances */}
       <Partners />
 
-      {/* Global Gold Coin - Main Partner & Vehicle */}
-      <GlobalGoldCoin data={siteData.globalGoldCoin} />
+      {/* Events Section */}
+      <EventSection events={siteData.events} />
 
       {/* Philosophy & Services Section */}
       <Philosophy
@@ -198,8 +198,8 @@ export default function GGC() {
       {/* Zoom Training Portal */}
       <ZoomPortal trainings={siteData.trainings} />
 
-      {/* Events Section */}
-      <EventSection events={siteData.events} />
+      {/* Global Gold Coin - Main Partner & Vehicle */}
+      <GlobalGoldCoin data={siteData.globalGoldCoin} />
 
       {/* Mission & Impact Section */}
       <MissionImpact impact={siteData.philosophy.impact} />

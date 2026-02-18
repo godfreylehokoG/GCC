@@ -15,7 +15,7 @@ export default function EventCard({ event, onRegister }) {
         'limited-seats': { bg: 'bg-amber-500/20', text: 'text-amber-400', label: 'Limited Seats' },
         'open': { bg: 'bg-green-500/20', text: 'text-green-400', label: 'Open' },
         'vip-access': { bg: 'bg-indigo-500/20', text: 'text-indigo-400', label: 'VIP Selection' },
-        'black-tie': { bg: 'bg-slate-500/20', text: 'text-gray-300', label: 'Black Tie Gala' },
+        'black-tie': { bg: 'bg-slate-500/20', text: 'text-gray-300', label: 'African Royal Attire' },
         'impact': { bg: 'bg-emerald-500/20', text: 'text-emerald-400', label: 'Community Impact' },
         'double-session': { bg: 'bg-amber-500/20', text: 'text-amber-400', label: 'Full Day Intensive' },
         'cultural': { bg: 'bg-orange-500/20', text: 'text-orange-400', label: 'Cultural Tour' },

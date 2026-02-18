@@ -62,7 +62,7 @@ export default function Hero() {
                         transition={{ delay: 0.4 }}
                         className="text-lg text-gray-400 mb-8 max-w-lg leading-relaxed"
                     >
-                        GGC presents The Wealth Mindset—a premier educational journey blending the timeless stability of gold with modern digital accessibility.
+                        The Wealth Mindset is a premier educational journey blending timeless financial wisdom with modern digital accessibility. Through vehicles like Global Gold Coin, we empower you to build lasting wealth.
                         Join our royal South African tour to secure your legacy.
                     </motion.p>
 
