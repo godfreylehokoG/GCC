@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { sendRegistrationConfirmation } from './_lib/email';
 
 // Initialize Supabase client
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
@@ -78,6 +79,12 @@ export default async function handler(req, res) {
 
         // Log the lead
         console.log('New Lead Registered in Supabase:', data[0]);
+
+        // Fire-and-forget email notification
+        sendRegistrationConfirmation(
+            { firstName, email },
+            { title: eventTitle, displayDate, venue, time, address: req.body.address }
+        ).catch(err => console.error('Silent Email Failure:', err));
 
         return res.status(200).json({
             success: true,
