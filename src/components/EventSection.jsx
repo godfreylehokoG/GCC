@@ -195,164 +195,26 @@ export default function EventSection({ events }) {
 
                             {/* Modal Body */}
                             <div className="p-6 overflow-y-auto max-h-[70vh] custom-scrollbar">
-                                {!formSubmitted ? (
-                                    <form onSubmit={handleFormSubmit} className="space-y-6">
-
-                                        {/* 1. Personal Identity */}
-                                        <div className="space-y-4">
-                                            <h4 className="text-indigo-400 text-xs font-bold uppercase tracking-widest border-b border-white/5 pb-2">1. Personal Details</h4>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">First Name</label>
-                                                    <input type="text" id="firstName" required disabled={isSubmitting} value={formData.firstName} onChange={handleFormChange} className="form-input-premium w-full" placeholder="John" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Last Name</label>
-                                                    <input type="text" id="lastName" required disabled={isSubmitting} value={formData.lastName} onChange={handleFormChange} className="form-input-premium w-full" placeholder="Doe" />
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Email Address</label>
-                                                <input type="email" id="email" required disabled={isSubmitting} value={formData.email} onChange={handleFormChange} className="form-input-premium w-full" placeholder="john@example.com" />
-                                            </div>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <div>
-                                                    <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Country</label>
-                                                    <select id="country" disabled={isSubmitting} value={formData.country} onChange={handleFormChange} className="form-input-premium w-full appearance-none">
-                                                        {countryData.map(c => (
-                                                            <option key={c.name} value={c.name} className="bg-gray-900">{c.flag} {c.name}</option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Mobile Number</label>
-                                                    <div className="flex gap-2">
-                                                        <select id="countryCode" value={formData.countryCode} onChange={handleFormChange} disabled={isSubmitting} className="form-input-premium w-24 text-center">
-                                                            {countryData.map(c => (
-                                                                <option key={c.name} value={c.code} className="bg-gray-900">{c.code}</option>
-                                                            ))}
-                                                        </select>
-                                                        <input type="tel" id="phone" required disabled={isSubmitting} value={formData.phone} onChange={handleFormChange} className="form-input-premium flex-1" placeholder="82 123 4567" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* 2. Location & Professional */}
-                                        <div className="space-y-4">
-                                            <h4 className="text-indigo-400 text-xs font-bold uppercase tracking-widest border-b border-white/5 pb-2">2. Regional & Professional</h4>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">City/Town</label>
-                                                    <input type="text" id="city" required disabled={isSubmitting} value={formData.city} onChange={handleFormChange} className="form-input-premium w-full" placeholder="Sandton" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">State/Province</label>
-                                                    <input type="text" id="stateProvince" required disabled={isSubmitting} value={formData.stateProvince} onChange={handleFormChange} className="form-input-premium w-full" placeholder="Gauteng" />
-                                                </div>
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Postal Code</label>
-                                                    <input type="text" id="postalCode" required disabled={isSubmitting} value={formData.postalCode} onChange={handleFormChange} className="form-input-premium w-full" placeholder="2196" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Occupation</label>
-                                                    <input type="text" id="occupation" required disabled={isSubmitting} value={formData.occupation} onChange={handleFormChange} className="form-input-premium w-full" placeholder="Business Owner" />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* 3. Interest & Background */}
-                                        <div className="space-y-4">
-                                            <h4 className="text-indigo-400 text-xs font-bold uppercase tracking-widest border-b border-white/5 pb-2">3. Background & Logistics</h4>
-                                            <div>
-                                                <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Primary Interest</label>
-                                                <select id="interest" disabled={isSubmitting} value={formData.interest} onChange={handleFormChange} className="form-input-premium w-full">
-                                                    <option value="wealth-preservation" className="bg-gray-900">Wealth Preservation (Gold)</option>
-                                                    <option value="economic-empowerment" className="bg-gray-900">Economic Empowerment</option>
-                                                    <option value="ggc-digital-asset" className="bg-gray-900">GGC Digital Asset</option>
-                                                    <option value="educational-academy" className="bg-gray-900">Educational Academy</option>
-                                                    <option value="partnership" className="bg-gray-900">Partnership Opportunities</option>
-                                                </select>
-                                            </div>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <div>
-                                                    <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Investment Experience</label>
-                                                    <select id="experienceLevel" disabled={isSubmitting} value={formData.experienceLevel} onChange={handleFormChange} className="form-input-premium w-full">
-                                                        <option value="beginner" className="bg-gray-900">Beginner</option>
-                                                        <option value="intermediate" className="bg-gray-900">Intermediate (Holds Assets)</option>
-                                                        <option value="advanced" className="bg-gray-900">Advanced Investor</option>
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">How did you hear about us?</label>
-                                                    <select id="referralSource" required disabled={isSubmitting} value={formData.referralSource} onChange={handleFormChange} className="form-input-premium w-full text-sm">
-                                                        <option value="" disabled className="bg-gray-900">Select Source</option>
-                                                        <option value="facebook" className="bg-gray-900">Facebook / Meta</option>
-                                                        <option value="instagram" className="bg-gray-900">Instagram</option>
-                                                        <option value="whatsapp" className="bg-gray-900">WhatsApp Community</option>
-                                                        <option value="linkedIn" className="bg-gray-900">LinkedIn</option>
-                                                        <option value="google" className="bg-gray-900">Google Search</option>
-                                                        <option value="friend" className="bg-gray-900">Friend / Referral</option>
-                                                        <option value="other" className="bg-gray-900">Other</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Reason for Attending</label>
-                                                <textarea id="reasonForAttending" disabled={isSubmitting} value={formData.reasonForAttending} onChange={handleFormChange} className="form-input-premium w-full py-3 h-24 resize-none" placeholder="What do you hope to learn or achieve at this seminar?" />
-                                            </div>
-
-                                            <div className="flex items-start gap-3 pt-2">
-                                                <input type="checkbox" id="marketingConsent" checked={formData.marketingConsent} onChange={handleFormChange} disabled={isSubmitting} className="mt-1 w-4 h-4 rounded border-white/10 bg-white/5 text-indigo-600 focus:ring-indigo-500" />
-                                                <label htmlFor="marketingConsent" className="text-xs text-gray-400 leading-relaxed">
-                                                    I agree to receive educational content and event updates from GGC. We value your privacy and will never sell your data.
-                                                </label>
-                                            </div>
-                                        </div>
-
-                                        {submitError && (
-                                            <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-sm">
-                                                {submitError}
-                                            </div>
-                                        )}
-
-                                        <button
-                                            type="submit"
-                                            disabled={isSubmitting}
-                                            className="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold hover:from-indigo-500 hover:to-purple-500 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
-                                        >
-                                            {isSubmitting ? (
-                                                <>
-                                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                                    REGISTERING...
-                                                </>
-                                            ) : (
-                                                'CONFIRM REGISTRATION'
-                                            )}
-                                        </button>
-                                    </form>
-
-                                ) : (
-                                    <div className="text-center py-8">
-                                        <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                                            <svg className="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                        </div>
-                                        <h3 className="text-2xl font-bold text-white mb-2">You're Registered!</h3>
-                                        <p className="text-gray-400 mb-6">
-                                            We'll send confirmation details to your email. See you at {selectedEvent.venue}!
-                                        </p>
-                                        <button
-                                            onClick={closeModal}
-                                            className="text-indigo-400 font-semibold hover:underline"
-                                        >
-                                            Close
-                                        </button>
+                                <div className="text-center py-12 px-6">
+                                    <div className="w-20 h-20 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-amber-500/20">
+                                        <Calendar size={40} className="text-amber-500" />
                                     </div>
-                                )}
+                                    <h3 className="text-2xl font-bold text-white mb-4">Registration Offline</h3>
+                                    <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8">
+                                        <p className="text-gray-300 leading-relaxed italic">
+                                            "Registration is temporarily offline for schedule updates. Please check back shortly."
+                                        </p>
+                                    </div>
+                                    <p className="text-gray-400 text-sm mb-8">
+                                        We are currently refining the tour schedule to accommodate more attendees. Thank you for your patience!
+                                    </p>
+                                    <button
+                                        onClick={closeModal}
+                                        className="px-8 py-3 rounded-full bg-white/5 hover:bg-white/10 text-white font-bold transition-all border border-white/10"
+                                    >
+                                        Got it
+                                    </button>
+                                </div>
                             </div>
                         </motion.div>
                     </motion.div>

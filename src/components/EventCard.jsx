@@ -103,11 +103,10 @@ export default function EventCard({ event, onRegister }) {
                 {/* CTA Button */}
                 <button
                     onClick={() => onRegister(event)}
-                    disabled={event.status === 'sold-out'}
-                    className="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold flex items-center justify-center gap-2 hover:from-indigo-500 hover:to-purple-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed group/btn"
+                    className="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600/50 to-purple-600/50 text-white/50 font-bold flex items-center justify-center gap-2 transition-all group/btn"
                 >
-                    <span>{event.status === 'sold-out' ? 'Sold Out' : 'Register Now'}</span>
-                    <ChevronRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
+                    <span>Registration Closed</span>
+                    <ChevronRight size={18} className="translate-x-1 opacity-50" />
                 </button>
             </div>
         </motion.div>

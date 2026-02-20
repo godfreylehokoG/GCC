@@ -122,19 +122,19 @@
     },
     "events": [
         {
-            "id": 4,
-            "title": "Global Gold Coin KZN Masterclass",
-            "city": "Midrand",
+            "id": 5,
+            "title": "KZN Global Gold Coin Masterclass",
+            "city": "Durban",
             "date": "2026-02-20",
             "displayDate": "Fri. February 20, 2026",
-            "time": "09:00 - 20:00",
-            "venue": "Midrand Convention Hub",
-            "address": "Midrand, Johannesburg",
-            "capacity": 400,
-            "registered": 156,
-            "image": "/images/midrand.jpg",
-            "status": "double-session",
-            "description": "Two intensive sessions in one day covering wealth mindset and gold-backed digital assets."
+            "time": "06:00 - Late",
+            "venue": "Beachfront & Zulu Kingdom",
+            "address": "Durban, KZN",
+            "capacity": 200,
+            "registered": 110,
+            "image": "/images/durban.jpg",
+            "status": "cultural",
+            "description": "Travel to Durban to experience the Zulu Kingdom and expand GGC's coastal presence."
         },
         {
             "id": 3,
@@ -165,21 +165,6 @@
             "image": "/images/lunch.jpg",
             "status": "vip-access",
             "description": "An exclusive luncheon to welcome GGC Leadership and celebrate the launch of the heritage tour."
-        },
-        {
-            "id": 5,
-            "title": "Durban & Zulu Nation Tour",
-            "city": "Durban",
-            "date": "2026-04-23",
-            "displayDate": "Thu. April 23, 2026",
-            "time": "06:00 - Late",
-            "venue": "Beachfront & Zulu Kingdom",
-            "address": "Durban, KZN",
-            "capacity": 200,
-            "registered": 110,
-            "image": "/images/durban.jpg",
-            "status": "cultural",
-            "description": "Travel to Durban to experience the Zulu Kingdom and expand GGC's coastal presence."
         },
         {
             "id": 2,

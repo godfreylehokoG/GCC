@@ -24,6 +24,11 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
+    // Temporary Safeguard: Registration is closed for schedule updates
+    return res.status(403).json({
+        error: 'Registration is temporarily offline for schedule updates. Please check back shortly.'
+    });
+
     try {
         const {
             firstName, lastName, email, phone, fullPhone,
