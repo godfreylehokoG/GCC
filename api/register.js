@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { sendRegistrationConfirmation } from './_lib/email';
+import { sendRegistrationConfirmation } from './_lib/email.js';
 
 // Initialize Supabase client
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
@@ -24,18 +24,13 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    // Temporary Safeguard: Registration is closed for schedule updates
-    return res.status(403).json({
-        error: 'Registration is temporarily offline for schedule updates. Please check back shortly.'
-    });
-
     try {
         const {
             firstName, lastName, email, phone, fullPhone,
             country, city, stateProvince, postalCode,
             interest, referralSource, reasonForAttending,
             occupation, experienceLevel, marketingConsent,
-            eventId, eventTitle
+            eventId, eventTitle, paymentReference, amount, currency, status
         } = req.body;
 
         // Validate required fields
@@ -61,6 +56,10 @@ export default async function handler(req, res) {
             marketing_consent: marketingConsent || false,
             event_id: eventId || null,
             event_title: eventTitle || null,
+            payment_reference: paymentReference || null,
+            payment_amount: amount || 0,
+            payment_currency: currency || null,
+            payment_status: status || 'confirmed',
             source: 'website'
         };
 
@@ -88,7 +87,16 @@ export default async function handler(req, res) {
         // Fire-and-forget email notification
         sendRegistrationConfirmation(
             { firstName, email },
-            { title: eventTitle, displayDate, venue, time, address: req.body.address }
+            {
+                title: eventTitle,
+                displayDate: req.body.eventDisplayDate,
+                venue: req.body.eventVenue,
+                time: req.body.eventTime,
+                address: req.body.eventAddress,
+                paymentReference: paymentReference,
+                amount: amount,
+                currency: currency
+            }
         ).catch(err => console.error('Silent Email Failure:', err));
 
         return res.status(200).json({

@@ -103,10 +103,10 @@ export default function EventCard({ event, onRegister }) {
                 {/* CTA Button */}
                 <button
                     onClick={() => onRegister(event)}
-                    className="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600/50 to-purple-600/50 text-white/50 font-bold flex items-center justify-center gap-2 transition-all group/btn"
+                    className="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-95 group/btn shadow-lg shadow-indigo-500/20"
                 >
-                    <span>Registration Closed</span>
-                    <ChevronRight size={18} className="translate-x-1 opacity-50" />
+                    <span>Register Now</span>
+                    <ChevronRight size={18} className="translate-x-1 group-hover/btn:translate-x-2 transition-transform" />
                 </button>
             </div>
         </motion.div>

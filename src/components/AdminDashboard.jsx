@@ -387,7 +387,7 @@ export default function AdminDashboard() {
         `${l.first_name} ${l.last_name} ${l.email} ${l.phone}`.toLowerCase().includes(search.toLowerCase())
     );
     const filteredRegs = registrations.filter(r =>
-        `${r.first_name} ${r.last_name} ${r.email} ${r.event_title}`.toLowerCase().includes(search.toLowerCase())
+        `${r.first_name} ${r.last_name} ${r.email} ${r.event_title} ${r.payment_reference}`.toLowerCase().includes(search.toLowerCase())
     );
     const activeData = activeTab === 'leads' ? filteredLeads : filteredRegs;
 
@@ -538,7 +538,7 @@ function RegistrationsTable({ data }) {
             <table className="w-full text-sm">
                 <thead className="border-b border-white/10 bg-white/5">
                     <tr>
-                        {['Name', 'Email', 'Event', 'City', 'Occupation', 'Consent', 'Date'].map(h => (
+                        {['Name', 'Email', 'Event', 'Reference', 'Status', 'Date'].map(h => (
                             <th key={h} className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-widest">{h}</th>
                         ))}
                     </tr>
@@ -557,13 +557,13 @@ function RegistrationsTable({ data }) {
                                     {reg.event_title || '—'}
                                 </span>
                             </td>
-                            <td className="px-6 py-4 text-gray-300">
-                                <span className="flex items-center gap-1"><MapPin size={13} /> {reg.city || '—'}</span>
-                            </td>
-                            <td className="px-6 py-4 text-gray-300 text-xs">{reg.occupation || '—'}</td>
+                            <td className="px-6 py-4 font-mono text-xs text-indigo-400 font-bold">{reg.payment_reference || '—'}</td>
                             <td className="px-6 py-4">
-                                <span className={`px-2 py-1 rounded-full text-xs font-bold ${reg.marketing_consent ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
-                                    {reg.marketing_consent ? 'Yes' : 'No'}
+                                <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${reg.payment_status === 'Pending Payment' || reg.payment_status === 'pending'
+                                        ? 'bg-amber-500/20 text-amber-400'
+                                        : 'bg-emerald-500/20 text-emerald-400'
+                                    }`}>
+                                    {reg.payment_status || 'Confirmed'}
                                 </span>
                             </td>
                             <td className="px-6 py-4 text-gray-500 text-xs">

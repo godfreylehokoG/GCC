@@ -124,21 +124,25 @@
         {
             "id": 5,
             "title": "KZN Global Gold Coin Masterclass",
-            "city": "Durban",
+            "type": "seminar",
+            "city": "Pietermaritzburg",
             "date": "2026-02-20",
             "displayDate": "Fri. February 20, 2026",
             "time": "06:00 - Late",
-            "venue": "Beachfront & Zulu Kingdom",
-            "address": "Durban, KZN",
+            "venue": "20 Bridle Place, Glenwood",
+            "address": "20 Bridle Place, Glenwood, Pietermaritzburg, KZN",
             "capacity": 200,
             "registered": 110,
             "image": "/images/durban.jpg",
             "status": "cultural",
-            "description": "Travel to Durban to experience the Zulu Kingdom and expand GGC's coastal presence."
+            "description": "Travel to Durban to experience the Zulu Kingdom and expand GGC's coastal presence.",
+            "priceSA": 250,
+            "priceUS": 20
         },
         {
             "id": 3,
             "title": "Community Legacy Day",
+            "type": "outreach",
             "city": "Village Outreach",
             "date": "2026-04-19",
             "displayDate": "Sun. April 19, 2026",
@@ -149,11 +153,14 @@
             "registered": 420,
             "image": "/images/outreach.jpg",
             "status": "impact",
-            "description": "Charity outreach: Well installations, school awards, and support for the elderly and frail."
+            "description": "Charity outreach: Well installations, school awards, and support for the elderly and frail.",
+            "priceSA": 0,
+            "priceUS": 0
         },
         {
             "id": 1,
             "title": "Royal Welcome Luncheon",
+            "type": "lunch",
             "city": "Johannesburg",
             "date": "2026-04-22",
             "displayDate": "Wed. April 22, 2026",
@@ -164,11 +171,14 @@
             "registered": 85,
             "image": "/images/lunch.jpg",
             "status": "vip-access",
-            "description": "An exclusive luncheon to welcome GGC Leadership and celebrate the launch of the heritage tour."
+            "description": "An exclusive luncheon to welcome GGC Leadership and celebrate the launch of the heritage tour.",
+            "priceSA": 550,
+            "priceUS": 50
         },
         {
             "id": 2,
             "title": "Mzilikazi Royal Monarch Gala",
+            "type": "gala",
             "city": "Johannesburg",
             "date": "2026-04-24",
             "displayDate": "Fri. April 24, 2026",
@@ -179,7 +189,9 @@
             "registered": 240,
             "image": "/images/gala.jpg",
             "status": "black-tie",
-            "description": "A prestigious African Royal Attire GALA welcoming the GGC Owner and Global Leaders in royal tradition."
+            "description": "A prestigious African Royal Attire GALA welcoming the GGC Owner and Global Leaders in royal tradition.",
+            "priceSA": 550,
+            "priceUS": 50
         }
     ],
     "leadership": [

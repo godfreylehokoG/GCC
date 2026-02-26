@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { sendLeadConfirmation } from './_lib/email';
+import { sendLeadConfirmation } from './_lib/email.js';
 
 // Initialize Supabase client
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
