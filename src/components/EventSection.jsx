@@ -1,16 +1,15 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, CreditCard, Wallet, ExternalLink, Copy, Check, ChevronRight } from 'lucide-react';
+import { X, ChevronRight } from 'lucide-react';
 import EventCard from './EventCard';
 import countryData from '../countries.json';
 
 export default function EventSection({ events }) {
+    const navigate = useNavigate();
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState(null);
-    const [paymentStep, setPaymentStep] = useState('form'); // 'form', 'payment', 'success'
-    const [registrationRef, setRegistrationRef] = useState('');
-    const [copySuccess, setCopySuccess] = useState(false);
 
     const [formData, setFormData] = useState({
         firstName: '',
@@ -44,11 +43,7 @@ export default function EventSection({ events }) {
         }
     };
 
-    const copyToClipboard = (text) => {
-        navigator.clipboard.writeText(text);
-        setCopySuccess(true);
-        setTimeout(() => setCopySuccess(false), 2000);
-    };
+
 
     const generateReference = () => {
         return `${formData.firstName} ${formData.lastName}`;
@@ -108,12 +103,23 @@ export default function EventSection({ events }) {
                 throw new Error(result.error || 'Failed to register');
             }
 
-            setRegistrationRef(reference);
-            if (pricing.amount > 0) {
-                setPaymentStep('payment');
-            } else {
-                setPaymentStep('success');
-            }
+            // Close modal and navigate to payment instructions page
+            setSelectedEvent(null);
+            navigate('/payment-instructions', {
+                state: {
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    email: formData.email,
+                    country: formData.country,
+                    eventTitle: selectedEvent.title,
+                    eventDisplayDate: selectedEvent.displayDate,
+                    eventVenue: selectedEvent.venue,
+                    eventTime: selectedEvent.time,
+                    amount: pricing.amount,
+                    currency: pricing.currency,
+                    reference: reference,
+                }
+            });
         } catch (err) {
             console.error('Registration Error:', err);
             setSubmitError(err.message);
@@ -124,7 +130,6 @@ export default function EventSection({ events }) {
 
     const closeModal = () => {
         setSelectedEvent(null);
-        setPaymentStep('form');
         setSubmitError(null);
         setFormData({
             firstName: '',
@@ -302,103 +307,7 @@ export default function EventSection({ events }) {
                                     </form>
                                 )}
 
-                                {paymentStep === 'payment' && (
-                                    <div className="space-y-6 text-center py-4">
-                                        <div className="w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto mb-2 border border-amber-500/20">
-                                            <Wallet size={32} className="text-amber-500" />
-                                        </div>
-                                        <div>
-                                            <h3 className="text-xl font-bold text-white">Payment Required</h3>
-                                            <p className="text-gray-400 text-sm mt-1">To secure your seat, please complete the payment below.</p>
-                                        </div>
 
-                                        <div className="bg-white/5 border border-white/10 rounded-2xl p-5 text-left space-y-4">
-                                            <div className="flex justify-between items-center pb-3 border-b border-white/5">
-                                                <span className="text-gray-400 text-sm">Amount Due</span>
-                                                <span className="text-white font-bold text-lg">{pricing.currency} {pricing.amount}</span>
-                                            </div>
-
-                                            <div className="space-y-3">
-                                                <div className="flex justify-between items-center group">
-                                                    <div>
-                                                        <span className="text-gray-500 text-[10px] uppercase font-bold block">Payment Reference (Use Your Full Name)</span>
-                                                        <span className="text-indigo-400 font-bold tracking-wider text-lg">{registrationRef}</span>
-                                                    </div>
-                                                    <button onClick={() => copyToClipboard(registrationRef)} className="p-2 hover:bg-white/5 rounded-lg transition-colors text-gray-400 hover:text-white">
-                                                        {copySuccess ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
-                                                    </button>
-                                                </div>
-
-                                                {formData.country === 'South Africa' ? (
-                                                    <div className="pt-2 space-y-2">
-                                                        <span className="text-gray-500 text-[10px] uppercase font-bold block">FNB Business EFT Details</span>
-                                                        <div className="text-sm space-y-1 text-gray-300">
-                                                            <p>Account Holder: <span className="text-white">GGC GLOBAL</span></p>
-                                                            <p>Account Number: <span className="text-white">63070529377</span></p>
-                                                            <p>Branch Code: <span className="text-white">210835</span></p>
-                                                            <p>Swift Code: <span className="text-white">FIRNZAJJ</span></p>
-                                                        </div>
-                                                    </div>
-                                                ) : formData.country === 'United States' ? (
-                                                    <div className="pt-2 space-y-2">
-                                                        <span className="text-gray-500 text-[10px] uppercase font-bold block">Cash App Handle</span>
-                                                        <div className="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/10">
-                                                            <span className="text-white font-bold">$HarvestFeeds</span>
-                                                            <a href="https://cash.app/$HarvestFeeds" target="_blank" rel="noreferrer" className="ml-auto text-indigo-400"><ExternalLink size={16} /></a>
-                                                        </div>
-                                                    </div>
-                                                ) : (
-                                                    <div className="pt-2 space-y-3">
-                                                        <span className="text-gray-500 text-[10px] uppercase font-bold block">International Payment</span>
-                                                        <div className="p-5 bg-indigo-500/5 border border-indigo-500/10 rounded-xl text-center space-y-3">
-                                                            <div className="w-12 h-12 bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto border border-indigo-500/20">
-                                                                <CreditCard size={24} className="text-indigo-400" />
-                                                            </div>
-                                                            <p className="text-white font-bold text-lg">PayPal — Coming Soon</p>
-                                                            <p className="text-gray-400 text-sm leading-relaxed">
-                                                                International payment via PayPal is being activated. Your registration has been saved and our team will contact you via WhatsApp or email to arrange payment.
-                                                            </p>
-                                                            <div className="pt-2 border-t border-white/5">
-                                                                <p className="text-gray-500 text-xs">Event Price</p>
-                                                                <p className="text-white font-bold text-xl">{pricing.currency} {pricing.amount}</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-3">
-                                            <a
-                                                href={`https://wa.me/27821234567?text=Hi, I just registered for ${selectedEvent.title} with reference ${registrationRef}. Here is my proof of payment.`}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                className="w-full py-4 rounded-xl bg-green-600 text-white font-bold flex items-center justify-center gap-2 hover:bg-green-500 transition-all"
-                                            >
-                                                <Check size={20} />
-                                                I'VE PAID (SEND PROOF)
-                                            </a>
-                                            <button onClick={closeModal} className="text-gray-500 text-xs hover:text-gray-300 transition-colors uppercase font-bold tracking-widest">
-                                                Close & Pay Later
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {paymentStep === 'success' && (
-                                    <div className="text-center py-12">
-                                        <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-500/20">
-                                            <Check size={40} className="text-green-500" />
-                                        </div>
-                                        <h3 className="text-2xl font-bold text-white mb-2">Registration Received!</h3>
-                                        <p className="text-gray-400 mb-8">
-                                            We've sent a confirmation email to {formData.email}. We can't wait to see you there!
-                                        </p>
-                                        <button onClick={closeModal} className="px-8 py-3 rounded-full bg-white/5 hover:bg-white/10 font-bold transition-all border border-white/10">
-                                            Close
-                                        </button>
-                                    </div>
-                                )}
                             </div>
                         </motion.div>
                     </motion.div>
