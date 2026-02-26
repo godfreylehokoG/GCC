@@ -50,14 +50,8 @@ export default function EventSection({ events }) {
         setTimeout(() => setCopySuccess(false), 2000);
     };
 
-    const generateReference = (event, country) => {
-        const eventCode = event.type === 'gala' ? 'GALA' :
-            event.type === 'lunch' ? 'LUNCH' :
-                event.id === 5 ? 'KZN' : 'EVT';
-        const regionCode = country === 'South Africa' ? 'SA' :
-            country === 'United States' ? 'US' : 'GL';
-        const random = Math.floor(1000 + Math.random() * 9000);
-        return `GGC-${eventCode}-${regionCode}-${random}`;
+    const generateReference = () => {
+        return `${formData.firstName} ${formData.lastName}`;
     };
 
     const getPrice = () => {
@@ -78,7 +72,7 @@ export default function EventSection({ events }) {
         setIsSubmitting(true);
         setSubmitError(null);
 
-        const reference = generateReference(selectedEvent, formData.country);
+        const reference = generateReference();
         const pricing = getPrice();
 
         try {
@@ -107,11 +101,7 @@ export default function EventSection({ events }) {
             try {
                 result = await response.json();
             } catch {
-                // Response body was not valid JSON (e.g. API not running)
-                if (!response.ok) {
-                    throw new Error(`Server error (${response.status}). The API may not be running locally. Please deploy or use "vercel dev".`);
-                }
-                throw new Error('Unexpected server response. Please try again.');
+                throw new Error('Registration failed. Please check your connection and try again.');
             }
 
             if (!response.ok) {
@@ -331,8 +321,8 @@ export default function EventSection({ events }) {
                                             <div className="space-y-3">
                                                 <div className="flex justify-between items-center group">
                                                     <div>
-                                                        <span className="text-gray-500 text-[10px] uppercase font-bold block">Reference Number (Required)</span>
-                                                        <span className="text-indigo-400 font-mono font-bold tracking-wider">{registrationRef}</span>
+                                                        <span className="text-gray-500 text-[10px] uppercase font-bold block">Payment Reference (Use Your Full Name)</span>
+                                                        <span className="text-indigo-400 font-bold tracking-wider text-lg">{registrationRef}</span>
                                                     </div>
                                                     <button onClick={() => copyToClipboard(registrationRef)} className="p-2 hover:bg-white/5 rounded-lg transition-colors text-gray-400 hover:text-white">
                                                         {copySuccess ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
@@ -358,10 +348,21 @@ export default function EventSection({ events }) {
                                                         </div>
                                                     </div>
                                                 ) : (
-                                                    <div className="pt-2 p-4 bg-indigo-500/5 border border-indigo-500/10 rounded-xl text-center">
-                                                        <p className="text-indigo-300 text-sm leading-relaxed">
-                                                            Global payment gateways (PayPal/Stripe) are being activated. Our team will contact you via WhatsApp to finalize your payment.
-                                                        </p>
+                                                    <div className="pt-2 space-y-3">
+                                                        <span className="text-gray-500 text-[10px] uppercase font-bold block">International Payment</span>
+                                                        <div className="p-5 bg-indigo-500/5 border border-indigo-500/10 rounded-xl text-center space-y-3">
+                                                            <div className="w-12 h-12 bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto border border-indigo-500/20">
+                                                                <CreditCard size={24} className="text-indigo-400" />
+                                                            </div>
+                                                            <p className="text-white font-bold text-lg">PayPal — Coming Soon</p>
+                                                            <p className="text-gray-400 text-sm leading-relaxed">
+                                                                International payment via PayPal is being activated. Your registration has been saved and our team will contact you via WhatsApp or email to arrange payment.
+                                                            </p>
+                                                            <div className="pt-2 border-t border-white/5">
+                                                                <p className="text-gray-500 text-xs">Event Price</p>
+                                                                <p className="text-white font-bold text-xl">{pricing.currency} {pricing.amount}</p>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 )}
                                             </div>

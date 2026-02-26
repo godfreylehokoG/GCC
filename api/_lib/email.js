@@ -1,12 +1,22 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resendApiKey = process.env.RESEND_API_KEY;
+const resend = resendApiKey ? new Resend(resendApiKey) : null;
 const fromEmail = process.env.EMAIL_FROM || 'admin@thewealth-mindset.com';
+
+if (!resend) {
+    console.warn('RESEND_API_KEY is not set. Email sending is disabled.');
+}
 
 /**
  * Sends a confirmation email for event registration
  */
 export async function sendRegistrationConfirmation(registrant, event) {
+    if (!resend) {
+        console.warn('Email skipped (Resend not configured): registration confirmation for', registrant.email);
+        return { success: false, error: 'Email service not configured' };
+    }
+
     const isPaid = (event.amount && event.amount > 0);
     const refPrefix = event.paymentReference ? `[Ref: ${event.paymentReference}] ` : '';
     const subject = `${refPrefix}${isPaid ? 'Action Required: Payment' : 'Confirmed'}: ${event.title}`;
@@ -87,6 +97,11 @@ export async function sendRegistrationConfirmation(registrant, event) {
  * Sends a confirmation email for general lead interest
  */
 export async function sendLeadConfirmation(lead) {
+    if (!resend) {
+        console.warn('Email skipped (Resend not configured): lead confirmation for', lead.email);
+        return { success: false, error: 'Email service not configured' };
+    }
+
     try {
         const { data, error } = await resend.emails.send({
             from: `The Wealth Mindset <${fromEmail}>`,
