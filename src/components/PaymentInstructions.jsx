@@ -224,15 +224,26 @@ export default function PaymentInstructions() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="bg-green-500/5 border border-green-500/10 rounded-2xl p-8 mb-8 text-center"
+                        className="bg-white/5 border border-white/10 rounded-3xl p-10 mb-8 overflow-hidden relative"
                     >
-                        <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500/20">
-                            <Check size={32} className="text-green-500" />
+                        {/* Subtle background glow */}
+                        <div className="absolute -inset-24 bg-green-500/5 blur-[100px] rounded-full" />
+
+                        <div className="relative z-10 text-center">
+                            <div className="w-20 h-20 bg-green-500/10 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-green-500/20 rotate-3 group-hover:rotate-0 transition-transform duration-500">
+                                <Check size={40} className="text-green-500" />
+                            </div>
+                            <h3 className="text-2xl font-bold text-white mb-3">No Payment Required</h3>
+                            <p className="text-gray-400 text-lg max-w-md mx-auto leading-relaxed">
+                                This is a free outreach event. Your seat has been successfully secured and no further action is needed!
+                            </p>
+
+                            <div className="mt-10 py-4 px-6 bg-green-500/10 border border-green-500/20 rounded-2xl inline-block">
+                                <p className="text-green-400 font-bold text-sm uppercase tracking-widest">
+                                    Registration Confirmed ✅
+                                </p>
+                            </div>
                         </div>
-                        <h3 className="text-xl font-bold text-white mb-2">No Payment Required</h3>
-                        <p className="text-gray-400">
-                            This is a free event. Your seat has been secured and you don't need to make any payment.
-                        </p>
                     </motion.div>
                 )}
 

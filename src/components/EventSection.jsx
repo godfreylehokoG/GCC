@@ -55,13 +55,11 @@ export default function EventSection({ events }) {
         if (!selectedEvent) return { amount: 0, currency: 'ZAR' };
         const isUS = formData.country === 'United States';
 
-        if (selectedEvent.type === 'gala' || selectedEvent.type === 'lunch') {
-            return isUS ? { amount: 50, currency: 'USD' } : { amount: 550, currency: 'ZAR' };
-        }
-        if (selectedEvent.type === 'seminar') {
-            return isUS ? { amount: 20, currency: 'USD' } : { amount: 250, currency: 'ZAR' };
-        }
-        return { amount: 0, currency: 'ZAR' };
+        // Use dynamic prices from the event data if available
+        const amount = isUS ? (selectedEvent.priceUS ?? 0) : (selectedEvent.priceSA ?? 0);
+        const currency = isUS ? 'USD' : 'ZAR';
+
+        return { amount, currency };
     };
 
     const pricing = getPrice();
