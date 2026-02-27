@@ -125,8 +125,9 @@ export default function PaymentInstructions() {
                             <div className="space-y-4">
                                 <h3 className="text-xs text-amber-400 uppercase font-bold tracking-widest flex items-center gap-2">
                                     <Wallet size={14} />
-                                    FNB Business EFT Details
+                                    FNB Business EFT Instructions
                                 </h3>
+                                <p className="text-gray-400 text-sm">Please use the following bank details to complete your payment. It is critical that you use the reference below.</p>
                                 <div className="bg-white/5 rounded-xl p-5 space-y-3 border border-white/5">
                                     <div className="flex justify-between items-center">
                                         <span className="text-gray-400 text-sm">Account Holder</span>
@@ -147,7 +148,7 @@ export default function PaymentInstructions() {
                                 </div>
                                 <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 text-center">
                                     <p className="text-amber-300 text-sm font-semibold">
-                                        ⚠️ Important: Use <span className="text-white font-bold">"{reference}"</span> as your EFT payment reference
+                                        ⚠️ Critical: Use <span className="text-white font-bold">"{reference}"</span> as your EFT payment reference
                                     </p>
                                 </div>
                             </div>
@@ -157,6 +158,7 @@ export default function PaymentInstructions() {
                                     <CreditCard size={14} />
                                     Cash App Payment
                                 </h3>
+                                <p className="text-gray-400 text-sm">Send your payment to the Cash App handle below. Please include your full name as a note.</p>
                                 <div className="bg-white/5 rounded-xl p-5 border border-white/5">
                                     <div className="flex items-center justify-between mb-4">
                                         <div>
@@ -188,8 +190,13 @@ export default function PaymentInstructions() {
                                     </div>
                                     <p className="text-white font-bold text-xl">PayPal — Coming Soon</p>
                                     <p className="text-gray-400 text-sm leading-relaxed max-w-md mx-auto">
-                                        International payment via PayPal is being activated. Your registration has been saved and our team will contact you via WhatsApp or email to arrange payment.
+                                        We've saved your registration details! International payment via PayPal is currently being activated for your region.
                                     </p>
+                                    <div className="py-3 px-4 bg-indigo-500/10 border border-indigo-500/20 rounded-xl">
+                                        <p className="text-indigo-300 text-sm font-bold">
+                                            You will receive an email as soon as PayPal is active for you to complete your registration.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         )}
