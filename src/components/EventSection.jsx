@@ -29,6 +29,8 @@ export default function EventSection({ events }) {
         marketingConsent: true
     });
 
+
+
     const handleFormChange = (e) => {
         const { id, value, type, checked } = e.target;
         setFormData(prev => ({
@@ -62,13 +64,15 @@ export default function EventSection({ events }) {
         return { amount: 0, currency: 'ZAR' };
     };
 
+    const pricing = getPrice();
+
     const handleFormSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
         setSubmitError(null);
 
         const reference = generateReference();
-        const pricing = getPrice();
+
 
         try {
             const response = await fetch('/api/register', {
@@ -103,8 +107,7 @@ export default function EventSection({ events }) {
                 throw new Error(result.error || 'Failed to register');
             }
 
-            // Close modal and navigate to payment instructions page
-            setSelectedEvent(null);
+            // Navigate to payment instructions page first
             navigate('/payment-instructions', {
                 state: {
                     firstName: formData.firstName,
@@ -120,6 +123,9 @@ export default function EventSection({ events }) {
                     reference: reference,
                 }
             });
+
+            // Then close modal (this resets state)
+            setSelectedEvent(null);
         } catch (err) {
             console.error('Registration Error:', err);
             setSubmitError(err.message);
@@ -150,7 +156,7 @@ export default function EventSection({ events }) {
         });
     };
 
-    const pricing = getPrice();
+
 
     return (
         <section id="events" className="px-6 md:px-10 pb-32">
@@ -229,83 +235,83 @@ export default function EventSection({ events }) {
 
                             {/* Modal Body */}
                             <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
-                                {paymentStep === 'form' && (
-                                    <form onSubmit={handleFormSubmit} className="space-y-6">
-                                        <div className="space-y-4">
-                                            <h4 className="text-indigo-400 text-xs font-bold uppercase tracking-widest border-b border-white/5 pb-2">1. Personal Details</h4>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">First Name</label>
-                                                    <input type="text" id="firstName" required disabled={isSubmitting} value={formData.firstName} onChange={handleFormChange} className="form-input-premium w-full" placeholder="John" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Last Name</label>
-                                                    <input type="text" id="lastName" required disabled={isSubmitting} value={formData.lastName} onChange={handleFormChange} className="form-input-premium w-full" placeholder="Doe" />
-                                                </div>
+
+                                <form onSubmit={handleFormSubmit} className="space-y-6">
+                                    <div className="space-y-4">
+                                        <h4 className="text-indigo-400 text-xs font-bold uppercase tracking-widest border-b border-white/5 pb-2">1. Personal Details</h4>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">First Name</label>
+                                                <input type="text" id="firstName" required disabled={isSubmitting} value={formData.firstName} onChange={handleFormChange} className="form-input-premium w-full" placeholder="John" />
                                             </div>
                                             <div>
-                                                <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Email Address</label>
-                                                <input type="email" id="email" required disabled={isSubmitting} value={formData.email} onChange={handleFormChange} className="form-input-premium w-full" placeholder="john@example.com" />
+                                                <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Last Name</label>
+                                                <input type="text" id="lastName" required disabled={isSubmitting} value={formData.lastName} onChange={handleFormChange} className="form-input-premium w-full" placeholder="Doe" />
                                             </div>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <div>
-                                                    <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Country</label>
-                                                    <select id="country" disabled={isSubmitting} value={formData.country} onChange={handleFormChange} className="form-input-premium w-full appearance-none">
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Email Address</label>
+                                            <input type="email" id="email" required disabled={isSubmitting} value={formData.email} onChange={handleFormChange} className="form-input-premium w-full" placeholder="john@example.com" />
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Country</label>
+                                                <select id="country" disabled={isSubmitting} value={formData.country} onChange={handleFormChange} className="form-input-premium w-full appearance-none">
+                                                    {countryData.map(c => (
+                                                        <option key={c.name} value={c.name} className="bg-gray-900">{c.flag} {c.name}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Mobile Number</label>
+                                                <div className="flex gap-2">
+                                                    <select id="countryCode" value={formData.countryCode} onChange={handleFormChange} disabled={isSubmitting} className="form-input-premium w-16 text-xs text-center">
                                                         {countryData.map(c => (
-                                                            <option key={c.name} value={c.name} className="bg-gray-900">{c.flag} {c.name}</option>
+                                                            <option key={c.name} value={c.code} className="bg-gray-900">{c.code}</option>
                                                         ))}
                                                     </select>
-                                                </div>
-                                                <div>
-                                                    <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Mobile Number</label>
-                                                    <div className="flex gap-2">
-                                                        <select id="countryCode" value={formData.countryCode} onChange={handleFormChange} disabled={isSubmitting} className="form-input-premium w-16 text-xs text-center">
-                                                            {countryData.map(c => (
-                                                                <option key={c.name} value={c.code} className="bg-gray-900">{c.code}</option>
-                                                            ))}
-                                                        </select>
-                                                        <input type="tel" id="phone" required disabled={isSubmitting} value={formData.phone} onChange={handleFormChange} className="form-input-premium flex-1" placeholder="82 123 4567" />
-                                                    </div>
+                                                    <input type="tel" id="phone" required disabled={isSubmitting} value={formData.phone} onChange={handleFormChange} className="form-input-premium flex-1" placeholder="82 123 4567" />
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
 
-                                        <div className="space-y-4">
-                                            <h4 className="text-indigo-400 text-xs font-bold uppercase tracking-widest border-b border-white/5 pb-2">2. Additional Info</h4>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">City</label>
-                                                    <input type="text" id="city" required disabled={isSubmitting} value={formData.city} onChange={handleFormChange} className="form-input-premium w-full" placeholder="Pietermaritzburg" />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Occupation</label>
-                                                    <input type="text" id="occupation" required disabled={isSubmitting} value={formData.occupation} onChange={handleFormChange} className="form-input-premium w-full" placeholder="Entrepreneur" />
-                                                </div>
+                                    <div className="space-y-4">
+                                        <h4 className="text-indigo-400 text-xs font-bold uppercase tracking-widest border-b border-white/5 pb-2">2. Additional Info</h4>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">City</label>
+                                                <input type="text" id="city" required disabled={isSubmitting} value={formData.city} onChange={handleFormChange} className="form-input-premium w-full" placeholder="Pietermaritzburg" />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Occupation</label>
+                                                <input type="text" id="occupation" required disabled={isSubmitting} value={formData.occupation} onChange={handleFormChange} className="form-input-premium w-full" placeholder="Entrepreneur" />
                                             </div>
                                         </div>
+                                    </div>
 
-                                        {submitError && (
-                                            <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-sm">
-                                                {submitError}
-                                            </div>
+                                    {submitError && (
+                                        <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-sm">
+                                            {submitError}
+                                        </div>
+                                    )}
+
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold hover:from-indigo-500 hover:to-purple-500 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                                    >
+                                        {isSubmitting ? (
+                                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        ) : (
+                                            <>
+                                                {pricing.amount > 0 ? `PROCEED TO PAYMENT (${pricing.currency} ${pricing.amount})` : 'CONFIRM REGISTRATION'}
+                                                <ChevronRight size={18} />
+                                            </>
                                         )}
+                                    </button>
+                                </form>
 
-                                        <button
-                                            type="submit"
-                                            disabled={isSubmitting}
-                                            className="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold hover:from-indigo-500 hover:to-purple-500 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
-                                        >
-                                            {isSubmitting ? (
-                                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                            ) : (
-                                                <>
-                                                    {pricing.amount > 0 ? `PROCEED TO PAYMENT (${pricing.currency} ${pricing.amount})` : 'CONFIRM REGISTRATION'}
-                                                    <ChevronRight size={18} />
-                                                </>
-                                            )}
-                                        </button>
-                                    </form>
-                                )}
 
 
                             </div>
