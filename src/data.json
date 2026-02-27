@@ -154,8 +154,8 @@
             "image": "/images/outreach.jpg",
             "status": "impact",
             "description": "Charity outreach: Well installations, school awards, and support for the elderly and frail.",
-            "priceSA": 0,
-            "priceUS": 0
+            "priceSA": 550,
+            "priceUS": 50
         },
         {
             "id": 1,
