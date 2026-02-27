@@ -192,6 +192,42 @@
             "description": "A prestigious African Royal Attire GALA welcoming the GGC Owner and Global Leaders in royal tradition.",
             "priceSA": 550,
             "priceUS": 50
+        },
+        {
+            "id": 4,
+            "title": "Johannesburg Global Gold Coin Masterclass",
+            "type": "seminar",
+            "city": "Johannesburg",
+            "date": "2026-04-23",
+            "displayDate": "Thu. April 23, 2026",
+            "time": "09:00 - 16:00",
+            "venue": "TBD (Sandton Venue)",
+            "address": "Sandton, Johannesburg, RSA",
+            "capacity": 200,
+            "registered": 145,
+            "image": "/images/durban.jpg",
+            "status": "open",
+            "description": "Exclusive GGC Masterclass in Johannesburg covering asset protection and gold-backed digital growth.",
+            "priceSA": 250,
+            "priceUS": 20
+        },
+        {
+            "id": 6,
+            "title": "Wealth Mindset Heritage Seminar",
+            "type": "seminar",
+            "city": "Johannesburg",
+            "date": "2026-04-25",
+            "displayDate": "Sat. April 25, 2026",
+            "time": "10:00 - 15:00",
+            "venue": "TBD (Premium Venue)",
+            "address": "Johannesburg, RSA",
+            "capacity": 300,
+            "registered": 180,
+            "image": "/images/durban.jpg",
+            "status": "open",
+            "description": "A comprehensive seminar focusing on the core principles of the Wealth Mindset and the process of sovereign building.",
+            "priceSA": 250,
+            "priceUS": 20
         }
     ],
     "leadership": [

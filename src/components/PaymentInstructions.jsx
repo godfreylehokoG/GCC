@@ -201,9 +201,9 @@ export default function PaymentInstructions() {
                             </div>
                         )}
 
-                        {/* WhatsApp Proof of Payment */}
+                        {/* WhatsApp & Email Proof of Payment */}
                         {(country === 'South Africa' || country === 'United States') && (
-                            <div className="mt-8 space-y-3">
+                            <div className="mt-8 space-y-4">
                                 <a
                                     href={`https://wa.me/27821234567?text=Hi, I just registered for ${eventTitle}. My name is ${fullName}. Here is my proof of payment.`}
                                     target="_blank"
@@ -211,11 +211,19 @@ export default function PaymentInstructions() {
                                     className="w-full py-4 rounded-xl bg-green-600 text-white font-bold flex items-center justify-center gap-2 hover:bg-green-500 transition-all"
                                 >
                                     <MessageCircle size={20} />
-                                    I'VE PAID — SEND PROOF VIA WHATSAPP
+                                    SEND PROOF VIA WHATSAPP
                                 </a>
-                                <p className="text-gray-500 text-xs text-center">
-                                    Send your proof of payment to expedite verification
-                                </p>
+                                <div className="text-center space-y-2 py-4 bg-white/5 rounded-2xl border border-white/5">
+                                    <p className="text-gray-400 text-sm">
+                                        Or email your proof to:
+                                    </p>
+                                    <a href="mailto:admin@thewealth-mindset.com" className="text-indigo-400 font-bold hover:text-indigo-300 transition-colors text-lg">
+                                        admin@thewealth-mindset.com
+                                    </a>
+                                    <p className="text-gray-500 text-xs mt-2 px-6">
+                                        Please include your reference <strong className="text-white">"{reference}"</strong> in the email subject for faster verification.
+                                    </p>
+                                </div>
                             </div>
                         )}
                     </motion.div>
@@ -272,6 +280,6 @@ export default function PaymentInstructions() {
                     </p>
                 </div>
             </footer>
-        </div>
+        </div >
     );
 }
