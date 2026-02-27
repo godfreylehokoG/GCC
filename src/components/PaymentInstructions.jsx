@@ -130,6 +130,10 @@ export default function PaymentInstructions() {
                                 <p className="text-gray-400 text-sm">Please use the following bank details to complete your payment. It is critical that you use the reference below.</p>
                                 <div className="bg-white/5 rounded-xl p-5 space-y-3 border border-white/5">
                                     <div className="flex justify-between items-center">
+                                        <span className="text-gray-400 text-sm">Bank</span>
+                                        <span className="text-white font-semibold">First National Bank (FNB)</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
                                         <span className="text-gray-400 text-sm">Account Holder</span>
                                         <span className="text-white font-semibold">GGC GLOBAL</span>
                                     </div>
@@ -205,7 +209,7 @@ export default function PaymentInstructions() {
                         {(country === 'South Africa' || country === 'United States') && (
                             <div className="mt-8 space-y-4">
                                 <a
-                                    href={`https://wa.me/27821234567?text=Hi, I just registered for ${eventTitle}. My name is ${fullName}. Here is my proof of payment.`}
+                                    href={`https://wa.me/27786511959?text=Hi, I just registered for ${eventTitle}. My name is ${fullName}. I have paid ${currency} ${amount}. Here is my proof of payment.`}
                                     target="_blank"
                                     rel="noreferrer"
                                     className="w-full py-4 rounded-xl bg-green-600 text-white font-bold flex items-center justify-center gap-2 hover:bg-green-500 transition-all"

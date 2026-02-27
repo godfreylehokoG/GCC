@@ -53,11 +53,11 @@ export default function EventSection({ events }) {
 
     const getPrice = () => {
         if (!selectedEvent) return { amount: 0, currency: 'ZAR' };
-        const isUS = formData.country === 'United States';
+        const isSA = formData.country === 'South Africa';
 
         // Use dynamic prices from the event data if available
-        const amount = isUS ? (selectedEvent.priceUS ?? 0) : (selectedEvent.priceSA ?? 0);
-        const currency = isUS ? 'USD' : 'ZAR';
+        const amount = isSA ? (selectedEvent.priceSA ?? 0) : (selectedEvent.priceUS ?? 0);
+        const currency = isSA ? 'ZAR' : 'USD';
 
         return { amount, currency };
     };
