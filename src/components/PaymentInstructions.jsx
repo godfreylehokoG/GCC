@@ -96,7 +96,7 @@ export default function PaymentInstructions() {
                 </motion.div>
 
                 {/* Payment Section — only for paid events */}
-                {isPaid && (
+                {isPaid ? (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -218,6 +218,21 @@ export default function PaymentInstructions() {
                                 </p>
                             </div>
                         )}
+                    </motion.div>
+                ) : (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="bg-green-500/5 border border-green-500/10 rounded-2xl p-8 mb-8 text-center"
+                    >
+                        <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500/20">
+                            <Check size={32} className="text-green-500" />
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-2">No Payment Required</h3>
+                        <p className="text-gray-400">
+                            This is a free event. Your seat has been secured and you don't need to make any payment.
+                        </p>
                     </motion.div>
                 )}
 
