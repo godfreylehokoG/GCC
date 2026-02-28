@@ -303,7 +303,7 @@ export default function EventSection({ events }) {
                                             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                                         ) : (
                                             <>
-                                                {pricing.amount > 0 ? 'PROCEED TO REGISTRATION' : 'CONFIRM REGISTRATION'}
+                                                {pricing.amount > 0 ? `PROCEED TO PAYMENT (${pricing.currency} ${pricing.amount})` : 'CONFIRM REGISTRATION'}
                                                 <ChevronRight size={18} />
                                             </>
                                         )}

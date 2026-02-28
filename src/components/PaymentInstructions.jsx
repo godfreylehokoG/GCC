@@ -103,13 +103,11 @@ export default function PaymentInstructions() {
                         transition={{ delay: 0.2 }}
                         className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-2xl p-6 mb-8"
                     >
-                        {/* Amount Due — Temporarily Hidden */}
-                        {/* 
+                        {/* Amount Due */}
                         <div className="text-center mb-6 pb-6 border-b border-white/10">
                             <p className="text-gray-400 text-sm mb-1">Amount Due</p>
                             <p className="text-4xl font-bold text-white">{currency} {amount}</p>
                         </div>
-                        */}
 
                         {/* Payment Reference */}
                         <div className="bg-white/5 rounded-xl p-4 mb-6 flex items-center justify-between">
@@ -211,7 +209,7 @@ export default function PaymentInstructions() {
                         {(country === 'South Africa' || country === 'United States') && (
                             <div className="mt-8 space-y-4">
                                 <a
-                                    href={`https://wa.me/27786511959?text=Hi, I just registered for ${eventTitle}. My name is ${fullName}. I have made my payment. Here is my proof of payment.`}
+                                    href={`https://wa.me/27786511959?text=Hi, I just registered for ${eventTitle}. My name is ${fullName}. I have paid ${currency} ${amount}. Here is my proof of payment.`}
                                     target="_blank"
                                     rel="noreferrer"
                                     className="w-full py-4 rounded-xl bg-green-600 text-white font-bold flex items-center justify-center gap-2 hover:bg-green-500 transition-all"
