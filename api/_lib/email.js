@@ -82,9 +82,14 @@ export async function sendRegistrationConfirmation(registrant, event) {
         });
 
         if (error) {
-            console.error('Resend Error (Registration):', error);
+            console.error('--- RESEND API ERROR (REGISTRATION) ---');
+            console.error('Error:', error);
+            console.error('To:', registrant.email);
+            console.error('Subject:', subject);
             return { success: false, error };
         }
+
+        console.log('Registration confirmation email sent to:', registrant.email);
 
         return { success: true, data };
     } catch (err) {
@@ -131,10 +136,13 @@ export async function sendLeadConfirmation(lead) {
         });
 
         if (error) {
-            console.error('Resend Error (Lead):', error);
+            console.error('--- RESEND API ERROR (LEAD) ---');
+            console.error('Error:', error);
+            console.error('To:', lead.email);
             return { success: false, error };
         }
 
+        console.log('Lead confirmation email sent to:', lead.email);
         return { success: true, data };
     } catch (err) {
         console.error('Failed to send lead email:', err);

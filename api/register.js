@@ -84,7 +84,7 @@ export default async function handler(req, res) {
         // Log the lead
         console.log('New Lead Registered in Supabase:', data[0]);
 
-        // Fire-and-forget email notification
+        // Fire-and-forget email notification (with better error reporting)
         sendRegistrationConfirmation(
             { firstName, email },
             {
@@ -97,7 +97,11 @@ export default async function handler(req, res) {
                 amount: amount,
                 currency: currency
             }
-        ).catch(err => console.error('Silent Email Failure:', err));
+        ).then(result => {
+            if (!result.success) {
+                console.error(`Email delivery failed for ${email}:`, result.error);
+            }
+        }).catch(err => console.error('CRITICAL: Email processing exception:', err));
 
         return res.status(200).json({
             success: true,
