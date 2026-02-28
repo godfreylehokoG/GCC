@@ -251,7 +251,7 @@ export default function EventSection({ events }) {
                                             <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Email Address</label>
                                             <input type="email" id="email" required disabled={isSubmitting} value={formData.email} onChange={handleFormChange} className="form-input-premium w-full" placeholder="john@example.com" />
                                         </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-[1fr_1.5fr] gap-4">
                                             <div>
                                                 <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Country</label>
                                                 <select id="country" disabled={isSubmitting} value={formData.country} onChange={handleFormChange} className="form-input-premium w-full appearance-none">
@@ -263,7 +263,7 @@ export default function EventSection({ events }) {
                                             <div>
                                                 <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Mobile Number</label>
                                                 <div className="flex gap-2">
-                                                    <select id="countryCode" value={formData.countryCode} onChange={handleFormChange} disabled={isSubmitting} className="form-input-premium w-16 text-xs text-center">
+                                                    <select id="countryCode" value={formData.countryCode} onChange={handleFormChange} disabled={isSubmitting} className="form-input-premium !w-24 flex-shrink-0 text-xs px-2">
                                                         {countryData.map(c => (
                                                             <option key={c.name} value={c.code} className="bg-gray-900">{c.code}</option>
                                                         ))}
