@@ -105,6 +105,15 @@ export default function EventSection({ events }) {
                 throw new Error(result.error || 'Failed to register');
             }
 
+            // Log email error to console for debugging if present
+            if (result.emailError) {
+                console.group('--- EMAIL NOTIFICATION ERROR ---');
+                console.error('Priority: High');
+                console.error('Status: Registration saved to DB, but email failed.');
+                console.error('Resend Error:', result.emailError);
+                console.groupEnd();
+            }
+
             // Navigate to payment instructions page first
             navigate('/payment-instructions', {
                 state: {
