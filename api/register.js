@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { sendRegistrationConfirmation } from './_lib/email.js';
 
 // Initialize Supabase client
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
@@ -29,7 +30,7 @@ export default async function handler(req, res) {
             country, city, stateProvince, postalCode,
             interest, referralSource, reasonForAttending,
             occupation, experienceLevel, marketingConsent,
-            eventId, eventTitle
+            eventId, eventTitle, paymentReference, amount, currency, status
         } = req.body;
 
         // Validate required fields
@@ -55,6 +56,10 @@ export default async function handler(req, res) {
             marketing_consent: marketingConsent || false,
             event_id: eventId || null,
             event_title: eventTitle || null,
+            payment_reference: paymentReference || null,
+            payment_amount: amount || 0,
+            payment_currency: currency || null,
+            payment_status: status || 'confirmed',
             source: 'website'
         };
 
@@ -78,6 +83,25 @@ export default async function handler(req, res) {
 
         // Log the lead
         console.log('New Lead Registered in Supabase:', data[0]);
+
+        // Fire-and-forget email notification (with better error reporting)
+        sendRegistrationConfirmation(
+            { firstName, email },
+            {
+                title: eventTitle,
+                displayDate: req.body.eventDisplayDate,
+                venue: req.body.eventVenue,
+                time: req.body.eventTime,
+                address: req.body.eventAddress,
+                paymentReference: paymentReference,
+                amount: amount,
+                currency: currency
+            }
+        ).then(result => {
+            if (!result.success) {
+                console.error(`Email delivery failed for ${email}:`, result.error);
+            }
+        }).catch(err => console.error('CRITICAL: Email processing exception:', err));
 
         return res.status(200).json({
             success: true,
