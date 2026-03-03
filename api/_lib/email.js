@@ -8,6 +8,11 @@ if (!resend) {
     console.warn('RESEND_API_KEY is not set. Email sending is disabled.');
 }
 
+// Log for debugging (will show in Vercel logs)
+console.log('--- EMAIL SYSTEM CONFIG ---');
+console.log('From Address:', fromEmail);
+console.log('API Key Configured:', !!resendApiKey);
+
 /**
  * Sends a confirmation email for event registration
  */
