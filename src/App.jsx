@@ -6,17 +6,13 @@ import PaymentInstructions from "./components/PaymentInstructions";
 
 export default function App() {
   return (
-    <>
-      <GGC />
-      <Analytics />
-    </>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<GGC />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/payment-instructions" element={<PaymentInstructions />} />
       </Routes>
+      <Analytics />
     </BrowserRouter>
   );
 }
-

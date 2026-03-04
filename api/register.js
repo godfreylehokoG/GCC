@@ -84,8 +84,8 @@ export default async function handler(req, res) {
         // Log the lead
         console.log('New Lead Registered in Supabase:', data[0]);
 
-        // Fire-and-forget email notification (with better error reporting)
-        sendRegistrationConfirmation(
+        // Send email notification and wait for result for debugging
+        const emailResult = await sendRegistrationConfirmation(
             { firstName, email },
             {
                 title: eventTitle,
@@ -97,11 +97,26 @@ export default async function handler(req, res) {
                 amount: amount,
                 currency: currency
             }
-        ).then(result => {
-            if (!result.success) {
-                console.error(`Email delivery failed for ${email}:`, result.error);
-            }
-        }).catch(err => console.error('CRITICAL: Email processing exception:', err));
+        ).catch(err => {
+            console.error('CRITICAL: Email processing exception:', err);
+            return { success: false, error: err.message };
+        });
+
+        if (!emailResult.success) {
+            console.error(`Email delivery failed for ${email}:`, emailResult.error);
+            // We still return success: true for the registration itself, 
+            // but we add an emailError flag so the UI can show a warning
+            return res.status(200).json({
+                success: true,
+                message: 'Registration successful, but confirmation email failed to send.',
+                emailError: emailResult.error,
+                lead: {
+                    id: data[0].id,
+                    firstName: data[0].first_name,
+                    email: data[0].email
+                }
+            });
+        }
 
         return res.status(200).json({
             success: true,
