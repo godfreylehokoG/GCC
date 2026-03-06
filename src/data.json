@@ -215,19 +215,63 @@
     "leadership": [
         {
             "id": 1,
+            "tier": 1,
             "name": "Prince Lethukukhanya",
             "role": "Founder & Author",
+            "description": "Visionary leader bridging royal heritage and modern financial structures to build sustainable community wealth.",
             "image": "/Prince_Lethukukhanya.jpeg",
             "bio": "Prince Lethukukhanya is a royal visionary and author dedicated to economic empowerment and legacy building. He leads the Wealth Mindset initiative, bridging traditional wealth preservation with modern digital assets.",
             "longBio": "Prince Lethukukhanya is a royal visionary and author dedicated to economic empowerment and legacy building. As the founder of the Wealth Mindset initiative, he is committed to bridging the gap between traditional royal heritage and modern financial structures. His leadership focuses on creating sustainable pathways for community development and personal financial freedom.\n\nHe is the author of 'The Process,' a roadmap to sovereign wealth that emphasizes the importance of internal transformation before external success. Through his work, he continues to advocate for the preservation of African tradition while embracing the opportunities of the digital age, ensuring that legacy and innovation move forward hand in hand."
         },
         {
             "id": 2,
-            "name": "Prophet Oxbert Mintah",
-            "role": "Strategic Leader & Prophet",
+            "tier": 2,
+            "name": "Ambassador Paulette K. Broach",
+            "role": "Chief Operating Officer",
+            "description": "Operational leadership, coordination of projects, and ensuring execution of Wealth Mindset initiatives.",
+            "image": "/Ambassador.png",
+            "bio": "Ambassador Paulette K. Broach is a leadership and governance strategist focused on institutional strengthening and principled leadership development. She is the Founder and Executive Director of Paulette K. Broach International.",
+            "longBio": "Ambassador Paulette K. Broach is a leadership and governance strategist focused on institutional strengthening and principled leadership development. She is the Founder and Executive Director of Paulette K. Broach International, a nonprofit organization dedicated to leadership formation, governance maturity, and structured capacity building.\n\nRecognized in 2024 in connection with the Mzilikazi Kingdom, she serves in an international representative capacity focused on cross-border collaboration, leadership dialogue, and sustainable institutional alignment.\n\nShe is also the Founder of Dominion University, a leadership formation platform committed to developing discernment, strategic execution, and governance clarity in leaders across sectors.\n\nAreas of focus include institutional development, leadership governance frameworks, women in leadership capacity building, ethical economic education, and international collaboration."
+        },
+        {
+            "id": 3,
+            "tier": 2,
+            "name": "Madam Joey Wills-McCrary",
+            "role": "Chief Financial Officer",
+            "description": "Financial oversight, budgeting, strategic financial planning, and investment structures.",
+            "image": "/Joey.jpeg",
+            "bio": "A highly qualified accounting executive with over 20 years of hands-on experience specializing in real estate and project management, offering expertise in financial reporting, cash flow analysis, and budgetary planning.",
+            "longBio": "Madam Joey Wills-McCrary is a highly qualified accounting executive with over 20 years of hands-on experience specializing in real estate and project management. She offers an array of skills in real estate transactions, financial reporting, cash flow analysis, budgetary planning, team management, and cross-functional collaboration.\n\nShe has a proven ability to manage the acquisition of billion-dollar real estate investments with leading-edge partners. An adept leader of substantial and diverse teams, she has a proven record of accomplishments in fast-paced, deadline-driven environments.\n\nAs the Chief Financial Officer of The Wealth Mindset, she oversees all financial operations, strategic planning, investment structures, and ensures the fiscal integrity of every initiative."
+        },
+        {
+            "id": 4,
+            "tier": 3,
+            "name": "Prince Thulani Mzilikazi",
+            "role": "Chief of Staff",
+            "description": "Strategic coordination of leadership initiatives, partnerships, compliance oversight, and executive communications.",
+            "image": "/Prince_Thulani.png",
+            "bio": "Prince Thulani Mzilikazi is a strategic leader and accomplished public speaker rooted in the disciplines of human capital development and organizational governance. As Chief of Staff, he ensures the founder's vision is translated into actionable strategy across every initiative.",
+            "longBio": "Prince Thulani Mzilikazi is a strategic leader, accomplished public speaker, and governance-oriented executive with a Bachelor's Degree in Human Resources Development from the Vaal University of Technology. His academic foundation in people development and organizational strategy positions him uniquely at the intersection of leadership, governance, and institutional growth.\n\nAs Chief of Staff of The Wealth Mindset, Prince Thulani serves as the operational backbone of the organization's leadership structure. He is responsible for the strategic coordination of leadership initiatives, partnership cultivation, compliance oversight, and executive communications. His role ensures that the founder's vision is not only preserved in intent but translated into actionable strategies that align every department with the organization's broader mission.\n\nWith a deep understanding of human capital dynamics and institutional architecture, Prince Thulani builds bridges between teams, manages high-level stakeholder relationships, and drives the execution of key projects with precision and integrity. His leadership style is defined by clarity, discipline, and an unwavering commitment to the principles of legacy and service that The Wealth Mindset stands for."
+        },
+        {
+            "id": 5,
+            "tier": 3,
+            "name": "Oxbert Mintah",
+            "role": "Protocol Administrator",
+            "description": "Royal protocol management, cultural representation, dignitary coordination, and ceremonial planning.",
             "image": "/Prophet Oxbert Mintah.jpeg",
-            "bio": "Prophet Oxbert Mintah is a dynamic minister, prayer intercessor, and entrepreneur based in Johannesburg. Known for catalyzing revivals and empowering youth to fulfill their kingdom mandate, he is the convener of The Clarion Call and Co-Visioneer of the Ipray Conference.",
-            "longBio": "Prophet Oxbert Mintah, a Ghanaian national based in Johannesburg, South Africa, is a dynamic minister characterized by his diverse gifts. As a youthful preacher, teacher, prayer intercessor, writer, entrepreneur, and ordained Reverend minister, he operates under the influence of a distinctive prophetic unction. Noted for his impactful conferences and international speaking engagements, he has consistently demonstrated his ability to catalyze revivals and lead souls to Christ. His ministry prioritizes the revitalization of the body of Christ and the empowerment of the end-time youth to fulfill their kingdom mandate and accomplish notable spiritual feats. Additionally, he is a skilled psalmist, worshipper, and published author.\n\nHe is the convener of The Clarion Call, a global, interdenominational prayer platform that connects intercessors, prayer warriors, believers, and ministers of the Gospel across Africa, Europe, Asia, and the Americas. The Clarion Call's vision is to raise kingdom militants who will stand in the gap in prayer for churches, nations, families, and other entities. The aim is to cultivate men and women with a strong thirst for the things of God through His unadulterated word by grooming, nurturing, and tutoring them in the act of prayer. He is also the Co-Visioneer of Ipray Conference, an annual, interdenominational prayer summit in Polokwane, South Africa, aimed at raising intercessors for the body of Christ. Additionally, he serves at Power Zone Ministry International in Polokwane, South Africa.\n\nHe holds a diploma in Ministerial Leadership Ethics, Biblical Hermeneutics, Pentecostal and Charismatic Studies from W.W.A.C.C.E.I & THRONE-ROOM APOSTOLIC COLLEGE IN COLLABORATION WITH UNITED FELLOWSHIP ASSEMBLIES INT. His language proficiency in English is excellent, with skills in speaking, reading, and writing. He is also skilled in computer literacy, including Microsoft Office and Internet Explorer. His key skills and competencies include excellent analytical, oratory, and interpersonal skills, as well as problem-solving skills and the ability to work with a team."
+            "bio": "Oxbert Mintah is a dynamic minister, entrepreneur, and ordained Reverend based in Johannesburg. He manages royal protocol, cultural representation, and ceremonial planning for The Wealth Mindset.",
+            "longBio": "Oxbert Mintah, a Ghanaian national based in Johannesburg, South Africa, is a dynamic minister characterized by his diverse gifts. As a youthful preacher, teacher, prayer intercessor, writer, entrepreneur, and ordained Reverend minister, he operates under the influence of a distinctive prophetic unction. Noted for his impactful conferences and international speaking engagements, he has consistently demonstrated his ability to catalyze revivals and lead souls to Christ.\n\nHe is the convener of The Clarion Call, a global, interdenominational prayer platform that connects intercessors, prayer warriors, believers, and ministers of the Gospel across Africa, Europe, Asia, and the Americas. He is also the Co-Visioneer of Ipray Conference, an annual, interdenominational prayer summit in Polokwane, South Africa, aimed at raising intercessors for the body of Christ.\n\nAs Protocol Administrator for The Wealth Mindset, he oversees royal protocol management, cultural representation, dignitary coordination, and ceremonial planning — ensuring that every engagement reflects the dignity and heritage of the organization."
+        },
+        {
+            "id": 6,
+            "tier": 3,
+            "name": "Madam Muneiwa Sibiya",
+            "role": "Executive Administrative Assistant",
+            "description": "Executive scheduling, operational documentation, and coordination between departments.",
+            "image": "/Muneiwa.jpeg",
+            "bio": "Muneiwa Sibiya is a Gospel Minister, Worship Leader, and Recording Artist with a strong foundation in civil engineering and project management. She coordinates executive operations for The Wealth Mindset.",
+            "longBio": "Madam Muneiwa Sibiya is a Gospel Minister, Worship Leader, and Recording Artist ordained as an Evangelist in 2019 at Church of God Mission Nigeria. Born in Limpopo, South Africa, and raised in Louis Trichardt, she showed a deep love for music from a young age, participating in competitions including the National Eisteddfod Academy and Idols South Africa.\n\nIn 2018, she was appointed Worship Team Leader at her church, where passion met purpose. Inspired by Myles Munroe's teachings, she believed that purpose is not merely discovered but walked into. In 2020, she recorded her debut single 'Take Hold,' placing in the Top 5 of the Heavenly Gates Gospel Awards nominations across Africa. In 2024, she held her first live recording and released the worship single 'Yahweh,' earning nominations at the Women in Gospel Awards.\n\nMuneiwa is also academically accomplished, holding a Diploma in Civil Engineering, a Certificate in Project Management, IT certifications, and a Diploma in Applied Ministries. As Executive Administrative Assistant for The Wealth Mindset, she manages executive scheduling, operational documentation, and inter-departmental coordination."
         }
     ],
     "book": {

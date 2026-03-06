@@ -29,6 +29,7 @@ export async function sendRegistrationConfirmation(registrant, event) {
     try {
         const { data, error } = await resend.emails.send({
             from: `The Wealth Mindset <${fromEmail}>`,
+            reply_to: 'admin@thewealth-mindset.com',
             to: [registrant.email],
             subject: subject,
             html: `
@@ -66,8 +67,17 @@ export async function sendRegistrationConfirmation(registrant, event) {
                             <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 25px 0;">
                             <h3 style="margin-top: 0; color: #6366f1; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Payment Summary</h3>
                             <p style="font-size: 24px; font-weight: bold; margin: 10px 0;">${event.currency} ${event.amount}</p>
-                            <p style="font-size: 13px; color: #9ca3af; line-height: 1.6;">
-                                Send your Proof of Payment to our team via WhatsApp or reply to this email to expedite your verification.
+                            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
+                            <h3 style="margin-top: 0; color: #fbbf24; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Banking Details (South Africa — FNB EFT)</h3>
+                            <table style="width: 100%; font-size: 14px; border-collapse: collapse;">
+                                <tr><td style="color: #9ca3af; padding: 6px 0;">Bank</td><td style="color: #eef2f6; font-weight: bold; text-align: right;">First National Bank (FNB)</td></tr>
+                                <tr><td style="color: #9ca3af; padding: 6px 0;">Account Number</td><td style="color: #eef2f6; font-family: monospace; font-weight: bold; text-align: right;">63070529377</td></tr>
+                                <tr><td style="color: #9ca3af; padding: 6px 0;">Branch Code</td><td style="color: #eef2f6; font-family: monospace; text-align: right;">210835</td></tr>
+                                <tr><td style="color: #9ca3af; padding: 6px 0;">Swift Code</td><td style="color: #eef2f6; font-family: monospace; text-align: right;">FIRNZAJJ</td></tr>
+                                <tr><td style="color: #9ca3af; padding: 6px 0;">Reference</td><td style="color: #6366f1; font-weight: bold; font-family: monospace; text-align: right;">${event.paymentReference}</td></tr>
+                            </table>
+                            <p style="font-size: 13px; color: #9ca3af; line-height: 1.6; margin-top: 16px;">
+                                After paying, send your Proof of Payment by replying to this email or via WhatsApp for faster verification.
                             </p>
                         ` : ''}
                     </div>

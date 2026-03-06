@@ -1,152 +1,127 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Quote, X, ChevronRight } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { ChevronRight, Users, Quote } from 'lucide-react';
 
 export default function Leadership({ leadership }) {
-    const [selectedLeader, setSelectedLeader] = useState(null);
+    const navigate = useNavigate();
+
+    // Get founder and the rest of the team
+    const founder = leadership.find(l => l.tier === 1);
+    const team = leadership.filter(l => l.tier !== 1);
 
     return (
-        <section id="leadership" className="py-24 px-6 md:px-10 bg-gradient-to-b from-[#05060f] to-[#0b0f2b] relative">
-            <div className="max-w-7xl mx-auto">
-                <div className="text-center mb-16">
-                    <motion.span
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="inline-block px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm font-semibold uppercase tracking-wider mb-4"
-                    >
-                        Visionary Leadership
-                    </motion.span>
-                    <motion.h2
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="text-4xl md:text-5xl font-bold mb-4"
-                    >
-                        The Minds Behind the Mission
-                    </motion.h2>
-                    <p className="text-gray-400 max-w-2xl mx-auto">
-                        Meet the leaders driving the Wealth Mindset movement forward with royal heritage and strategic spiritual guidance.
-                    </p>
-                </div>
-
-                <div className={`grid ${leadership.filter(l => l.id === 1).length > 1 ? 'md:grid-cols-2' : 'max-w-3xl mx-auto'} gap-12 lg:gap-24`}>
-                    {leadership.filter(leader => leader.id === 1).map((leader, index) => (
-                        <motion.div
-                            key={leader.id}
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.2 }}
-                            className="group relative"
-                        >
-                            {/* Profile Image Container */}
-                            <div
-                                onClick={() => leader.longBio && setSelectedLeader(leader)}
-                                className={`relative aspect-[4/5] rounded-[40px] overflow-hidden mb-8 border border-white/10 group-hover:border-indigo-500/30 transition-all duration-500 ${leader.longBio ? 'cursor-pointer' : ''}`}
-                            >
-                                <img
-                                    src={leader.image}
-                                    alt={leader.name}
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
-
-                                {/* Float Decoration */}
-                                <div className="absolute top-6 right-6 p-4 rounded-3xl bg-black/40 backdrop-blur-md border border-white/10 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0">
-                                    <Quote className="text-indigo-400" size={24} />
-                                </div>
-
-                                {leader.longBio && (
-                                    <div className="absolute bottom-6 left-6 right-6 p-4 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 opacity-100 translate-y-0 lg:opacity-0 lg:translate-y-4 lg:group-hover:opacity-100 lg:group-hover:translate-y-0 transition-all duration-500">
-                                        <span className="text-white text-sm font-bold flex items-center justify-between">
-                                            VIEW FULL PROFILE <ChevronRight size={16} />
-                                        </span>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Content */}
-                            <div className="px-4">
-                                <h3 className="text-3xl font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors">
-                                    {leader.name}
-                                </h3>
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="h-px w-8 bg-indigo-500" />
-                                    <span className="text-indigo-400 font-bold uppercase tracking-widest text-xs">
-                                        {leader.role}
-                                    </span>
-                                </div>
-                                <p className="text-gray-400 leading-relaxed text-lg line-clamp-3">
-                                    {leader.bio}
-                                </p>
-                                {leader.longBio && (
-                                    <button
-                                        onClick={() => setSelectedLeader(leader)}
-                                        className="mt-4 text-indigo-400 font-bold text-sm flex items-center gap-2 hover:text-indigo-300 transition-colors"
-                                    >
-                                        READ MORE <ChevronRight size={16} />
-                                    </button>
-                                )}
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
+        <section id="leadership" className="py-24 px-6 md:px-10 bg-gradient-to-b from-[#05060f] to-[#0b0f2b] relative overflow-hidden">
+            {/* Background decoration */}
+            <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-[120px]" />
             </div>
 
-            {/* Bio Modal */}
-            <AnimatePresence>
-                {selectedLeader && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[100] flex items-center justify-center px-6 py-20 bg-black/90 backdrop-blur-sm"
-                    >
-                        <motion.div
-                            initial={{ scale: 0.9, y: 20 }}
-                            animate={{ scale: 1, y: 0 }}
-                            exit={{ scale: 0.9, y: 20 }}
-                            className="relative w-full max-w-4xl bg-[#0b0f2b] border border-white/10 rounded-[32px] overflow-hidden max-h-full flex flex-col shadow-2xl"
+            <div className="max-w-7xl mx-auto relative z-10">
+                <div className="grid lg:grid-cols-2 gap-16 items-center">
+
+                    {/* Left side: Content & Team Teaser */}
+                    <div className="text-center lg:text-left">
+                        <motion.span
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            className="inline-block px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm font-semibold uppercase tracking-wider mb-6"
                         >
-                            <button
-                                onClick={() => setSelectedLeader(null)}
-                                className="absolute top-6 right-6 z-10 p-3 rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-colors"
-                            >
-                                <X size={24} />
-                            </button>
+                            Our Team
+                        </motion.span>
+                        <motion.h2
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="text-4xl md:text-5xl font-bold mb-6"
+                        >
+                            The Minds Behind <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-indigo-200">the Mission</span>
+                        </motion.h2>
+                        <p className="text-gray-400 max-w-xl mx-auto lg:mx-0 text-lg leading-relaxed mb-10">
+                            A collective of strategic thinkers, royal visionaries, and principled leaders dedicated to bridging traditional heritage with modern economic empowerment.
+                        </p>
 
-                            <div className="overflow-y-auto custom-scrollbar">
-                                <div className="grid md:grid-cols-2">
-                                    {/* Modal Image */}
-                                    <div className="h-96 md:h-auto sticky top-0">
-                                        <img
-                                            src={selectedLeader.image}
-                                            alt={selectedLeader.name}
-                                            className="w-full h-full object-cover"
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-r from-[#0b0f2b] via-transparent to-transparent hidden md:block" />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-[#0b0f2b] via-transparent to-transparent md:hidden" />
-                                    </div>
-
-                                    {/* Modal Content */}
-                                    <div className="p-8 md:p-12">
-                                        <span className="text-indigo-400 font-bold uppercase tracking-widest text-xs mb-4 block">
-                                            {selectedLeader.role}
-                                        </span>
-                                        <h3 className="text-4xl font-bold text-white mb-8 border-b border-white/10 pb-6">
-                                            {selectedLeader.name}
-                                        </h3>
-                                        <div className="space-y-6 text-gray-300 leading-relaxed whitespace-pre-line text-lg">
-                                            {selectedLeader.longBio}
+                        {/* Team Circle Teaser */}
+                        <div className="flex flex-col sm:flex-row items-center gap-6 mb-10 justify-center lg:justify-start">
+                            <div className="flex -space-x-4">
+                                {team.map((member, i) => (
+                                    <motion.div
+                                        key={member.id}
+                                        initial={{ opacity: 0, scale: 0.5 }}
+                                        whileInView={{ opacity: 1, scale: 1 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: i * 0.1 }}
+                                        className="relative group"
+                                    >
+                                        <div className="w-16 h-16 rounded-full border-2 border-[#05060f] overflow-hidden bg-indigo-900 group-hover:border-indigo-500 transition-colors duration-300 shadow-xl">
+                                            <img
+                                                src={member.image}
+                                                alt={member.name}
+                                                className="w-full h-full object-cover"
+                                            />
                                         </div>
-                                    </div>
+                                        {/* Optional tooltip-like label on hover */}
+                                        <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-20">
+                                            {member.name}
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </div>
+                            <div className="text-gray-500 text-sm font-medium">
+                                <span className="text-white font-bold">+5 Senior Leaders</span>
+                                <br /> Coordinating Global Initiatives
+                            </div>
+                        </div>
+
+                        <motion.button
+                            onClick={() => navigate('/leadership')}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-4 rounded-full font-bold transition-all shadow-lg shadow-indigo-500/20"
+                        >
+                            Meet Our Leadership <ChevronRight size={18} />
+                        </motion.button>
+                    </div>
+
+                    {/* Right side: Compact Founder Card */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        className="relative max-w-md mx-auto lg:ml-auto group"
+                    >
+                        <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden border border-white/10 group-hover:border-indigo-500/30 transition-all duration-500">
+                            <img
+                                src={founder.image}
+                                alt={founder.name}
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+
+                            <div className="absolute bottom-8 left-8 right-8">
+                                <span className="text-indigo-400 font-bold uppercase tracking-widest text-xs mb-2 block">
+                                    {founder.role}
+                                </span>
+                                <h3 className="text-3xl font-bold text-white mb-4">
+                                    {founder.name}
+                                </h3>
+                                <div className="p-4 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10">
+                                    <Quote size={20} className="text-indigo-400 mb-2 opacity-50" />
+                                    <p className="text-gray-300 text-sm italic leading-relaxed">
+                                        "{founder.bio}"
+                                    </p>
                                 </div>
                             </div>
-                        </motion.div>
+                        </div>
+
+                        {/* Floating elements for visual interest */}
+                        <div className="absolute -top-6 -right-6 w-24 h-24 bg-indigo-600/10 rounded-full blur-2xl" />
+                        <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-indigo-600/10 rounded-full blur-2xl" />
                     </motion.div>
-                )}
-            </AnimatePresence>
+
+                </div>
+            </div>
         </section>
     );
 }
