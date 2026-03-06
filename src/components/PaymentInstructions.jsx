@@ -88,10 +88,6 @@ export default function PaymentInstructions() {
                             <span className="text-gray-400">Venue</span>
                             <span className="text-white text-right">{eventVenue}</span>
                         </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-400">Registered As</span>
-                            <span className="text-indigo-400 font-bold">{fullName}</span>
-                        </div>
                     </div>
                 </motion.div>
 
@@ -133,10 +129,7 @@ export default function PaymentInstructions() {
                                         <span className="text-gray-400 text-sm">Bank</span>
                                         <span className="text-white font-semibold">First National Bank (FNB)</span>
                                     </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-gray-400 text-sm">Account Holder</span>
-                                        <span className="text-white font-semibold">GGC GLOBAL</span>
-                                    </div>
+
                                     <div className="flex justify-between items-center">
                                         <span className="text-gray-400 text-sm">Account Number</span>
                                         <span className="text-white font-mono font-bold">63070529377</span>

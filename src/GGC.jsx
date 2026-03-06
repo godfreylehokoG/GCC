@@ -418,9 +418,19 @@ export default function GGC() {
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <div className="text-center md:text-left">
             <img src="/WealthMindset-removebg.png" alt="GGC Logo" className="h-12 w-auto mb-6 mx-auto md:mx-0 grayscale hover:grayscale-0 transition-all" />
-            <p className="text-gray-500 max-w-sm mx-auto md:mx-0">
+            <p className="text-gray-500 max-w-sm mx-auto md:mx-0 mb-6">
               Empowering individuals and communities with the knowledge and discipline required to build sustainable wealth.
             </p>
+            <div className="space-y-2 text-sm">
+              <a href="mailto:info@thewealth-mindset.com" className="flex items-center gap-2 text-gray-400 hover:text-indigo-400 transition-colors justify-center md:justify-start">
+                <span>✉️</span>
+                <span>info@thewealth-mindset.com</span>
+              </a>
+              <a href="https://wa.me/27786511959" target="_blank" rel="noreferrer" className="flex items-center gap-2 text-gray-400 hover:text-green-400 transition-colors justify-center md:justify-start">
+                <span>💬</span>
+                <span>+27 78 651 1959</span>
+              </a>
+            </div>
           </div>
           <div className="text-center md:text-right space-y-4">
             <div className="text-[10px] uppercase font-bold text-gray-600 tracking-[0.2em] mb-4">Official Disclaimers</div>
