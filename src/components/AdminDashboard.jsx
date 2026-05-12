@@ -6,10 +6,12 @@ import {
     Search, BarChart2, Contact2, ClipboardList, Activity
 } from 'lucide-react';
 
-const supabase = createClient(
-    import.meta.env.VITE_SUPABASE_URL,
-    import.meta.env.VITE_SUPABASE_ANON_KEY
-);
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+const supabase = (supabaseUrl && supabaseAnonKey)
+    ? createClient(supabaseUrl, supabaseAnonKey)
+    : null;
 
 const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'Legacy@Wealth2026!';
 
@@ -371,14 +373,24 @@ export default function AdminDashboard() {
     }, [isLoggedIn]);
 
     async function fetchData() {
+        if (!supabase) {
+            console.error('Supabase client not initialized. Check your environment variables.');
+            setLoading(false);
+            return;
+        }
         setLoading(true);
-        const [{ data: leadsData }, { data: regsData }] = await Promise.all([
-            supabase.from('leads').select('*').order('created_at', { ascending: false }),
-            supabase.from('event_registrations').select('*').order('created_at', { ascending: false })
-        ]);
-        setLeads(leadsData || []);
-        setRegistrations(regsData || []);
-        setLoading(false);
+        try {
+            const [{ data: leadsData }, { data: regsData }] = await Promise.all([
+                supabase.from('leads').select('*').order('created_at', { ascending: false }),
+                supabase.from('event_registrations').select('*').order('created_at', { ascending: false })
+            ]);
+            setLeads(leadsData || []);
+            setRegistrations(regsData || []);
+        } catch (err) {
+            console.error('Error fetching data:', err);
+        } finally {
+            setLoading(false);
+        }
     }
 
     if (!isLoggedIn) return <LoginGate onLogin={() => setIsLoggedIn(true)} />;
