@@ -1,23 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
 import { sendLeadConfirmation } from './_lib/email.js';
-
-// Initialize Supabase client
-const supabaseUrl = process.env.VITE_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseKey) {
-    console.error('CRITICAL: Supabase environment variables are missing in .env');
-}
-
-const supabase = (supabaseUrl && supabaseKey)
-    ? createClient(supabaseUrl, supabaseKey)
-    : null;
+import { saveLead } from './_lib/dynamodb.js';
 
 export default async function handler(req, res) {
-    if (!supabase) {
-        return res.status(500).json({ error: 'Database connection not configured. Check your .env file.' });
-    }
-
     // Only allow POST requests
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
@@ -38,29 +22,13 @@ export default async function handler(req, res) {
             email: email,
             phone: phone,
             interest: interest || 'general',
-            source: 'lead_form',
-            created_at: new Date().toISOString()
+            source: 'lead_form'
         };
 
-        // Save to Supabase
-        const { data, error: sbError } = await supabase
-            .from('leads')
-            .insert([leadData])
-            .select();
+        // Save to AWS DynamoDB
+        const savedLead = await saveLead(leadData);
 
-        if (sbError) {
-            console.error('--- SUPABASE INSERT ERROR (leads) ---');
-            console.error('Error Code:', sbError.code);
-            console.error('Message:', sbError.message);
-            console.error('Details:', sbError.details);
-            console.error('Hint:', sbError.hint);
-            return res.status(500).json({
-                error: `Database Error: ${sbError.message}`,
-                details: sbError.details
-            });
-        }
-
-        console.log('New Lead Captured in Supabase:', data[0]);
+        console.log('New Lead Captured in DynamoDB:', savedLead);
 
         // Fire-and-forget email notification
         sendLeadConfirmation({ firstName, email })
@@ -70,15 +38,17 @@ export default async function handler(req, res) {
             success: true,
             message: 'Lead captured successfully',
             lead: {
-                id: data[0].id,
-                firstName: data[0].first_name,
-                email: data[0].email
+                id: savedLead.id,
+                firstName: savedLead.first_name,
+                email: savedLead.email
             }
         });
 
     } catch (error) {
         console.error('--- INTERNAL SERVER ERROR (lead) ---');
         console.error(error);
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(error.statusCode || 500).json({
+            error: error.statusCode ? error.message : 'Internal server error'
+        });
     }
 }

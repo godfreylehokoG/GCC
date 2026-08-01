@@ -1,19 +1,9 @@
-import { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { useState } from 'react';
 import {
     Users, Calendar, Download, LogOut, Eye, EyeOff,
     TrendingUp, Mail, Phone, MapPin, RefreshCw, Shield,
     Search, BarChart2, Contact2, ClipboardList, Activity
 } from 'lucide-react';
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-const supabase = (supabaseUrl && supabaseAnonKey)
-    ? createClient(supabaseUrl, supabaseAnonKey)
-    : null;
-
-const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'Legacy@Wealth2026!';
 
 // Colour palette for charts
 const CHART_COLORS = [
@@ -45,17 +35,19 @@ function LoginGate({ onLogin }) {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setTimeout(() => {
-            if (password === ADMIN_PASSWORD) {
-                onLogin();
-            } else {
-                setError('Incorrect password. Please try again.');
+        try {
+            const result = await onLogin(password);
+            if (!result.success) {
+                setError(result.error || 'Incorrect password. Please try again.');
             }
+        } catch {
+            setError('Unable to access dashboard. Please try again.');
+        } finally {
             setLoading(false);
-        }, 600);
+        }
     };
 
     return (
@@ -362,38 +354,75 @@ function MonthlyActivity({ registrations }) {
 // --- Main Dashboard ---
 export default function AdminDashboard() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [adminPassword, setAdminPassword] = useState('');
     const [activeTab, setActiveTab] = useState('leads');
     const [leads, setLeads] = useState([]);
     const [registrations, setRegistrations] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [dataError, setDataError] = useState('');
     const [search, setSearch] = useState('');
 
-    useEffect(() => {
-        if (isLoggedIn) fetchData();
-    }, [isLoggedIn]);
-
-    async function fetchData() {
-        if (!supabase) {
-            console.error('Supabase client not initialized. Check your environment variables.');
-            setLoading(false);
+    async function fetchData(passwordOverride = adminPassword, options = {}) {
+        if (!passwordOverride) {
+            setDataError('Admin password is required.');
+            if (options.throwOnError) throw new Error('Admin password is required.');
             return;
         }
+
         setLoading(true);
+        setDataError('');
         try {
-            const [{ data: leadsData }, { data: regsData }] = await Promise.all([
-                supabase.from('leads').select('*').order('created_at', { ascending: false }),
-                supabase.from('event_registrations').select('*').order('created_at', { ascending: false })
-            ]);
-            setLeads(leadsData || []);
-            setRegistrations(regsData || []);
+            const response = await fetch('/api/admin-data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: passwordOverride })
+            });
+
+            const result = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Failed to load admin data.');
+            }
+
+            setLeads(result.leads || []);
+            setRegistrations(result.registrations || []);
+            return result;
         } catch (err) {
             console.error('Error fetching data:', err);
+            setDataError(err.message || 'Failed to load admin data.');
+            if (options.throwOnError) throw err;
         } finally {
             setLoading(false);
         }
     }
 
-    if (!isLoggedIn) return <LoginGate onLogin={() => setIsLoggedIn(true)} />;
+    async function handleLogin(password) {
+        try {
+            await fetchData(password, { throwOnError: true });
+            setAdminPassword(password);
+            setIsLoggedIn(true);
+            return { success: true };
+        } catch (err) {
+            return {
+                success: false,
+                error: err.message || 'Unable to access dashboard.'
+            };
+        }
+    }
+
+    function handleRefresh() {
+        fetchData();
+    }
+
+    function handleLogout() {
+        setIsLoggedIn(false);
+        setAdminPassword('');
+        setLeads([]);
+        setRegistrations([]);
+        setDataError('');
+    }
+
+    if (!isLoggedIn) return <LoginGate onLogin={handleLogin} />;
 
     const filteredLeads = leads.filter(l =>
         `${l.first_name} ${l.last_name} ${l.email} ${l.phone}`.toLowerCase().includes(search.toLowerCase())
@@ -422,11 +451,11 @@ export default function AdminDashboard() {
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
-                    <button onClick={fetchData}
+                    <button onClick={handleRefresh}
                         className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all" title="Refresh">
                         <RefreshCw size={18} />
                     </button>
-                    <button onClick={() => setIsLoggedIn(false)}
+                    <button onClick={handleLogout}
                         className="flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-xl transition-all">
                         <LogOut size={16} /> Logout
                     </button>
@@ -479,6 +508,12 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Content */}
+                {dataError && (
+                    <div className="bg-red-500/10 border border-red-500/20 text-red-300 px-4 py-3 rounded-xl text-sm">
+                        {dataError}
+                    </div>
+                )}
+
                 {loading ? (
                     <div className="flex items-center justify-center py-24">
                         <RefreshCw size={32} className="animate-spin text-indigo-400" />

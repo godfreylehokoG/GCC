@@ -1,24 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
 import { sendRegistrationConfirmation } from './_lib/email.js';
-
-// Initialize Supabase client
-const supabaseUrl = process.env.VITE_SUPABASE_URL;
-// In a server-side API, we should use the Service Role Key to bypass RLS
-// If it's not available, we fall back to the Anon Key
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseKey) {
-    console.error('CRITICAL: Supabase environment variables are missing in .env');
-}
-
-const supabase = (supabaseUrl && supabaseKey)
-    ? createClient(supabaseUrl, supabaseKey)
-    : null;
+import { saveEventRegistration } from './_lib/dynamodb.js';
 
 export default async function handler(req, res) {
-    if (!supabase) {
-        return res.status(500).json({ error: 'Database connection not configured. Check your .env file.' });
-    }
     // Only allow POST requests
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
@@ -63,26 +46,11 @@ export default async function handler(req, res) {
             source: 'website'
         };
 
-        // Save to Supabase
-        const { data, error: sbError } = await supabase
-            .from('event_registrations')
-            .insert([registrationData])
-            .select();
-
-        if (sbError) {
-            console.error('--- SUPABASE INSERT ERROR ---');
-            console.error('Error Code:', sbError.code);
-            console.error('Message:', sbError.message);
-            console.error('Details:', sbError.details);
-            console.error('Hint:', sbError.hint);
-            return res.status(500).json({
-                error: `Database Error: ${sbError.message}`,
-                details: sbError.details
-            });
-        }
+        // Save to AWS DynamoDB
+        const savedRegistration = await saveEventRegistration(registrationData);
 
         // Log the lead
-        console.log('New Lead Registered in Supabase:', data[0]);
+        console.log('New Lead Registered in DynamoDB:', savedRegistration);
 
         // Send email notification and wait for result for debugging
         const emailResult = await sendRegistrationConfirmation(
@@ -111,9 +79,9 @@ export default async function handler(req, res) {
                 message: 'Registration successful, but confirmation email failed to send.',
                 emailError: emailResult.error,
                 lead: {
-                    id: data[0].id,
-                    firstName: data[0].first_name,
-                    email: data[0].email
+                    id: savedRegistration.id,
+                    firstName: savedRegistration.first_name,
+                    email: savedRegistration.email
                 }
             });
         }
@@ -122,16 +90,17 @@ export default async function handler(req, res) {
             success: true,
             message: 'Registration successful',
             lead: {
-                id: data[0].id,
-                firstName: data[0].first_name,
-                email: data[0].email
+                id: savedRegistration.id,
+                firstName: savedRegistration.first_name,
+                email: savedRegistration.email
             }
         });
 
     } catch (error) {
         console.error('--- INTERNAL SERVER ERROR ---');
         console.error(error);
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(error.statusCode || 500).json({
+            error: error.statusCode ? error.message : 'Internal server error'
+        });
     }
 }
-

@@ -1,0 +1,19 @@
+-- Enable RLS on both tables
+ALTER TABLE leads ENABLE ROW LEVEL SECURITY;
+ALTER TABLE event_registrations ENABLE ROW LEVEL SECURITY;
+
+-- Allow inserts on leads
+CREATE POLICY "Allow public insert on leads"
+  ON leads FOR INSERT WITH CHECK (true);
+
+-- Allow reads on leads (Admin Dashboard)
+CREATE POLICY "Allow service role to read leads"
+  ON leads FOR SELECT USING (true);
+
+-- Allow inserts on event_registrations
+CREATE POLICY "Allow public insert on event_registrations"
+  ON event_registrations FOR INSERT WITH CHECK (true);
+
+-- Allow reads on event_registrations (Admin Dashboard)
+CREATE POLICY "Allow service role to read event_registrations"
+  ON event_registrations FOR SELECT USING (true);

@@ -1,0 +1,17 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "WriteAndReadWealthMindsetTables",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:PutItem",
+        "dynamodb:Scan"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:af-south-1:YOUR_ACCOUNT_ID:table/wealth_mindset_leads",
+        "arn:aws:dynamodb:af-south-1:YOUR_ACCOUNT_ID:table/wealth_mindset_event_registrations"
+      ]
+    }
+  ]
+}
