@@ -1,5 +1,6 @@
 import { sendRegistrationConfirmation } from './_lib/email.js';
 import { saveEventRegistration } from './_lib/dynamodb.js';
+import { sendApiError } from './_lib/http-errors.js';
 
 export default async function handler(req, res) {
     // Only allow POST requests
@@ -21,7 +22,7 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
 
-        // Prepare the lead data for Supabase
+        // Prepare the registration data for DynamoDB
         const registrationData = {
             first_name: firstName,
             last_name: lastName,
@@ -99,8 +100,6 @@ export default async function handler(req, res) {
     } catch (error) {
         console.error('--- INTERNAL SERVER ERROR ---');
         console.error(error);
-        return res.status(error.statusCode || 500).json({
-            error: error.statusCode ? error.message : 'Internal server error'
-        });
+        return sendApiError(res, error, 'Failed to save registration.');
     }
 }

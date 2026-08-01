@@ -1,5 +1,6 @@
 import { timingSafeEqual } from 'crypto';
 import { listEventRegistrations, listLeads } from './_lib/dynamodb.js';
+import { sendApiError } from './_lib/http-errors.js';
 
 const adminPassword = process.env.ADMIN_PASSWORD || process.env.VITE_ADMIN_PASSWORD;
 
@@ -42,8 +43,6 @@ export default async function handler(req, res) {
     } catch (error) {
         console.error('--- ADMIN DATA ERROR ---');
         console.error(error);
-        return res.status(error.statusCode || 500).json({
-            error: error.statusCode ? error.message : 'Failed to load admin data.'
-        });
+        return sendApiError(res, error, 'Failed to load admin data.');
     }
 }
