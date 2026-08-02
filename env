@@ -1,4 +1,4 @@
-AWS_REGION=af-south-1
+AWS_REGION=eu-north-1
 AWS_ACCESS_KEY_ID=your_aws_access_key_id
 AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
 AWS_DYNAMODB_LEADS_TABLE=wealth_mindset_leads
