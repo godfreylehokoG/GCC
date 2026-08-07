@@ -152,10 +152,11 @@
             "capacity": 500,
             "registered": 420,
             "image": "/images/outreach.jpg",
-            "status": "impact",
-            "description": "Charity outreach: Well installations, school awards, and support for the elderly and frail.",
-            "priceSA": 550,
-            "priceUS": 50
+            "status": "free",
+            "description": "Free charity outreach: Well installations, school awards, and support for the elderly and frail.",
+            "priceSA": 0,
+            "priceUS": 0,
+            "registrationRequired": false
         },
         {
             "id": 2,
@@ -180,8 +181,8 @@
             "title": "The Wealth Mindset Launch",
             "type": "seminar",
             "city": "Johannesburg",
-            "date": "2026-09-26",
-            "displayDate": "Sat. September 26, 2026",
+            "date": "2026-09-27",
+            "displayDate": "Sun. September 27, 2026",
             "time": "10:00 - 15:00",
             "venue": "TBD",
             "address": "TBD",

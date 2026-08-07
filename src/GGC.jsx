@@ -23,7 +23,6 @@ import Philosophy from './components/Philosophy';
 import ZoomPortal from './components/ZoomPortal';
 import MissionImpact from './components/MissionImpact';
 import Partners from './components/Partners';
-import GlobalGoldCoin from './components/GlobalGoldCoin';
 import Leadership from './components/Leadership';
 import BookShowcase from './components/BookShowcase';
 import AboutUs from './components/AboutUs';
@@ -111,7 +110,7 @@ export default function GGC() {
     }
   };
 
-  const navItems = ["About", "Philosophy", "GGC", "Leadership", "Trainings", "Events", "Tutorials", "News", "Contact"];
+  const navItems = ["About", "Philosophy", "Leadership", "Trainings", "Events", "Tutorials", "News", "Contact"];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0b0f2b] to-[#05060f] text-[#eef2f6] font-[Poppins]">
@@ -197,9 +196,6 @@ export default function GGC() {
 
       {/* Zoom Training Portal */}
       <ZoomPortal trainings={siteData.trainings} />
-
-      {/* Global Gold Coin - Main Partner & Vehicle */}
-      <GlobalGoldCoin data={siteData.globalGoldCoin} />
 
       {/* Mission & Impact Section */}
       <MissionImpact impact={siteData.philosophy.impact} />

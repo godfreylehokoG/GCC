@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MapPin, Calendar, Clock, Users, ChevronRight, Ban } from 'lucide-react';
+import { MapPin, Calendar, Clock, Users, ChevronRight, Ban, Gift } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function EventCard({ event, onRegister }) {
@@ -10,6 +10,7 @@ export default function EventCard({ event, onRegister }) {
     const today = new Date();
     const daysUntil = Math.ceil((eventDate - today) / (1000 * 60 * 60 * 24));
     const isPassed = daysUntil <= 0;
+    const requiresRegistration = event.registrationRequired !== false;
 
     // Status badge styling
     const statusStyles = {
@@ -18,6 +19,7 @@ export default function EventCard({ event, onRegister }) {
         'vip-access': { bg: 'bg-indigo-500/20', text: 'text-indigo-400', label: 'VIP Selection' },
         'black-tie': { bg: 'bg-slate-500/20', text: 'text-gray-300', label: 'African Royal Attire' },
         'impact': { bg: 'bg-emerald-500/20', text: 'text-emerald-400', label: 'Community Impact' },
+        'free': { bg: 'bg-emerald-500/20', text: 'text-emerald-400', label: 'Free Entry' },
         'double-session': { bg: 'bg-amber-500/20', text: 'text-amber-400', label: 'Full Day Intensive' },
         'cultural': { bg: 'bg-orange-500/20', text: 'text-orange-400', label: 'Cultural Tour' },
         'sold-out': { bg: 'bg-red-500/20', text: 'text-red-400', label: 'Sold Out' }
@@ -88,23 +90,32 @@ export default function EventCard({ event, onRegister }) {
                     </div>
                 </div>
 
-                {/* Capacity Bar */}
+                {/* Attendance Details */}
                 <div className="mb-6">
-                    <div className="flex justify-between items-center mb-2">
-                        <div className="flex items-center text-xs text-gray-400">
+                    {requiresRegistration ? (
+                        <>
+                            <div className="flex justify-between items-center mb-2">
+                                <div className="flex items-center text-xs text-gray-400">
+                                    <Users size={14} className="mr-2" />
+                                    <span>{isPassed ? 'Event concluded' : `${event.registered} / ${event.capacity} registered`}</span>
+                                </div>
+                                <span className={`text-xs font-bold ${isPassed ? 'text-gray-500' : 'text-indigo-400'}`}>{capacityPercent}%</span>
+                            </div>
+                            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                                <motion.div
+                                    className={`h-full ${isPassed ? 'bg-gradient-to-r from-gray-500 to-gray-600' : 'bg-gradient-to-r from-indigo-500 to-purple-500'}`}
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${capacityPercent}%` }}
+                                    transition={{ duration: 1, delay: 0.2 }}
+                                />
+                            </div>
+                        </>
+                    ) : (
+                        <div className="flex items-center text-xs text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3">
                             <Users size={14} className="mr-2" />
-                            <span>{isPassed ? 'Event concluded' : `${event.registered} / ${event.capacity} registered`}</span>
+                            <span>Free entry - no registration required</span>
                         </div>
-                        <span className={`text-xs font-bold ${isPassed ? 'text-gray-500' : 'text-indigo-400'}`}>{capacityPercent}%</span>
-                    </div>
-                    <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                        <motion.div
-                            className={`h-full ${isPassed ? 'bg-gradient-to-r from-gray-500 to-gray-600' : 'bg-gradient-to-r from-indigo-500 to-purple-500'}`}
-                            initial={{ width: 0 }}
-                            animate={{ width: `${capacityPercent}%` }}
-                            transition={{ duration: 1, delay: 0.2 }}
-                        />
-                    </div>
+                    )}
                 </div>
 
                 {/* CTA Button */}
@@ -112,6 +123,11 @@ export default function EventCard({ event, onRegister }) {
                     <div className="w-full py-4 rounded-xl bg-white/5 border border-white/10 text-gray-500 font-bold flex items-center justify-center gap-2 cursor-not-allowed">
                         <Ban size={18} />
                         <span>Past Event</span>
+                    </div>
+                ) : !requiresRegistration ? (
+                    <div className="w-full py-4 rounded-xl bg-emerald-500/15 border border-emerald-500/25 text-emerald-300 font-bold flex items-center justify-center gap-2">
+                        <Gift size={18} />
+                        <span>Free Entry</span>
                     </div>
                 ) : (
                     <button

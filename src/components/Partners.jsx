@@ -17,7 +17,8 @@ const partners = [
         id: 3,
         name: "Global Gold Coin",
         logo: "/globalgoldcoinlogo.png",
-        role: "Wealth Creation Vehicle"
+        role: "Wealth Creation Vehicle",
+        hideLogo: true
     }
 ];
 
@@ -60,13 +61,15 @@ export default function Partners() {
                             whileHover={{ scale: 1.05 }}
                             className="flex flex-col items-center gap-4 group"
                         >
-                            <div className="h-20 w-auto flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-500">
-                                <img
-                                    src={partner.logo}
-                                    alt={partner.name}
-                                    className="max-h-full w-auto object-contain brightness-125"
-                                />
-                            </div>
+                            {!partner.hideLogo && (
+                                <div className="h-20 w-auto flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-500">
+                                    <img
+                                        src={partner.logo}
+                                        alt={partner.name}
+                                        className="max-h-full w-auto object-contain brightness-125"
+                                    />
+                                </div>
+                            )}
                             <div className="text-center">
                                 <h4 className="text-white font-semibold text-sm group-hover:text-indigo-400 transition-colors uppercase tracking-wider">
                                     {partner.name}
