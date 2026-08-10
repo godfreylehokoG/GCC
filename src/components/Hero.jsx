@@ -85,25 +85,6 @@ export default function Hero() {
                             Learn More
                         </a>
                     </motion.div>
-
-                    {/* Trust Indicators */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.6 }}
-                        className="flex gap-8 mt-12"
-                    >
-                        {[
-                            { label: 'Secure', icon: '🔒' },
-                            { label: 'Transparent', icon: '✨' },
-                            { label: 'Legacy-Focused', icon: '🪙' }
-                        ].map((item) => (
-                            <div key={item.label} className="flex items-center gap-2">
-                                <span className="text-xl">{item.icon}</span>
-                                <span className="text-sm font-semibold text-gray-400 uppercase tracking-wider">{item.label}</span>
-                            </div>
-                        ))}
-                    </motion.div>
                 </motion.div>
             </div>
         </section>
