@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: DynamoDB tables for The Wealth Mindset lead capture and event registrations.
+Description: DynamoDB tables for The Wealth Mindset lead capture, events CMS, and event registrations.
 
 Parameters:
   LeadsTableName:
@@ -8,6 +8,9 @@ Parameters:
   RegistrationsTableName:
     Type: String
     Default: wealth_mindset_event_registrations
+  EventsTableName:
+    Type: String
+    Default: wealth_mindset_events
 
 Resources:
   LeadsTable:
@@ -42,6 +45,22 @@ Resources:
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled: true
 
+  EventsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref EventsTableName
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      SSESpecification:
+        SSEEnabled: true
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+
 Outputs:
   LeadsTableName:
     Description: DynamoDB table for general website leads.
@@ -49,3 +68,6 @@ Outputs:
   EventRegistrationsTableName:
     Description: DynamoDB table for event registrations.
     Value: !Ref EventRegistrationsTable
+  EventsTableName:
+    Description: DynamoDB table for CMS-managed events.
+    Value: !Ref EventsTable

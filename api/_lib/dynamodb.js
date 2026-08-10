@@ -1,10 +1,11 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocumentClient, DeleteCommand, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
 import { randomUUID } from 'crypto';
 
 const region = process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION;
 const leadsTableName = process.env.AWS_DYNAMODB_LEADS_TABLE;
 const registrationsTableName = process.env.AWS_DYNAMODB_REGISTRATIONS_TABLE;
+const eventsTableName = process.env.AWS_DYNAMODB_EVENTS_TABLE;
 
 const dynamoClient = region ? new DynamoDBClient({ region }) : null;
 const documentClient = dynamoClient
@@ -88,4 +89,35 @@ export function listLeads() {
 
 export function listEventRegistrations() {
     return scanTable(registrationsTableName);
+}
+
+export async function saveCmsEvent(eventData) {
+    assertConfigured(eventsTableName);
+
+    const item = {
+        ...eventData,
+        id: String(eventData.id),
+        updated_at: new Date().toISOString()
+    };
+
+    await documentClient.send(new PutCommand({
+        TableName: eventsTableName,
+        Item: item
+    }));
+
+    return item;
+}
+
+export async function deleteCmsEvent(id) {
+    assertConfigured(eventsTableName);
+
+    await documentClient.send(new DeleteCommand({
+        TableName: eventsTableName,
+        Key: { id: String(id) }
+    }));
+}
+
+export async function listCmsEvents() {
+    const items = await scanTable(eventsTableName);
+    return items.sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
 }

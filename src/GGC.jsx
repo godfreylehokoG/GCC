@@ -31,6 +31,7 @@ import AboutUs from './components/AboutUs';
 import siteData from './data.json';
 
 export default function GGC() {
+  const [events, setEvents] = useState(siteData.events);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [showCookies, setShowCookies] = useState(false);
@@ -56,6 +57,25 @@ export default function GGC() {
   useEffect(() => {
     const consent = localStorage.getItem('ggc_cookie_consent');
     if (!consent) setShowCookies(true);
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    fetch('/api/events')
+      .then(response => response.ok ? response.json() : Promise.reject(new Error('Unable to load events')))
+      .then(result => {
+        if (isMounted && Array.isArray(result.events)) {
+          setEvents(result.events);
+        }
+      })
+      .catch(error => {
+        console.warn('Using bundled events:', error);
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleSendChat = () => {
@@ -186,7 +206,7 @@ export default function GGC() {
       <Partners />
 
       {/* Events Section */}
-      <EventSection events={siteData.events} />
+      <EventSection events={events} />
 
       {/* Philosophy & Services Section */}
       <Philosophy

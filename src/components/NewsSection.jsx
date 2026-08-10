@@ -30,7 +30,7 @@ export default function NewsSection({ news }) {
                     transition={{ delay: 0.2 }}
                     className="text-gray-400 max-w-2xl mx-auto"
                 >
-                    The latest announcements, educational content, and tour updates from GGC.
+                    The latest announcements, educational content, and tour updates from The Wealth Mindset.
                 </motion.p>
             </div>
 

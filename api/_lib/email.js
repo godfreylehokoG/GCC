@@ -53,7 +53,7 @@ export async function sendRegistrationConfirmation(registrant, event) {
                         <div style="margin-bottom: 20px;">
                             <h3 style="margin-top: 0; color: #fbbf24; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Booking Reference</h3>
                             <div style="background-color: #6366f1; color: white; padding: 12px; border-radius: 8px; font-family: monospace; font-size: 20px; font-weight: bold; display: inline-block;">
-                                ${event.paymentReference || 'GGC-REG-PENDING'}
+                                ${event.paymentReference || 'WM-REG-PENDING'}
                             </div>
                             <p style="font-size: 12px; color: #9ca3af; margin-top: 8px;">Please keep this reference code for your records${isPaid ? ' and use it as your payment reference' : ''}.</p>
                         </div>

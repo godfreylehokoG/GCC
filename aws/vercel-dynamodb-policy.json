@@ -5,12 +5,14 @@
       "Sid": "WriteAndReadWealthMindsetTables",
       "Effect": "Allow",
       "Action": [
+        "dynamodb:DeleteItem",
         "dynamodb:PutItem",
         "dynamodb:Scan"
       ],
       "Resource": [
         "arn:aws:dynamodb:af-south-1:YOUR_ACCOUNT_ID:table/wealth_mindset_leads",
-        "arn:aws:dynamodb:af-south-1:YOUR_ACCOUNT_ID:table/wealth_mindset_event_registrations"
+        "arn:aws:dynamodb:af-south-1:YOUR_ACCOUNT_ID:table/wealth_mindset_event_registrations",
+        "arn:aws:dynamodb:af-south-1:YOUR_ACCOUNT_ID:table/wealth_mindset_events"
       ]
     }
   ]

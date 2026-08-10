@@ -2,14 +2,49 @@ import { useState } from 'react';
 import {
     Users, Calendar, Download, LogOut, Eye, EyeOff,
     TrendingUp, Mail, Phone, MapPin, RefreshCw, Shield,
-    Search, BarChart2, Contact2, ClipboardList, Activity
+    Search, BarChart2, Contact2, ClipboardList, Activity,
+    Plus, Save, Trash2, Edit3, X
 } from 'lucide-react';
+import siteData from '../data.json';
 
 // Colour palette for charts
 const CHART_COLORS = [
     '#818cf8', '#a78bfa', '#34d399', '#fbbf24', '#f87171',
     '#38bdf8', '#f472b6', '#a3e635'
 ];
+
+const emptyEvent = {
+    id: '',
+    title: '',
+    type: 'seminar',
+    city: '',
+    date: '',
+    displayDate: '',
+    time: '',
+    venue: '',
+    address: '',
+    capacity: 0,
+    registered: 0,
+    image: '',
+    status: 'open',
+    description: '',
+    priceSA: 0,
+    priceUS: 0,
+    registrationRequired: true
+};
+
+function normalizeEventForm(event) {
+    return {
+        ...emptyEvent,
+        ...event,
+        id: event.id || Date.now(),
+        capacity: Number(event.capacity) || 0,
+        registered: Number(event.registered) || 0,
+        priceSA: Number(event.priceSA) || 0,
+        priceUS: Number(event.priceUS) || 0,
+        registrationRequired: event.registrationRequired !== false
+    };
+}
 
 // --- Utility: Export to CSV ---
 function exportToCSV(data, filename) {
@@ -305,6 +340,208 @@ function InsightsTab({ leads, registrations }) {
     );
 }
 
+function EventsCmsTab({ events, setEvents, onSave, saving, message }) {
+    const [editingEvent, setEditingEvent] = useState(null);
+    const sortedEvents = [...events].sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
+
+    function startNewEvent() {
+        setEditingEvent({
+            ...emptyEvent,
+            id: Date.now(),
+            date: new Date().toISOString().slice(0, 10),
+            displayDate: new Date().toLocaleDateString('en-ZA', {
+                weekday: 'short',
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric'
+            })
+        });
+    }
+
+    function updateField(field, value) {
+        setEditingEvent(prev => ({
+            ...prev,
+            [field]: ['capacity', 'registered', 'priceSA', 'priceUS'].includes(field)
+                ? Number(value)
+                : field === 'registrationRequired'
+                    ? value === 'true'
+                    : value
+        }));
+    }
+
+    function saveDraft() {
+        const normalized = normalizeEventForm(editingEvent);
+        setEvents(prev => {
+            const exists = prev.some(event => String(event.id) === String(normalized.id));
+            return exists
+                ? prev.map(event => String(event.id) === String(normalized.id) ? normalized : event)
+                : [...prev, normalized];
+        });
+        setEditingEvent(null);
+    }
+
+    function deleteEvent(id) {
+        const event = events.find(item => String(item.id) === String(id));
+        if (!window.confirm(`Delete "${event?.title || 'this event'}"?`)) return;
+        setEvents(prev => prev.filter(item => String(item.id) !== String(id)));
+        if (editingEvent && String(editingEvent.id) === String(id)) {
+            setEditingEvent(null);
+        }
+    }
+
+    return (
+        <div className="space-y-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 className="text-2xl font-bold text-white">Events CMS</h2>
+                    <p className="text-sm text-gray-400 mt-1">Create events, edit dates, pricing, venue details, descriptions, and remove old entries.</p>
+                </div>
+                <div className="flex gap-3">
+                    <button onClick={startNewEvent}
+                        className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/15 text-white text-sm font-bold rounded-xl transition-all">
+                        <Plus size={16} /> New Event
+                    </button>
+                    <button onClick={onSave} disabled={saving}
+                        className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold rounded-xl transition-all disabled:opacity-50">
+                        {saving ? <RefreshCw size={16} className="animate-spin" /> : <Save size={16} />}
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+
+            {message && (
+                <div className={`px-4 py-3 rounded-xl text-sm border ${message.type === 'error'
+                    ? 'bg-red-500/10 border-red-500/20 text-red-300'
+                    : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300'
+                    }`}>
+                    {message.text}
+                </div>
+            )}
+
+            {editingEvent && (
+                <div className="bg-white/5 border border-white/10 rounded-3xl p-6 space-y-5">
+                    <div className="flex items-center justify-between gap-4">
+                        <h3 className="text-white font-bold">{events.some(event => String(event.id) === String(editingEvent.id)) ? 'Edit Event' : 'Create Event'}</h3>
+                        <button onClick={() => setEditingEvent(null)} className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
+                            <X size={18} />
+                        </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <AdminInput label="Title" value={editingEvent.title} onChange={value => updateField('title', value)} required />
+                        <AdminInput label="Type" value={editingEvent.type} onChange={value => updateField('type', value)} />
+                        <AdminInput label="Date" type="date" value={editingEvent.date} onChange={value => updateField('date', value)} required />
+                        <AdminInput label="Display Date" value={editingEvent.displayDate} onChange={value => updateField('displayDate', value)} />
+                        <AdminInput label="Time" value={editingEvent.time} onChange={value => updateField('time', value)} />
+                        <AdminInput label="City" value={editingEvent.city} onChange={value => updateField('city', value)} />
+                        <AdminInput label="Venue" value={editingEvent.venue} onChange={value => updateField('venue', value)} />
+                        <AdminInput label="Address" value={editingEvent.address} onChange={value => updateField('address', value)} />
+                        <AdminInput label="Capacity" type="number" value={editingEvent.capacity} onChange={value => updateField('capacity', value)} />
+                        <AdminInput label="Registered" type="number" value={editingEvent.registered} onChange={value => updateField('registered', value)} />
+                        <AdminInput label="South Africa Price" type="number" value={editingEvent.priceSA} onChange={value => updateField('priceSA', value)} />
+                        <AdminInput label="International Price" type="number" value={editingEvent.priceUS} onChange={value => updateField('priceUS', value)} />
+                        <AdminInput label="Image Path" value={editingEvent.image} onChange={value => updateField('image', value)} />
+                        <div>
+                            <label className="block text-xs font-medium text-gray-400 mb-2">Status</label>
+                            <select value={editingEvent.status} onChange={event => updateField('status', event.target.value)}
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                {['open', 'limited-seats', 'vip-access', 'black-tie', 'impact', 'free', 'double-session', 'cultural', 'sold-out'].map(status => (
+                                    <option key={status} value={status} className="bg-slate-900">{status}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-xs font-medium text-gray-400 mb-2">Registration</label>
+                            <select value={String(editingEvent.registrationRequired)} onChange={event => updateField('registrationRequired', event.target.value)}
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="true" className="bg-slate-900">Required</option>
+                                <option value="false" className="bg-slate-900">Free entry only</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="block text-xs font-medium text-gray-400 mb-2">Event Information</label>
+                        <textarea value={editingEvent.description} onChange={event => updateField('description', event.target.value)}
+                            rows={4}
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            placeholder="Describe the event..." />
+                    </div>
+
+                    <button onClick={saveDraft} disabled={!editingEvent.title || !editingEvent.date}
+                        className="flex items-center gap-2 px-5 py-3 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold rounded-xl transition-all disabled:opacity-50">
+                        <Save size={16} /> Apply Event
+                    </button>
+                </div>
+            )}
+
+            <div className="bg-white/5 border border-white/10 rounded-3xl overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                        <thead className="border-b border-white/10 bg-white/5">
+                            <tr>
+                                {['Event', 'Date', 'Venue', 'Amount', 'Registration', 'Actions'].map(header => (
+                                    <th key={header} className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-widest">{header}</th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                            {sortedEvents.map(event => (
+                                <tr key={event.id} className="hover:bg-white/5 transition-colors">
+                                    <td className="px-6 py-4">
+                                        <div className="font-semibold text-white">{event.title}</div>
+                                        <div className="text-xs text-gray-500 max-w-sm truncate">{event.description}</div>
+                                    </td>
+                                    <td className="px-6 py-4 text-gray-300">{event.displayDate || event.date}</td>
+                                    <td className="px-6 py-4 text-gray-300">{event.venue || 'TBD'}</td>
+                                    <td className="px-6 py-4 text-gray-300">ZAR {event.priceSA || 0} / USD {event.priceUS || 0}</td>
+                                    <td className="px-6 py-4">
+                                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${event.registrationRequired === false ? 'bg-emerald-500/20 text-emerald-300' : 'bg-indigo-500/20 text-indigo-300'}`}>
+                                            {event.registrationRequired === false ? 'Free entry' : 'Required'}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <div className="flex gap-2">
+                                            <button onClick={() => setEditingEvent(normalizeEventForm(event))}
+                                                className="p-2 text-indigo-300 hover:text-white hover:bg-indigo-500/20 rounded-xl transition-all" title="Edit event">
+                                                <Edit3 size={16} />
+                                            </button>
+                                            <button onClick={() => deleteEvent(event.id)}
+                                                className="p-2 text-red-300 hover:text-white hover:bg-red-500/20 rounded-xl transition-all" title="Delete event">
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                            {sortedEvents.length === 0 && (
+                                <tr>
+                                    <td colSpan="6" className="text-center py-20 text-gray-500">No events created yet.</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function AdminInput({ label, value, onChange, type = 'text', required = false }) {
+    return (
+        <div>
+            <label className="block text-xs font-medium text-gray-400 mb-2">{label}</label>
+            <input
+                type={type}
+                required={required}
+                value={value ?? ''}
+                onChange={event => onChange(event.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+        </div>
+    );
+}
+
 // --- Monthly Activity Heatmap Strip ---
 function MonthlyActivity({ registrations }) {
     const days = Array.from({ length: 30 }, (_, i) => {
@@ -358,8 +595,11 @@ export default function AdminDashboard() {
     const [activeTab, setActiveTab] = useState('leads');
     const [leads, setLeads] = useState([]);
     const [registrations, setRegistrations] = useState([]);
+    const [events, setEvents] = useState(siteData.events || []);
     const [loading, setLoading] = useState(false);
+    const [savingEvents, setSavingEvents] = useState(false);
     const [dataError, setDataError] = useState('');
+    const [eventsMessage, setEventsMessage] = useState(null);
     const [search, setSearch] = useState('');
 
     async function fetchData(passwordOverride = adminPassword, options = {}) {
@@ -377,11 +617,16 @@ export default function AdminDashboard() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ password: passwordOverride })
             });
+            const eventsResponse = await fetch('/api/events');
 
             const result = await response.json().catch(() => ({}));
+            const eventsResult = await eventsResponse.json().catch(() => ({}));
 
             if (!response.ok) {
                 throw new Error(result.error || 'Failed to load admin data.');
+            }
+            if (eventsResponse.ok && Array.isArray(eventsResult.events)) {
+                setEvents(eventsResult.events);
             }
 
             setLeads(result.leads || []);
@@ -419,7 +664,34 @@ export default function AdminDashboard() {
         setAdminPassword('');
         setLeads([]);
         setRegistrations([]);
+        setEvents(siteData.events || []);
         setDataError('');
+        setEventsMessage(null);
+    }
+
+    async function saveEvents() {
+        setSavingEvents(true);
+        setEventsMessage(null);
+
+        try {
+            const response = await fetch('/api/events', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: adminPassword, events })
+            });
+            const result = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Failed to save events.');
+            }
+
+            setEvents(result.events || events);
+            setEventsMessage({ type: 'success', text: 'Events saved successfully.' });
+        } catch (err) {
+            setEventsMessage({ type: 'error', text: err.message || 'Failed to save events.' });
+        } finally {
+            setSavingEvents(false);
+        }
     }
 
     if (!isLoggedIn) return <LoginGate onLogin={handleLogin} />;
@@ -430,11 +702,15 @@ export default function AdminDashboard() {
     const filteredRegs = registrations.filter(r =>
         `${r.first_name} ${r.last_name} ${r.email} ${r.event_title} ${r.payment_reference}`.toLowerCase().includes(search.toLowerCase())
     );
-    const activeData = activeTab === 'leads' ? filteredLeads : filteredRegs;
+    const filteredEvents = events.filter(event =>
+        `${event.title} ${event.displayDate} ${event.venue} ${event.description}`.toLowerCase().includes(search.toLowerCase())
+    );
+    const activeData = activeTab === 'leads' ? filteredLeads : activeTab === 'registrations' ? filteredRegs : filteredEvents;
 
     const tabs = [
         { id: 'leads', label: 'Leads', count: leads.length, icon: Contact2 },
         { id: 'registrations', label: 'Registrations', count: registrations.length, icon: ClipboardList },
+        { id: 'events', label: 'Events CMS', count: events.length, icon: Calendar },
         { id: 'insights', label: 'Insights', count: null, icon: Activity }
     ];
 
@@ -491,7 +767,7 @@ export default function AdminDashboard() {
                         })}
                     </div>
 
-                    {activeTab !== 'insights' && (
+                    {activeTab !== 'insights' && activeTab !== 'events' && (
                         <div className="flex gap-3 w-full md:w-auto">
                             <div className="relative flex-1 md:w-64">
                                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -520,6 +796,14 @@ export default function AdminDashboard() {
                     </div>
                 ) : activeTab === 'insights' ? (
                     <InsightsTab leads={leads} registrations={registrations} />
+                ) : activeTab === 'events' ? (
+                    <EventsCmsTab
+                        events={filteredEvents}
+                        setEvents={setEvents}
+                        onSave={saveEvents}
+                        saving={savingEvents}
+                        message={eventsMessage}
+                    />
                 ) : (
                     <div className="bg-white/5 border border-white/10 rounded-3xl overflow-hidden">
                         {activeTab === 'leads'

@@ -23,7 +23,7 @@ export default function Hero() {
 
                     <img
                         src="/WealthMindset-removebg.png"
-                        alt="GGC Logo"
+                        alt="The Wealth Mindset Logo"
                         className="relative z-10 w-64 md:w-80 lg:w-96 h-auto animate-float drop-shadow-[0_20px_50px_rgba(99,102,241,0.4)]"
                     />
                 </motion.div>
@@ -62,8 +62,8 @@ export default function Hero() {
                         transition={{ delay: 0.4 }}
                         className="text-lg text-gray-400 mb-8 max-w-lg leading-relaxed"
                     >
-                        The Wealth Mindset is a premier educational journey blending timeless financial wisdom with modern digital accessibility. Through vehicles like Global Gold Coin, we empower you to build lasting wealth.
-                        Join our royal South African tour to secure your legacy.
+                        The Wealth Mindset is a premier educational journey blending timeless financial wisdom, disciplined leadership, and practical legacy-building tools.
+                        Join our South African tour to strengthen your financial foundation and build with purpose.
                     </motion.p>
 
                     <motion.div
@@ -96,7 +96,7 @@ export default function Hero() {
                         {[
                             { label: 'Secure', icon: '🔒' },
                             { label: 'Transparent', icon: '✨' },
-                            { label: 'Gold-Backed', icon: '🪙' }
+                            { label: 'Legacy-Focused', icon: '🪙' }
                         ].map((item) => (
                             <div key={item.label} className="flex items-center gap-2">
                                 <span className="text-xl">{item.icon}</span>

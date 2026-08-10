@@ -123,7 +123,7 @@
     "events": [
         {
             "id": 5,
-            "title": "KZN Global Gold Coin Masterclass",
+            "title": "KZN Wealth Mindset Masterclass",
             "type": "seminar",
             "city": "Pietermaritzburg",
             "date": "2026-02-20",
@@ -135,7 +135,7 @@
             "registered": 110,
             "image": "/images/durban.jpg",
             "status": "cultural",
-            "description": "Travel to Durban to experience the Zulu Kingdom and expand GGC's coastal presence.",
+            "description": "A practical masterclass focused on wealth discipline, leadership, and legacy-building principles for the KZN community.",
             "priceSA": 550,
             "priceUS": 50
         },
@@ -172,7 +172,7 @@
             "registered": 240,
             "image": "/images/gala.jpg",
             "status": "black-tie",
-            "description": "A prestigious African Royal Attire GALA welcoming the GGC Owner and Global Leaders in royal tradition.",
+            "description": "A prestigious African Royal Attire gala celebrating leadership, heritage, and the values of disciplined legacy-building.",
             "priceSA": 550,
             "priceUS": 50
         },
@@ -209,8 +209,8 @@
             "image": "/images/durban.jpg",
             "status": "open",
             "description": "A comprehensive seminar focusing on the core principles of the Wealth Mindset and the process of sovereign building.",
-            "priceSA": 250,
-            "priceUS": 20
+            "priceSA": 550,
+            "priceUS": 50
         }
     ],
     "leadership": [
@@ -281,84 +281,13 @@
         "releaseDate": "Coming 2026",
         "preface": "Before anything meaningful takes shape, there is a season where nothing looks impressive.\nNo titles. No applause. No certainty that the effort will amount to anything visible. Only repetition, responsibility, and the quiet decision to continue.\n\nThis is the portion of the journey most people omit when they tell their story. Not because it lacked importance, but because it resists simple explanation. Becoming does not announce itself. It works beneath the surface. It reshapes posture, thought, and patience long before the world recognizes a change.\n\nThe process begins when survival stops feeling sufficient. There comes a moment when living reactively no longer satisfies the deeper pull within. Something asks to be ordered. Something demands discipline, direction, and intentionality. Not because life has collapsed, but because potential has become too loud to ignore.\n\nI did not begin with clarity. I began with questions. There were years where progress felt slow and identity felt unfinished. Where responsibility came before recognition and lessons arrived without language.\n\nI learned that growth rarely feels like elevation while it is happening. More often, it feels like dismantling. The process removes excess, sharpens what is essential, and tests what is genuine.\n\nThis book is for anyone standing between who they have been and who they sense they are becoming. For those who feel the weight of responsibility before the privilege of recognition. For those learning that leadership begins internally, long before it is acknowledged externally.\n\nNo one steps into greater roles by accident. People are shaped for them. Slowly. Deliberately. Often uncomfortably.\n\nThis is not a promise of ease. It is an invitation to endurance.\n\nThis is The Process."
     },
-    "globalGoldCoin": {
-        "title": "Global Gold Coin (GGC)",
-        "tagline": "The world's first cryptocurrency backed by a real, producing gold mine.",
-        "about": "GGC Coin is a groundbreaking gold-backed digital asset that transforms pure gold from the trusted mines of Nelson, Nevada into powerful, secure tokens. This innovative fusion bridges the timeless value of precious metals with the cutting-edge advantages of blockchain technology.",
-        "stats": [
-            {
-                "label": "$15 Billion",
-                "desc": "Gold Backing"
-            },
-            {
-                "label": "2,000%",
-                "desc": "Growth Since Launch"
-            },
-            {
-                "label": "500,000+",
-                "desc": "Wallets Created"
-            },
-            {
-                "label": "$100",
-                "desc": "Current Coin Value"
-            }
-        ],
-        "benefits": [
-            {
-                "title": "Stability You Can Trust",
-                "desc": "Anchored to a real, tangible store of value—helping reduce extreme price swings."
-            },
-            {
-                "title": "Backed by Physical Gold",
-                "desc": "Supported by allocated gold held in secure storage, provided by a Nevada mine."
-            },
-            {
-                "title": "Built for Long-Term Value",
-                "desc": "Ideal solution for preserving value across generations through gold's enduring role."
-            }
-        ],
-        "multiplierProgram": {
-            "title": "Multiplier Bonuses",
-            "desc": "Double, Triple, or even 10x your money with our exclusive pre-launch multiplier program.",
-            "notice": "Limited time promotion extended! Contact support@globalgoldcoin.net to apply."
-        },
-        "referralPlan": {
-            "direct": "10% Commission",
-            "level2": "5% Commission",
-            "note": "Share your referral link and earn as your network grows."
-        },
-        "testimonials": [
-            {
-                "author": "R.B.",
-                "quote": "I started with $600 literally last weekend, now with added bonuses my account is over $2,600."
-            },
-            {
-                "author": "J.D.",
-                "quote": "I funded my account with $10,000 and now I'm on the road to becoming a multi-millionaire."
-            },
-            {
-                "author": "L.J.",
-                "quote": "Profit of over $1500 overnight. This is like getting in at the early stages of Bitcoin."
-            }
-        ],
-        "faqs": [
-            {
-                "q": "What makes GGC different?",
-                "a": "Backed by $15 billion in verified gold reserves in a Nevada mine, providing tangible value."
-            },
-            {
-                "q": "How do I get the $100 gift?",
-                "a": "Create a free account on CryptoGoldExchange; the 2 GGC coins will be deposited instantly."
-            }
-        ]
-    },
     "news": [
         {
             "id": 1,
             "title": "Royal Mzilikazi Gala: A Night of Tradition",
             "date": "Feb 06, 2026",
             "tag": "Events",
-            "excerpt": "GGC prepares for the prestigious African Royal Attire Gala in Johannesburg, celebrating the intersection of royalty and wealth."
+            "excerpt": "The Wealth Mindset prepares for the prestigious African Royal Attire Gala in Johannesburg, celebrating the intersection of heritage, leadership, and legacy."
         },
         {
             "id": 2,
@@ -476,7 +405,7 @@
             {
                 "id": 2,
                 "title": "Ethical Inclusion",
-                "desc": "Provide access to gold-backed digital assets that bridge traditional value with modern technology."
+                "desc": "Provide access to practical education that bridges traditional values with modern financial discipline."
             },
             {
                 "id": 3,

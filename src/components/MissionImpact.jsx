@@ -22,7 +22,7 @@ export default function MissionImpact({ impact }) {
                         </span>
                         <h2 className="text-4xl md:text-5xl font-bold mb-8">{impact.title}</h2>
                         <p className="text-gray-400 text-lg leading-relaxed mb-10">
-                            Wealth building isn't just about individual success—it's about the legacy we leave for our communities. Through GGC and the Mzilikazi Royal Monarch partnership, we are committed to sustainable local impact.
+                            Wealth building isn't just about individual success—it's about the legacy we leave for our communities. Through education, service, and community partnerships, we are committed to sustainable local impact.
                         </p>
 
                         <div className="grid sm:grid-cols-3 gap-6">

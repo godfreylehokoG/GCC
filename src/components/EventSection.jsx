@@ -254,7 +254,7 @@ export default function EventSection({ events }) {
                     transition={{ delay: 0.2 }}
                     className="text-gray-400 max-w-2xl mx-auto"
                 >
-                    Join us at exclusive seminars across South Africa. Learn about GGC, meet our team, and discover how to preserve your wealth with digital gold.
+                    Join us at Wealth Mindset seminars across South Africa. Learn practical financial principles, connect with our leadership team, and take the next step in building a disciplined legacy.
                 </motion.p>
             </div>
 

@@ -1,53 +1,45 @@
 // Vercel Serverless Function - AI Chat
-// This endpoint handles AI chat interactions for the GGC assistant
+// This endpoint handles AI chat interactions for The Wealth Mindset assistant.
 
-// GGC Knowledge Base (embedded for MVP - Phase 2 will use RAG)
-const GGC_KNOWLEDGE = `
-Global Gold Coin (GGC) is a gold-backed digital asset focused on wealth preservation.
+// Wealth Mindset knowledge base (embedded for MVP - Phase 2 will use RAG)
+const WEALTH_MINDSET_KNOWLEDGE = `
+The Wealth Mindset is an educational platform focused on financial literacy, disciplined habits, leadership, and legacy-building.
 
 KEY FACTS:
-- GGC is backed by physical gold reserves
-- Focus on economic empowerment through education
-- Currently touring South Africa with seminars in Johannesburg, Cape Town, and Durban
-- Not investment advice - educational platform only
+- Education comes before action
+- Focus on practical financial literacy and responsible decision-making
+- Offers South African events, community outreach, trainings, and educational resources
+- Not financial advice - educational platform only
 
-SOUTH AFRICAN TOUR 2026:
-- Johannesburg: October 15, 2026 at Sandton Convention Centre
-- Cape Town: October 22, 2026 at CTICC
-- Durban: October 29, 2026 at Durban ICC
-
-WHAT GGC OFFERS:
-- Gold-backed digital currency
-- Educational resources and academy
+WHAT THE WEALTH MINDSET OFFERS:
+- Financial literacy education
+- Wealth psychology and disciplined habits
 - Community seminars and events
-- Wealth preservation strategies
+- Legacy-building and leadership development
 
 DISCLAIMER:
-GGC does not provide financial advice. All information is for educational purposes only.
+The Wealth Mindset does not provide financial advice. All information is for educational purposes only.
 `;
 
 export default async function handler(req, res) {
-    // Only allow POST requests
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
     try {
-        const { message, conversationHistory } = req.body;
+        const { message } = req.body;
 
         if (!message) {
             return res.status(400).json({ error: 'Message is required' });
         }
 
-        // For MVP: Simple keyword-based responses
-        // Phase 2 will integrate OpenAI with RAG
         let response = generateMVPResponse(message.toLowerCase());
 
         // TODO: Phase 2 - OpenAI Integration
         // const completion = await openai.chat.completions.create({
         //   model: 'gpt-4',
         //   messages: [
-        //     { role: 'system', content: `You are the GGC assistant. Use this knowledge: ${GGC_KNOWLEDGE}. Never give financial advice.` },
+        //     { role: 'system', content: `You are The Wealth Mindset assistant. Use this knowledge: ${WEALTH_MINDSET_KNOWLEDGE}. Never give financial advice.` },
         //     ...conversationHistory,
         //     { role: 'user', content: message }
         //   ]
@@ -67,21 +59,20 @@ export default async function handler(req, res) {
 }
 
 function generateMVPResponse(message) {
-    // Simple keyword matching for MVP
     if (message.includes('event') || message.includes('seminar') || message.includes('tour')) {
-        return "We have three exciting seminars planned for South Africa in October 2026! Johannesburg on Oct 15, Cape Town on Oct 22, and Durban on Oct 29. Would you like to register for any of these events?";
+        return "We host Wealth Mindset seminars and events focused on financial literacy, disciplined habits, leadership, and legacy-building. You can register for available events in the Events section.";
     }
 
-    if (message.includes('gold') || message.includes('backed')) {
-        return "GGC is backed by physical gold reserves, providing stability and tangible value. Our approach emphasizes gold coins as a tool for wealth preservation and protection against inflation.";
+    if (message.includes('mindset') || message.includes('wealth')) {
+        return "The Wealth Mindset focuses on practical financial literacy, disciplined habits, leadership, and legacy-building. Our goal is to help people think clearly before making financial decisions.";
     }
 
     if (message.includes('invest') || message.includes('buy') || message.includes('price')) {
-        return "I can't provide investment advice. GGC is focused on education and wealth preservation. I recommend attending one of our seminars to learn more about our approach to financial empowerment.";
+        return "I can't provide investment advice. The Wealth Mindset is focused on education, financial literacy, and responsible decision-making. I recommend attending a seminar or training to learn the principles before taking action.";
     }
 
     if (message.includes('learn') || message.includes('academy') || message.includes('video')) {
-        return "Our GGC Academy offers educational videos ranging from beginner to advanced topics. You can learn about crypto basics, GGC specifics, and security practices. Check out the Tutorials section on our website!";
+        return "Our academy and tutorials cover financial literacy, wealth habits, leadership, and legacy-building. Check out the Tutorials section to start learning at your own pace.";
     }
 
     if (message.includes('register') || message.includes('sign up') || message.includes('join')) {
@@ -89,9 +80,8 @@ function generateMVPResponse(message) {
     }
 
     if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
-        return "Hello! Welcome to GGC. I'm here to help you learn about Global Gold Coin and our South African tour. What would you like to know?";
+        return "Hello! Welcome to The Wealth Mindset. I'm here to help you learn about our trainings, events, and educational resources. What would you like to know?";
     }
 
-    // Default response
-    return "That's a great question! I'm the GGC assistant and I can help you learn about our gold-backed digital currency, upcoming seminars, or educational resources. What specific aspect would you like to explore?";
+    return "That's a great question! I'm The Wealth Mindset assistant and I can help you learn about our educational resources, upcoming seminars, trainings, and legacy-building approach. What specific aspect would you like to explore?";
 }
