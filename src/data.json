@@ -136,8 +136,8 @@
             "image": "/images/durban.jpg",
             "status": "cultural",
             "description": "Travel to Durban to experience the Zulu Kingdom and expand GGC's coastal presence.",
-            "priceSA": 250,
-            "priceUS": 20
+            "priceSA": 550,
+            "priceUS": 50
         },
         {
             "id": 3,

@@ -14,7 +14,8 @@ export default async function handler(req, res) {
             country, city, stateProvince, postalCode,
             interest, referralSource, reasonForAttending,
             occupation, experienceLevel, marketingConsent,
-            eventId, eventTitle, paymentReference, amount, currency, status
+            eventId, eventTitle, paymentReference, amount, currency, status,
+            events
         } = req.body;
 
         // Validate required fields
@@ -22,8 +23,21 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
 
-        // Prepare the registration data for DynamoDB
-        const registrationData = {
+        const selectedEvents = Array.isArray(events) && events.length > 0
+            ? events
+            : [{
+                id: eventId,
+                title: eventTitle,
+                displayDate: req.body.eventDisplayDate,
+                venue: req.body.eventVenue,
+                time: req.body.eventTime,
+                address: req.body.eventAddress,
+                amount,
+                currency
+            }];
+
+        // Prepare the shared registration data for DynamoDB
+        const baseRegistrationData = {
             first_name: firstName,
             last_name: lastName,
             email: email,
@@ -38,34 +52,51 @@ export default async function handler(req, res) {
             occupation: occupation || null,
             experience_level: experienceLevel || null,
             marketing_consent: marketingConsent || false,
-            event_id: eventId || null,
-            event_title: eventTitle || null,
             payment_reference: paymentReference || null,
-            payment_amount: amount || 0,
             payment_currency: currency || null,
             payment_status: status || 'confirmed',
             source: 'website'
         };
 
-        // Save to AWS DynamoDB
-        const savedRegistration = await saveEventRegistration(registrationData);
+        // Save one row per selected event so reporting still groups by event.
+        const savedRegistrations = await Promise.all(selectedEvents.map(event => saveEventRegistration({
+            ...baseRegistrationData,
+            event_id: event.id || null,
+            event_title: event.title || null,
+            payment_amount: event.amount ?? amount ?? 0,
+            payment_currency: event.currency || currency || null
+        })));
+        const savedRegistration = savedRegistrations[0];
 
         // Log the lead
-        console.log('New Lead Registered in DynamoDB:', savedRegistration);
+        console.log('New Lead Registered in DynamoDB:', savedRegistrations);
+
+        const eventSummary = selectedEvents.length > 1
+            ? {
+                title: `${selectedEvents.length} Events: ${selectedEvents.map(event => event.title).join(', ')}`,
+                displayDate: selectedEvents.map(event => `${event.title}: ${event.displayDate || 'TBD'}`).join('<br>'),
+                venue: selectedEvents.map(event => `${event.title}: ${event.venue || 'TBD'}`).join('<br>'),
+                time: selectedEvents.map(event => `${event.title}: ${event.time || 'TBD'}`).join('<br>'),
+                address: selectedEvents.map(event => `${event.title}: ${event.address || 'TBD'}`).join('<br>'),
+                paymentReference,
+                amount,
+                currency
+            }
+            : {
+                title: selectedEvents[0]?.title || eventTitle,
+                displayDate: selectedEvents[0]?.displayDate || req.body.eventDisplayDate,
+                venue: selectedEvents[0]?.venue || req.body.eventVenue,
+                time: selectedEvents[0]?.time || req.body.eventTime,
+                address: selectedEvents[0]?.address || req.body.eventAddress,
+                paymentReference,
+                amount,
+                currency
+            };
 
         // Send email notification and wait for result for debugging
         const emailResult = await sendRegistrationConfirmation(
             { firstName, email },
-            {
-                title: eventTitle,
-                displayDate: req.body.eventDisplayDate,
-                venue: req.body.eventVenue,
-                time: req.body.eventTime,
-                address: req.body.eventAddress,
-                paymentReference: paymentReference,
-                amount: amount,
-                currency: currency
-            }
+            eventSummary
         ).catch(err => {
             console.error('CRITICAL: Email processing exception:', err);
             return { success: false, error: err.message };

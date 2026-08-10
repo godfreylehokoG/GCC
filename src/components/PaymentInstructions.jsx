@@ -31,8 +31,12 @@ export default function PaymentInstructions() {
     }
 
     const { firstName, lastName, country, eventTitle, eventDisplayDate, eventVenue, eventTime, amount, currency, reference } = data;
+    const selectedEvents = Array.isArray(data.selectedEvents) ? data.selectedEvents : [];
+    const hasMultipleEvents = selectedEvents.length > 1;
     const isPaid = amount > 0;
     const fullName = `${firstName} ${lastName}`;
+    const proofEventText = hasMultipleEvents ? selectedEvents.map(event => event.title).join(', ') : eventTitle;
+    const proofMessage = encodeURIComponent(`Hi, I just registered for ${proofEventText}. My name is ${fullName}. I have paid ${currency} ${amount}. Here is my proof of payment.`);
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#0b0f2b] to-[#05060f] text-[#eef2f6] font-[Poppins]">
@@ -71,24 +75,53 @@ export default function PaymentInstructions() {
                     className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8"
                 >
                     <h3 className="text-xs text-gray-500 uppercase font-bold tracking-widest mb-4">Event Details</h3>
-                    <div className="space-y-3">
-                        <div className="flex justify-between">
-                            <span className="text-gray-400">Event</span>
-                            <span className="text-white font-semibold text-right">{eventTitle}</span>
+                    {hasMultipleEvents ? (
+                        <div className="space-y-4">
+                            {selectedEvents.map(event => (
+                                <div key={event.id} className="rounded-xl bg-white/5 border border-white/5 p-4">
+                                    <div className="flex justify-between gap-4 mb-2">
+                                        <span className="text-white font-semibold">{event.title}</span>
+                                        <span className="text-indigo-300 font-bold text-sm whitespace-nowrap">
+                                            {event.amount > 0 ? `${event.currency} ${event.amount}` : 'Free'}
+                                        </span>
+                                    </div>
+                                    <div className="space-y-1 text-sm">
+                                        <div className="flex justify-between gap-4">
+                                            <span className="text-gray-400">Date</span>
+                                            <span className="text-white text-right">{event.displayDate}</span>
+                                        </div>
+                                        <div className="flex justify-between gap-4">
+                                            <span className="text-gray-400">Time</span>
+                                            <span className="text-white text-right">{event.time}</span>
+                                        </div>
+                                        <div className="flex justify-between gap-4">
+                                            <span className="text-gray-400">Venue</span>
+                                            <span className="text-white text-right">{event.venue}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-400">Date</span>
-                            <span className="text-white">{eventDisplayDate}</span>
+                    ) : (
+                        <div className="space-y-3">
+                            <div className="flex justify-between">
+                                <span className="text-gray-400">Event</span>
+                                <span className="text-white font-semibold text-right">{eventTitle}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-gray-400">Date</span>
+                                <span className="text-white">{eventDisplayDate}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-gray-400">Time</span>
+                                <span className="text-white">{eventTime}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-gray-400">Venue</span>
+                                <span className="text-white text-right">{eventVenue}</span>
+                            </div>
                         </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-400">Time</span>
-                            <span className="text-white">{eventTime}</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-400">Venue</span>
-                            <span className="text-white text-right">{eventVenue}</span>
-                        </div>
-                    </div>
+                    )}
                 </motion.div>
 
                 {/* Payment Section — only for paid events */}
@@ -202,7 +235,7 @@ export default function PaymentInstructions() {
                         {(country === 'South Africa' || country === 'United States') && (
                             <div className="mt-8 space-y-4">
                                 <a
-                                    href={`https://wa.me/27786511959?text=Hi, I just registered for ${eventTitle}. My name is ${fullName}. I have paid ${currency} ${amount}. Here is my proof of payment.`}
+                                    href={`https://wa.me/27786511959?text=${proofMessage}`}
                                     target="_blank"
                                     rel="noreferrer"
                                     className="w-full py-4 rounded-xl bg-green-600 text-white font-bold flex items-center justify-center gap-2 hover:bg-green-500 transition-all"

@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronRight } from 'lucide-react';
+import { X, ChevronRight, Check } from 'lucide-react';
 import EventCard from './EventCard';
 import countryData from '../countries.json';
 
 export default function EventSection({ events }) {
     const navigate = useNavigate();
     const [selectedEvent, setSelectedEvent] = useState(null);
+    const [selectedEventIds, setSelectedEventIds] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState(null);
 
@@ -51,18 +52,48 @@ export default function EventSection({ events }) {
         return `${formData.firstName} ${formData.lastName}`;
     };
 
-    const getPrice = () => {
-        if (!selectedEvent) return { amount: 0, currency: 'ZAR' };
-        const isSA = formData.country === 'South Africa';
+    const isUpcomingRegistrationEvent = (event) => {
+        const eventDate = new Date(event.date);
+        const today = new Date();
+        const daysUntil = Math.ceil((eventDate - today) / (1000 * 60 * 60 * 24));
 
-        // Use dynamic prices from the event data if available
-        const amount = isSA ? (selectedEvent.priceSA ?? 0) : (selectedEvent.priceUS ?? 0);
+        return daysUntil > 0 && event.registrationRequired !== false;
+    };
+
+    const registrationEvents = events.filter(isUpcomingRegistrationEvent);
+    const selectedEvents = registrationEvents.filter(event => selectedEventIds.includes(event.id));
+
+    const getEventPrice = (event) => {
+        const isSA = formData.country === 'South Africa';
+        const amount = isSA ? (event.priceSA ?? 0) : (event.priceUS ?? 0);
         const currency = isSA ? 'ZAR' : 'USD';
 
         return { amount, currency };
     };
 
+    const getPrice = () => {
+        const isSA = formData.country === 'South Africa';
+        const currency = isSA ? 'ZAR' : 'USD';
+        const amount = selectedEvents.reduce((total, event) => total + getEventPrice(event).amount, 0);
+
+        return { amount, currency };
+    };
+
     const pricing = getPrice();
+
+    const openRegistration = (event) => {
+        setSelectedEvent(event);
+        setSelectedEventIds([event.id]);
+        setSubmitError(null);
+    };
+
+    const toggleEventSelection = (eventId) => {
+        setSelectedEventIds(prev => (
+            prev.includes(eventId)
+                ? prev.filter(id => id !== eventId)
+                : [...prev, eventId]
+        ));
+    };
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
@@ -71,6 +102,11 @@ export default function EventSection({ events }) {
 
         const reference = generateReference();
 
+        if (selectedEvents.length === 0) {
+            setSubmitError('Please choose at least one event to attend.');
+            setIsSubmitting(false);
+            return;
+        }
 
         try {
             const response = await fetch('/api/register', {
@@ -81,12 +117,26 @@ export default function EventSection({ events }) {
                 body: JSON.stringify({
                     ...formData,
                     fullPhone: `${formData.countryCode}${formData.phone}`,
-                    eventId: selectedEvent.id,
-                    eventTitle: selectedEvent.title,
-                    eventDisplayDate: selectedEvent.displayDate,
-                    eventVenue: selectedEvent.venue,
-                    eventTime: selectedEvent.time,
-                    eventAddress: selectedEvent.address,
+                    eventId: selectedEvents.map(event => event.id).join(','),
+                    eventTitle: selectedEvents.map(event => event.title).join(', '),
+                    eventDisplayDate: selectedEvents.map(event => event.displayDate).join(', '),
+                    eventVenue: selectedEvents.map(event => event.venue).join(', '),
+                    eventTime: selectedEvents.map(event => event.time).join(', '),
+                    eventAddress: selectedEvents.map(event => event.address).join(', '),
+                    events: selectedEvents.map(event => {
+                        const eventPricing = getEventPrice(event);
+
+                        return {
+                            id: event.id,
+                            title: event.title,
+                            displayDate: event.displayDate,
+                            venue: event.venue,
+                            time: event.time,
+                            address: event.address,
+                            amount: eventPricing.amount,
+                            currency: eventPricing.currency
+                        };
+                    }),
                     paymentReference: reference,
                     amount: pricing.amount,
                     currency: pricing.currency,
@@ -121,10 +171,19 @@ export default function EventSection({ events }) {
                     lastName: formData.lastName,
                     email: formData.email,
                     country: formData.country,
-                    eventTitle: selectedEvent.title,
-                    eventDisplayDate: selectedEvent.displayDate,
-                    eventVenue: selectedEvent.venue,
-                    eventTime: selectedEvent.time,
+                    eventTitle: selectedEvents.map(event => event.title).join(', '),
+                    eventDisplayDate: selectedEvents.map(event => event.displayDate).join(', '),
+                    eventVenue: selectedEvents.map(event => event.venue).join(', '),
+                    eventTime: selectedEvents.map(event => event.time).join(', '),
+                    selectedEvents: selectedEvents.map(event => ({
+                        id: event.id,
+                        title: event.title,
+                        displayDate: event.displayDate,
+                        venue: event.venue,
+                        time: event.time,
+                        amount: getEventPrice(event).amount,
+                        currency: getEventPrice(event).currency
+                    })),
                     amount: pricing.amount,
                     currency: pricing.currency,
                     reference: reference,
@@ -133,6 +192,7 @@ export default function EventSection({ events }) {
 
             // Then close modal (this resets state)
             setSelectedEvent(null);
+            setSelectedEventIds([]);
         } catch (err) {
             console.error('Registration Error:', err);
             setSubmitError(err.message);
@@ -143,6 +203,7 @@ export default function EventSection({ events }) {
 
     const closeModal = () => {
         setSelectedEvent(null);
+        setSelectedEventIds([]);
         setSubmitError(null);
         setFormData({
             firstName: '',
@@ -207,7 +268,7 @@ export default function EventSection({ events }) {
                         viewport={{ once: true }}
                         transition={{ delay: index * 0.1 }}
                     >
-                        <EventCard event={event} onRegister={setSelectedEvent} />
+                        <EventCard event={event} onRegister={openRegistration} />
                     </motion.div>
                 ))}
             </div>
@@ -232,8 +293,8 @@ export default function EventSection({ events }) {
                             {/* Modal Header */}
                             <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 flex justify-between items-start flex-shrink-0">
                                 <div>
-                                    <h3 className="text-xl font-bold text-white">{selectedEvent.title}</h3>
-                                    <p className="text-white/70 text-sm mt-1">{selectedEvent.displayDate} • {selectedEvent.venue}</p>
+                                    <h3 className="text-xl font-bold text-white">Choose Your Events</h3>
+                                    <p className="text-white/70 text-sm mt-1">{selectedEvents.length || 0} selected for registration</p>
                                 </div>
                                 <button onClick={closeModal} className="text-white/70 hover:text-white transition-colors">
                                     <X size={24} />
@@ -244,6 +305,45 @@ export default function EventSection({ events }) {
                             <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
 
                                 <form onSubmit={handleFormSubmit} className="space-y-6">
+                                    <div className="space-y-4">
+                                        <h4 className="text-indigo-400 text-xs font-bold uppercase tracking-widest border-b border-white/5 pb-2">Events To Attend</h4>
+                                        <div className="space-y-3">
+                                            {registrationEvents.map(event => {
+                                                const eventPricing = getEventPrice(event);
+                                                const isChecked = selectedEventIds.includes(event.id);
+
+                                                return (
+                                                    <label
+                                                        key={event.id}
+                                                        className={`flex items-start gap-3 rounded-2xl border p-4 transition-all cursor-pointer ${isChecked ? 'bg-indigo-500/15 border-indigo-400/50' : 'bg-white/5 border-white/10 hover:border-white/20'}`}
+                                                    >
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={isChecked}
+                                                            disabled={isSubmitting}
+                                                            onChange={() => toggleEventSelection(event.id)}
+                                                            className="sr-only"
+                                                        />
+                                                        <span className={`mt-1 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-md border transition-all ${isChecked ? 'border-indigo-300 bg-indigo-500 text-white' : 'border-white/20 bg-white/5 text-transparent'}`}>
+                                                            <Check size={14} />
+                                                        </span>
+                                                        <span className="min-w-0 flex-1">
+                                                            <span className="block text-sm font-bold text-white">{event.title}</span>
+                                                            <span className="block text-xs text-gray-400 mt-1">{event.displayDate} • {event.venue}</span>
+                                                        </span>
+                                                        <span className="text-sm font-bold text-indigo-300">
+                                                            {eventPricing.amount > 0 ? `${eventPricing.currency} ${eventPricing.amount}` : 'Free'}
+                                                        </span>
+                                                    </label>
+                                                );
+                                            })}
+                                        </div>
+                                        <div className="flex items-center justify-between rounded-xl bg-white/5 border border-white/10 px-4 py-3">
+                                            <span className="text-sm text-gray-400">Total</span>
+                                            <span className="text-lg font-bold text-white">{pricing.currency} {pricing.amount}</span>
+                                        </div>
+                                    </div>
+
                                     <div className="space-y-4">
                                         <h4 className="text-indigo-400 text-xs font-bold uppercase tracking-widest border-b border-white/5 pb-2">1. Personal Details</h4>
                                         <div className="grid grid-cols-2 gap-4">
@@ -305,7 +405,7 @@ export default function EventSection({ events }) {
 
                                     <button
                                         type="submit"
-                                        disabled={isSubmitting}
+                                        disabled={isSubmitting || selectedEvents.length === 0}
                                         className="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold hover:from-indigo-500 hover:to-purple-500 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
                                     >
                                         {isSubmitting ? (
