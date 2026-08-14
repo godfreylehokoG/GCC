@@ -22,6 +22,9 @@ function passwordsMatch(input, expected) {
 }
 
 function normalizeEvent(event) {
+    const isCoronationEvent = event.type === 'coronation'
+        || String(event.title || '').toLowerCase().includes('royal coronation');
+
     return {
         id: event.id ?? Date.now(),
         title: event.title || 'Untitled Event',
@@ -35,11 +38,11 @@ function normalizeEvent(event) {
         capacity: Number(event.capacity) || 0,
         registered: Number(event.registered) || 0,
         image: event.image || '',
-        status: event.status || 'open',
+        status: isCoronationEvent ? 'free' : (event.status || 'open'),
         description: event.description || '',
-        priceSA: Number(event.priceSA) || 0,
-        priceUS: Number(event.priceUS) || 0,
-        registrationRequired: event.registrationRequired !== false
+        priceSA: isCoronationEvent ? 0 : (Number(event.priceSA) || 0),
+        priceUS: isCoronationEvent ? 0 : (Number(event.priceUS) || 0),
+        registrationRequired: isCoronationEvent ? false : event.registrationRequired !== false
     };
 }
 

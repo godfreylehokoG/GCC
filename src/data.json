@@ -189,10 +189,11 @@
             "capacity": 300,
             "registered": 0,
             "image": "/Mzilikazi-Royal.png",
-            "status": "black-tie",
+            "status": "free",
             "description": "A royal ceremonial gathering honoring the Mzilikazi legacy and coronation proceedings.",
-            "priceSA": 550,
-            "priceUS": 50
+            "priceSA": 0,
+            "priceUS": 0,
+            "registrationRequired": false
         },
         {
             "id": 6,
