@@ -42,7 +42,7 @@ function normalizeEvent(event) {
         description: event.description || '',
         priceSA: isCoronationEvent ? 0 : (Number(event.priceSA) || 0),
         priceUS: isCoronationEvent ? 0 : (Number(event.priceUS) || 0),
-        registrationRequired: isCoronationEvent ? false : event.registrationRequired !== false
+        registrationRequired: isCoronationEvent ? true : event.registrationRequired !== false
     };
 }
 

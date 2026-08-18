@@ -193,7 +193,7 @@
             "description": "A royal ceremonial gathering honoring the Mzilikazi legacy and coronation proceedings.",
             "priceSA": 0,
             "priceUS": 0,
-            "registrationRequired": false
+            "registrationRequired": true
         },
         {
             "id": 6,

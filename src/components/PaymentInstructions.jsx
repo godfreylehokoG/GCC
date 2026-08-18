@@ -273,7 +273,7 @@ export default function PaymentInstructions() {
                             </div>
                             <h3 className="text-2xl font-bold text-white mb-3">No Payment Required</h3>
                             <p className="text-gray-400 text-lg max-w-md mx-auto leading-relaxed">
-                                This is a free outreach event. Your seat has been successfully secured and no further action is needed!
+                                This is a free event. Your registration has been successfully confirmed and no further action is needed!
                             </p>
 
                             <div className="mt-10 py-4 px-6 bg-green-500/10 border border-green-500/20 rounded-2xl inline-block">
