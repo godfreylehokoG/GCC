@@ -152,6 +152,12 @@ export default function GGC() {
             </a>
           ))}
           <a
+            href="/school-uniform-sponsor"
+            className="text-sm font-medium text-emerald-300 hover:text-emerald-200 transition-colors"
+          >
+            Sponsor Uniforms
+          </a>
+          <a
             href="https://zoom.us/j/your-meeting-id"
             className="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2 rounded-full text-sm font-bold flex items-center gap-2 transition-all shadow-lg"
           >
@@ -188,6 +194,13 @@ export default function GGC() {
               {item}
             </a>
           ))}
+          <a
+            href="/school-uniform-sponsor"
+            className="hover:text-emerald-300 transition"
+            onClick={() => setMenuOpen(false)}
+          >
+            Sponsor Uniforms
+          </a>
           <a
             href="https://zoom.us/j/your-meeting-id"
             className="mt-4 bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3 rounded-full text-lg font-bold flex items-center gap-3 transition-all"

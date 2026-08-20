@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import GGC from "./GGC";
 import AdminDashboard from "./components/AdminDashboard";
 import PaymentInstructions from "./components/PaymentInstructions";
+import SchoolUniformSponsorPage from "./components/SchoolUniformSponsorPage";
 
 import LeadershipPage from "./components/LeadershipPage";
 
@@ -13,6 +14,7 @@ export default function App() {
         <Route path="/" element={<GGC />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/payment-instructions" element={<PaymentInstructions />} />
+        <Route path="/school-uniform-sponsor" element={<SchoolUniformSponsorPage />} />
         <Route path="/leadership" element={<LeadershipPage />} />
       </Routes>
       <Analytics />
