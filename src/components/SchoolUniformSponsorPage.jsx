@@ -8,10 +8,8 @@ import {
     CreditCard,
     HeartHandshake,
     Mail,
-    MessageCircle,
     Shirt,
     StepForward,
-    Wallet
 } from 'lucide-react';
 
 const initialFormData = {
@@ -309,7 +307,7 @@ export default function SchoolUniformSponsorPage() {
                         </motion.div>
 
                         <aside id="payment" className="space-y-6">
-                            <PaymentCard title="FNB Business EFT" icon={Wallet}>
+                            <PaymentCard title="FNB Business EFT" logoSrc="/fnb-logo.webp" logoAlt="FNB logo">
                                 <PaymentRow label="Bank" value="First National Bank (FNB)" />
                                 <PaymentRow label="Account Number" value="63070529377" copyLabel="account" onCopy={copyToClipboard} copied={copySuccess} />
                                 <PaymentRow label="Branch Code" value="210835" copyLabel="branch" onCopy={copyToClipboard} copied={copySuccess} />
@@ -337,10 +335,10 @@ export default function SchoolUniformSponsorPage() {
                                     <a
                                         href={`https://wa.me/27786511959?text=${proofMessage}`}
                                         target="_blank"
-                                        rel="noreferrer"
-                                        className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-md bg-[#22543d] hover:bg-[#1a4431] text-white font-bold transition-colors"
-                                    >
-                                        <MessageCircle size={18} />
+                                    rel="noreferrer"
+                                    className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-md bg-[#22543d] hover:bg-[#1a4431] text-white font-bold transition-colors"
+                                >
+                                        <img src="/whatsapp-logo.svg" alt="" className="h-5 w-5 bg-white rounded-full" />
                                         WhatsApp Proof
                                     </a>
                                     <a
@@ -378,11 +376,17 @@ function FormInput({ id, label, value, onChange, type = 'text', required = false
     );
 }
 
-function PaymentCard({ title, icon: Icon, children }) {
+function PaymentCard({ title, icon: Icon, logoSrc, logoAlt, children }) {
     return (
         <div className="bg-white border border-[#e2ddd0] rounded-lg p-6 shadow-sm">
             <h3 className="flex items-center gap-2 text-[#17211b] font-bold mb-5">
-                <Icon size={18} className="text-[#22543d]" />
+                {logoSrc ? (
+                    <span className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-[#e2ddd0] bg-white">
+                        <img src={logoSrc} alt={logoAlt} className="h-10 w-10 object-cover" />
+                    </span>
+                ) : (
+                    <Icon size={18} className="text-[#22543d]" />
+                )}
                 {title}
             </h3>
             <div className="space-y-3">
