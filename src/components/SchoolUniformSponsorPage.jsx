@@ -10,6 +10,7 @@ import {
     Mail,
     MessageCircle,
     Shirt,
+    StepForward,
     Wallet
 } from 'lucide-react';
 
@@ -84,69 +85,136 @@ export default function SchoolUniformSponsorPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#05060f] text-[#eef2f6] font-[Poppins]">
-            <header className="sticky top-0 z-50 flex items-center justify-between px-6 md:px-10 py-5 backdrop-blur bg-black/60 border-b border-white/5">
+        <div className="min-h-screen bg-[#f7f4ed] text-[#17211b] font-[Poppins]">
+            <header className="sticky top-0 z-50 flex items-center justify-between px-6 md:px-10 py-5 bg-[#05060f]/95 border-b border-white/10">
                 <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                     <img src="/WealthMindset-removebg.png" alt="The Wealth Mindset" className="h-10 md:h-12 w-auto" />
                 </Link>
-                <Link to="/" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors">
+                <Link to="/" className="inline-flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors">
                     <ArrowLeft size={16} />
                     Back to Home
                 </Link>
             </header>
 
             <main>
-                <section className="relative min-h-[82vh] overflow-hidden">
-                    <img
-                        src="/school-uniform-sponsor.png"
-                        alt="New school uniforms, shoes, socks, and bags ready for sponsorship"
-                        className="absolute inset-0 h-full w-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#05060f] via-[#05060f]/80 to-[#05060f]/20" />
-                    <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#05060f] to-transparent" />
-
-                    <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 py-20 min-h-[82vh] flex items-center">
+                <section className="bg-[#f7f4ed]">
+                    <div className="max-w-7xl mx-auto px-6 md:px-10 pt-12 pb-10">
                         <motion.div
                             initial={{ opacity: 0, y: 24 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="max-w-2xl"
+                            className="grid lg:grid-cols-[0.88fr_1.12fr] gap-8 lg:gap-12 items-end"
                         >
-                            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/15 border border-emerald-400/25 text-emerald-200 text-sm font-bold uppercase tracking-wider mb-6">
-                                <HeartHandshake size={16} />
-                                School Uniform Sponsorship
-                            </span>
-                            <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6">
-                                Sponsor a learner with school shoes and uniform.
-                            </h1>
-                            <p className="text-lg md:text-xl text-gray-300 leading-relaxed max-w-xl mb-8">
-                                The Wealth Mindset is supporting school kids with the essentials they need to attend school with dignity, confidence, and focus.
-                            </p>
-                            <a
-                                href="#register"
-                                className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-all shadow-lg shadow-emerald-500/20"
-                            >
-                                Register to Sponsor
-                                <HeartHandshake size={18} />
-                            </a>
+                            <div className="pb-4">
+                                <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#e3efe6] border border-[#c7dccd] text-[#28573a] text-xs font-bold uppercase tracking-wider mb-6">
+                                    <HeartHandshake size={15} />
+                                    School Uniform Sponsorship
+                                </span>
+                                <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6 text-[#111814]">
+                                    Sponsor a learner with school shoes and uniform.
+                                </h1>
+                                <p className="text-lg text-[#516058] leading-relaxed max-w-xl mb-8">
+                                    The Wealth Mindset is helping school kids receive the essentials they need to attend school with dignity, confidence, and focus.
+                                </p>
+                                <div className="flex flex-col sm:flex-row gap-3">
+                                    <a
+                                        href="#register"
+                                        className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-md bg-[#22543d] hover:bg-[#1a4431] text-white font-bold transition-colors"
+                                    >
+                                        Submit Sponsorship Details
+                                        <HeartHandshake size={18} />
+                                    </a>
+                                    <a
+                                        href="#payment"
+                                        className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-md border border-[#b9c8bd] text-[#26332b] hover:bg-white transition-colors font-bold"
+                                    >
+                                        View Payment Details
+                                    </a>
+                                </div>
+                            </div>
+                            <figure className="overflow-hidden rounded-lg bg-white border border-[#ded8c8] shadow-sm">
+                                <img
+                                    src="/school-kids.png"
+                                    alt="School kids wearing white shirts and grey uniforms"
+                                    className="h-[330px] md:h-[520px] w-full object-cover object-center"
+                                />
+                                <figcaption className="px-4 py-3 text-sm text-[#657067]">
+                                    The programme supports learners with practical school essentials, including shoes and uniform items.
+                                </figcaption>
+                            </figure>
                         </motion.div>
                     </div>
                 </section>
 
-                <section className="px-6 md:px-10 py-16">
-                    <div className="max-w-7xl mx-auto grid lg:grid-cols-3 gap-6">
-                        {[
-                            ['Shoes', 'School shoes for learners who need durable daily footwear.'],
-                            ['Uniform', 'Shirts, trousers, skirts, socks, and other school uniform items.'],
-                            ['Dignity', 'A practical contribution that helps children arrive ready to learn.']
-                        ].map(([title, text]) => (
-                            <div key={title} className="bg-white/5 border border-white/10 rounded-2xl p-6">
-                                <div className="w-12 h-12 rounded-xl bg-emerald-500/15 border border-emerald-400/20 flex items-center justify-center text-emerald-300 mb-5">
-                                    <Shirt size={22} />
+                <section className="px-6 md:px-10 py-14 bg-white border-y border-[#e4dfd2]">
+                    <div className="max-w-7xl mx-auto space-y-10">
+                        <div className="grid lg:grid-cols-3 gap-6">
+                            {[
+                                ['Shoes', 'School shoes for learners who need durable daily footwear.'],
+                                ['Uniform', 'Shirts, trousers, skirts, socks, and other school uniform items.'],
+                                ['Dignity', 'A practical contribution that helps children arrive ready to learn.']
+                            ].map(([title, text]) => (
+                                <div key={title} className="border border-[#e2ddd0] rounded-lg p-6 bg-[#fbfaf6]">
+                                    <div className="w-11 h-11 rounded-md bg-[#e3efe6] border border-[#c7dccd] flex items-center justify-center text-[#22543d] mb-5">
+                                        <Shirt size={22} />
+                                    </div>
+                                    <h2 className="text-xl font-bold text-[#17211b] mb-2">{title}</h2>
+                                    <p className="text-[#5e6b62] leading-relaxed">{text}</p>
                                 </div>
-                                <h2 className="text-xl font-bold text-white mb-2">{title}</h2>
-                                <p className="text-gray-400 leading-relaxed">{text}</p>
+                            ))}
+                        </div>
+
+                        <div className="grid lg:grid-cols-[0.9fr_1.1fr] gap-8 items-center">
+                            <div>
+                                <span className="text-[#22543d] text-xs font-bold uppercase tracking-widest">What Sponsorship Provides</span>
+                                <h2 className="text-3xl md:text-4xl font-bold text-[#17211b] mt-3 mb-4">
+                                    Practical school essentials, prepared with care.
+                                </h2>
+                                <p className="text-[#5e6b62] leading-relaxed text-lg">
+                                    Contributions go toward school shoes, shirts, socks, and uniform items for learners who need support. This keeps the focus on a simple outcome: helping children arrive at school ready and confident.
+                                </p>
+                                <p className="mt-5 text-sm text-[#6f7a72]">
+                                    Suggested reference for payments: <strong className="text-[#17211b]">{reference}</strong>
+                                </p>
                             </div>
-                        ))}
+                            <figure className="rounded-lg overflow-hidden border border-[#ded8c8] bg-[#f7f4ed] shadow-sm">
+                                <img
+                                    src="/school-uniform-sponsor.png"
+                                    alt="New school uniforms, shoes, socks, and bags ready for sponsorship"
+                                    className="w-full"
+                                />
+                                <figcaption className="px-4 py-3 text-sm text-[#657067]">
+                                    Example of the shoes, socks, shirts, and uniform items covered by sponsorship contributions.
+                                </figcaption>
+                            </figure>
+                        </div>
+                    </div>
+                </section>
+
+                <section className="px-6 md:px-10 py-14">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="max-w-2xl mb-8">
+                            <span className="text-[#22543d] text-xs font-bold uppercase tracking-widest">How It Works</span>
+                            <h2 className="text-3xl md:text-4xl font-bold text-[#17211b] mt-3">A simple, trackable process.</h2>
+                        </div>
+                        <div className="grid md:grid-cols-4 gap-4">
+                            {[
+                                ['Register', 'Submit your sponsorship details below.'],
+                                ['Pay', 'Use FNB EFT or Cash App with your full-name reference.'],
+                                ['Send Proof', 'Send proof of payment by WhatsApp or email.'],
+                                ['Allocate', 'The team confirms and allocates support to learners.']
+                            ].map(([title, text], index) => (
+                                <div key={title} className="bg-white border border-[#e2ddd0] rounded-lg p-5">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="w-9 h-9 rounded-md bg-[#22543d] text-white flex items-center justify-center font-bold text-sm">
+                                            {index + 1}
+                                        </div>
+                                        <StepForward size={18} className="text-[#22543d]" />
+                                    </div>
+                                    <h3 className="font-bold text-[#17211b] mb-2">{title}</h3>
+                                    <p className="text-sm leading-relaxed text-[#5e6b62]">{text}</p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </section>
 
@@ -156,12 +224,12 @@ export default function SchoolUniformSponsorPage() {
                             initial={{ opacity: 0, y: 24 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8"
+                            className="bg-white border border-[#e2ddd0] rounded-lg p-6 md:p-8 shadow-sm"
                         >
                             {!submitted ? (
                                 <>
-                                    <h2 className="text-3xl font-bold mb-2">Sponsor Registration</h2>
-                                    <p className="text-gray-400 mb-8">Register your details and use your full name as the payment reference.</p>
+                                    <h2 className="text-3xl font-bold mb-2 text-[#17211b]">Sponsor Registration</h2>
+                                    <p className="text-[#5e6b62] mb-8">Register your details and use your full name as the payment reference.</p>
 
                                     <form onSubmit={handleSubmit} className="space-y-5">
                                         <div className="grid md:grid-cols-2 gap-4">
@@ -178,37 +246,37 @@ export default function SchoolUniformSponsorPage() {
                                         </div>
                                         <div className="grid md:grid-cols-2 gap-4">
                                             <div>
-                                                <label className="block text-xs font-medium text-gray-400 mb-2">Sponsorship Type</label>
-                                                <select id="sponsorshipType" value={formData.sponsorshipType} onChange={handleChange} className="form-input-premium">
+                                                <label className="block text-xs font-semibold text-[#4f5d55] mb-2">Sponsorship Type</label>
+                                                <select id="sponsorshipType" value={formData.sponsorshipType} onChange={handleChange} className="w-full rounded-md border border-[#cfd8d1] bg-white px-4 py-3 text-sm text-[#17211b] outline-none transition-colors focus:border-[#22543d] focus:ring-2 focus:ring-[#22543d]/10">
                                                     {sponsorshipOptions.map(option => (
-                                                        <option key={option.value} value={option.value} className="bg-gray-900">{option.label}</option>
+                                                        <option key={option.value} value={option.value}>{option.label}</option>
                                                     ))}
                                                 </select>
                                             </div>
                                             <FormInput id="amount" label="Amount You Want To Give" type="number" min="0" value={formData.amount} onChange={handleChange} placeholder="550" />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-400 mb-2">Payment Method</label>
-                                            <select id="paymentMethod" value={formData.paymentMethod} onChange={handleChange} className="form-input-premium">
-                                                <option value="FNB EFT" className="bg-gray-900">FNB EFT</option>
-                                                <option value="Cash App" className="bg-gray-900">Cash App</option>
-                                                <option value="Will confirm with team" className="bg-gray-900">Will confirm with team</option>
+                                            <label className="block text-xs font-semibold text-[#4f5d55] mb-2">Payment Method</label>
+                                            <select id="paymentMethod" value={formData.paymentMethod} onChange={handleChange} className="w-full rounded-md border border-[#cfd8d1] bg-white px-4 py-3 text-sm text-[#17211b] outline-none transition-colors focus:border-[#22543d] focus:ring-2 focus:ring-[#22543d]/10">
+                                                <option value="FNB EFT">FNB EFT</option>
+                                                <option value="Cash App">Cash App</option>
+                                                <option value="Will confirm with team">Will confirm with team</option>
                                             </select>
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-400 mb-2">Notes</label>
+                                            <label className="block text-xs font-semibold text-[#4f5d55] mb-2">Notes</label>
                                             <textarea
                                                 id="notes"
                                                 value={formData.notes}
                                                 onChange={handleChange}
                                                 rows="4"
-                                                className="form-input-premium resize-none"
+                                                className="w-full resize-none rounded-md border border-[#cfd8d1] bg-white px-4 py-3 text-sm text-[#17211b] outline-none transition-colors focus:border-[#22543d] focus:ring-2 focus:ring-[#22543d]/10"
                                                 placeholder="Tell us if you want to sponsor a specific learner, school, grade, or item."
                                             />
                                         </div>
 
                                         {submitError && (
-                                            <div className="bg-red-500/10 border border-red-500/20 text-red-300 px-4 py-3 rounded-xl text-sm">
+                                            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
                                                 {submitError}
                                             </div>
                                         )}
@@ -216,31 +284,31 @@ export default function SchoolUniformSponsorPage() {
                                         <button
                                             type="submit"
                                             disabled={isSubmitting}
-                                            className="w-full py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                            className="w-full py-4 rounded-md bg-[#22543d] hover:bg-[#1a4431] text-white font-bold transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                                         >
-                                            {isSubmitting ? 'Submitting...' : 'Submit Sponsor Registration'}
+                                            {isSubmitting ? 'Submitting...' : 'Submit Sponsorship Details'}
                                             {!isSubmitting && <Check size={18} />}
                                         </button>
                                     </form>
                                 </>
                             ) : (
                                 <div className="text-center py-14">
-                                    <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20">
-                                        <Check size={40} className="text-emerald-400" />
+                                    <div className="w-20 h-20 bg-[#e3efe6] rounded-full flex items-center justify-center mx-auto mb-6 border border-[#c7dccd]">
+                                        <Check size={40} className="text-[#22543d]" />
                                     </div>
-                                    <h2 className="text-3xl font-bold mb-3">Registration Received</h2>
-                                    <p className="text-gray-400 max-w-md mx-auto mb-8">
+                                    <h2 className="text-3xl font-bold mb-3 text-[#17211b]">Registration Received</h2>
+                                    <p className="text-[#5e6b62] max-w-md mx-auto mb-8">
                                         Thank you for supporting the School Uniform Sponsorship Programme. Please complete payment using the reference below.
                                     </p>
-                                    <div className="bg-white/5 border border-white/10 rounded-2xl px-5 py-4 inline-flex items-center gap-4">
-                                        <span className="text-gray-400 text-sm">Reference</span>
-                                        <strong className="text-emerald-300">{reference}</strong>
+                                    <div className="bg-[#f7f4ed] border border-[#e2ddd0] rounded-md px-5 py-4 inline-flex items-center gap-4">
+                                        <span className="text-[#657067] text-sm">Reference</span>
+                                        <strong className="text-[#22543d]">{reference}</strong>
                                     </div>
                                 </div>
                             )}
                         </motion.div>
 
-                        <aside className="space-y-6">
+                        <aside id="payment" className="space-y-6">
                             <PaymentCard title="FNB Business EFT" icon={Wallet}>
                                 <PaymentRow label="Bank" value="First National Bank (FNB)" />
                                 <PaymentRow label="Account Number" value="63070529377" copyLabel="account" onCopy={copyToClipboard} copied={copySuccess} />
@@ -255,28 +323,29 @@ export default function SchoolUniformSponsorPage() {
                                     href="https://cash.app/$HarvestFeeds"
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="mt-4 w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-green-600 hover:bg-green-500 text-white font-bold transition-all"
+                                    className="mt-4 w-full inline-flex items-center justify-center gap-2 py-3 rounded-md bg-[#22543d] hover:bg-[#1a4431] text-white font-bold transition-colors"
                                 >
                                     Open Cash App
                                     <CreditCard size={16} />
                                 </a>
                             </PaymentCard>
 
-                            <div className="bg-white/5 border border-white/10 rounded-3xl p-6">
-                                <h3 className="text-white font-bold mb-4">Send Proof Of Payment</h3>
+                            <div className="bg-white border border-[#e2ddd0] rounded-lg p-6 shadow-sm">
+                                <h3 className="text-[#17211b] font-bold mb-2">Send Proof Of Payment</h3>
+                                <p className="text-sm text-[#657067] mb-4">Use WhatsApp or email after your EFT or Cash App payment is complete.</p>
                                 <div className="space-y-3">
                                     <a
                                         href={`https://wa.me/27786511959?text=${proofMessage}`}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-all"
+                                        className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-md bg-[#22543d] hover:bg-[#1a4431] text-white font-bold transition-colors"
                                     >
                                         <MessageCircle size={18} />
                                         WhatsApp Proof
                                     </a>
                                     <a
                                         href={`mailto:admin@thewealth-mindset.com?subject=${encodeURIComponent(reference)}`}
-                                        className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold transition-all"
+                                        className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-md border border-[#b9c8bd] text-[#26332b] hover:bg-[#f7f4ed] font-bold transition-colors"
                                     >
                                         <Mail size={18} />
                                         Email Proof
@@ -294,7 +363,7 @@ export default function SchoolUniformSponsorPage() {
 function FormInput({ id, label, value, onChange, type = 'text', required = false, placeholder = '', min }) {
     return (
         <div>
-            <label className="block text-xs font-medium text-gray-400 mb-2">{label}</label>
+            <label className="block text-xs font-semibold text-[#4f5d55] mb-2">{label}</label>
             <input
                 id={id}
                 type={type}
@@ -303,7 +372,7 @@ function FormInput({ id, label, value, onChange, type = 'text', required = false
                 value={value}
                 onChange={onChange}
                 placeholder={placeholder}
-                className="form-input-premium"
+                className="w-full rounded-md border border-[#cfd8d1] bg-white px-4 py-3 text-sm text-[#17211b] outline-none transition-colors focus:border-[#22543d] focus:ring-2 focus:ring-[#22543d]/10"
             />
         </div>
     );
@@ -311,9 +380,9 @@ function FormInput({ id, label, value, onChange, type = 'text', required = false
 
 function PaymentCard({ title, icon: Icon, children }) {
     return (
-        <div className="bg-white/5 border border-white/10 rounded-3xl p-6">
-            <h3 className="flex items-center gap-2 text-white font-bold mb-5">
-                <Icon size={18} className="text-emerald-300" />
+        <div className="bg-white border border-[#e2ddd0] rounded-lg p-6 shadow-sm">
+            <h3 className="flex items-center gap-2 text-[#17211b] font-bold mb-5">
+                <Icon size={18} className="text-[#22543d]" />
                 {title}
             </h3>
             <div className="space-y-3">
@@ -325,19 +394,19 @@ function PaymentCard({ title, icon: Icon, children }) {
 
 function PaymentRow({ label, value, copyLabel, onCopy, copied }) {
     return (
-        <div className="flex items-center justify-between gap-4 rounded-xl bg-white/5 border border-white/5 px-4 py-3">
+        <div className="flex items-center justify-between gap-4 rounded-md bg-[#f7f4ed] border border-[#e2ddd0] px-4 py-3">
             <div className="min-w-0">
-                <p className="text-xs text-gray-500 uppercase font-bold tracking-wider">{label}</p>
-                <p className="text-white font-semibold break-words">{value}</p>
+                <p className="text-xs text-[#6f7a72] uppercase font-bold tracking-wider">{label}</p>
+                <p className="text-[#17211b] font-semibold break-words">{value}</p>
             </div>
             {copyLabel && (
                 <button
                     type="button"
                     onClick={() => onCopy(copyLabel, value)}
-                    className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors flex-shrink-0"
+                    className="p-2 rounded-md text-[#657067] hover:text-[#17211b] hover:bg-white transition-colors flex-shrink-0"
                     title={`Copy ${label}`}
                 >
-                    {copied === copyLabel ? <Check size={18} className="text-emerald-400" /> : <Copy size={18} />}
+                    {copied === copyLabel ? <Check size={18} className="text-[#22543d]" /> : <Copy size={18} />}
                 </button>
             )}
         </div>
