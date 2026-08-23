@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: DynamoDB tables for The Wealth Mindset lead capture, events CMS, and event registrations.
+Description: DynamoDB tables for The Wealth Mindset lead capture, course leads, chat history, events CMS, and event registrations.
 
 Parameters:
   LeadsTableName:
@@ -11,10 +11,18 @@ Parameters:
   EventsTableName:
     Type: String
     Default: wealth_mindset_events
+  CourseLeadsTableName:
+    Type: String
+    Default: wealth_mindset_course_leads
+  ChatHistoryTableName:
+    Type: String
+    Default: wealth_mindset_chat_history
 
 Resources:
   LeadsTable:
     Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Properties:
       TableName: !Ref LeadsTableName
       BillingMode: PAY_PER_REQUEST
@@ -28,9 +36,16 @@ Resources:
         SSEEnabled: true
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Project
+          Value: wealth-mindset
+        - Key: DataClass
+          Value: lead-capture
 
   EventRegistrationsTable:
     Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Properties:
       TableName: !Ref RegistrationsTableName
       BillingMode: PAY_PER_REQUEST
@@ -44,9 +59,16 @@ Resources:
         SSEEnabled: true
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Project
+          Value: wealth-mindset
+        - Key: DataClass
+          Value: event-registration
 
   EventsTable:
     Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Properties:
       TableName: !Ref EventsTableName
       BillingMode: PAY_PER_REQUEST
@@ -60,14 +82,115 @@ Resources:
         SSEEnabled: true
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Project
+          Value: wealth-mindset
+        - Key: DataClass
+          Value: cms-events
+
+  CourseLeadsTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      TableName: !Ref CourseLeadsTableName
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: source
+          AttributeType: S
+        - AttributeName: created_at
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: source-created_at-index
+          KeySchema:
+            - AttributeName: source
+              KeyType: HASH
+            - AttributeName: created_at
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      SSESpecification:
+        SSEEnabled: true
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Project
+          Value: wealth-mindset
+        - Key: DataClass
+          Value: course-leads
+
+  ChatHistoryTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      TableName: !Ref ChatHistoryTableName
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: session_id
+          AttributeType: S
+        - AttributeName: created_at
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: session_id-created_at-index
+          KeySchema:
+            - AttributeName: session_id
+              KeyType: HASH
+            - AttributeName: created_at
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      SSESpecification:
+        SSEEnabled: true
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      TimeToLiveSpecification:
+        AttributeName: expires_at
+        Enabled: true
+      Tags:
+        - Key: Project
+          Value: wealth-mindset
+        - Key: DataClass
+          Value: chat-history
 
 Outputs:
   LeadsTableName:
     Description: DynamoDB table for general website leads.
     Value: !Ref LeadsTable
+  LeadsTableArn:
+    Description: ARN for the general website leads table.
+    Value: !GetAtt LeadsTable.Arn
   EventRegistrationsTableName:
     Description: DynamoDB table for event registrations.
     Value: !Ref EventRegistrationsTable
+  EventRegistrationsTableArn:
+    Description: ARN for the event registrations table.
+    Value: !GetAtt EventRegistrationsTable.Arn
   EventsTableName:
     Description: DynamoDB table for CMS-managed events.
     Value: !Ref EventsTable
+  EventsTableArn:
+    Description: ARN for the CMS-managed events table.
+    Value: !GetAtt EventsTable.Arn
+  CourseLeadsTableName:
+    Description: DynamoDB table for course interest leads.
+    Value: !Ref CourseLeadsTable
+  CourseLeadsTableArn:
+    Description: ARN for the course interest leads table.
+    Value: !GetAtt CourseLeadsTable.Arn
+  ChatHistoryTableName:
+    Description: DynamoDB table for chatbot conversation history.
+    Value: !Ref ChatHistoryTable
+  ChatHistoryTableArn:
+    Description: ARN for the chatbot conversation history table.
+    Value: !GetAtt ChatHistoryTable.Arn

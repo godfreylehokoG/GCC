@@ -1,5 +1,5 @@
 import { timingSafeEqual } from 'crypto';
-import { listEventRegistrations, listLeads } from './_lib/dynamodb.js';
+import { listChatHistory, listCourseLeads, listEventRegistrations, listLeads } from './_lib/dynamodb.js';
 import { sendApiError } from './_lib/http-errors.js';
 
 const adminPassword = process.env.ADMIN_PASSWORD || process.env.VITE_ADMIN_PASSWORD;
@@ -34,12 +34,20 @@ export default async function handler(req, res) {
     }
 
     try {
-        const [leads, registrations] = await Promise.all([
+        const [leads, registrations, courseLeads, chatHistory] = await Promise.all([
             listLeads(),
-            listEventRegistrations()
+            listEventRegistrations(),
+            listCourseLeads().catch(error => {
+                console.warn('Course leads unavailable:', error.message);
+                return [];
+            }),
+            listChatHistory().catch(error => {
+                console.warn('Chat history unavailable:', error.message);
+                return [];
+            })
         ]);
 
-        return res.status(200).json({ leads, registrations });
+        return res.status(200).json({ leads, registrations, courseLeads, chatHistory });
     } catch (error) {
         console.error('--- ADMIN DATA ERROR ---');
         console.error(error);

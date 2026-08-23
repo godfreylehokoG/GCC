@@ -6,6 +6,8 @@ const region = process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION;
 const leadsTableName = process.env.AWS_DYNAMODB_LEADS_TABLE;
 const registrationsTableName = process.env.AWS_DYNAMODB_REGISTRATIONS_TABLE;
 const eventsTableName = process.env.AWS_DYNAMODB_EVENTS_TABLE;
+const courseLeadsTableName = process.env.AWS_DYNAMODB_COURSE_LEADS_TABLE;
+const chatHistoryTableName = process.env.AWS_DYNAMODB_CHAT_HISTORY_TABLE;
 
 const dynamoClient = region ? new DynamoDBClient({ region }) : null;
 const documentClient = dynamoClient
@@ -83,12 +85,54 @@ export async function saveEventRegistration(registrationData) {
     return item;
 }
 
+export async function saveCourseLead(courseLeadData) {
+    assertConfigured(courseLeadsTableName);
+
+    const item = {
+        id: randomUUID(),
+        created_at: new Date().toISOString(),
+        ...courseLeadData
+    };
+
+    await documentClient.send(new PutCommand({
+        TableName: courseLeadsTableName,
+        Item: item
+    }));
+
+    return item;
+}
+
+export async function saveChatExchange(chatData) {
+    assertConfigured(chatHistoryTableName);
+
+    const item = {
+        id: randomUUID(),
+        created_at: new Date().toISOString(),
+        ...chatData
+    };
+
+    await documentClient.send(new PutCommand({
+        TableName: chatHistoryTableName,
+        Item: item
+    }));
+
+    return item;
+}
+
 export function listLeads() {
     return scanTable(leadsTableName);
 }
 
 export function listEventRegistrations() {
     return scanTable(registrationsTableName);
+}
+
+export function listCourseLeads() {
+    return scanTable(courseLeadsTableName);
+}
+
+export function listChatHistory() {
+    return scanTable(chatHistoryTableName);
 }
 
 export async function saveCmsEvent(eventData) {

@@ -4,8 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "npx vite build",
+    "dev": "vite --host 127.0.0.1",
+    "dev:vercel": "npx vercel dev --listen 127.0.0.1:5173",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },

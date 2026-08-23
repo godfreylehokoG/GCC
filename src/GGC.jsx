@@ -30,6 +30,20 @@ import AboutUs from './components/AboutUs';
 // Import data
 import siteData from './data.json';
 
+async function parseApiResponse(response, fallbackMessage) {
+  const responseText = await response.text();
+
+  if (!responseText) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(responseText);
+  } catch {
+    throw new Error(fallbackMessage);
+  }
+}
+
 export default function GGC() {
   const [events, setEvents] = useState(siteData.events);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -39,6 +53,21 @@ export default function GGC() {
     { role: 'ai', text: 'Hello! I am your Wealth Mindset Assistant. How can I help you today regarding our 12-week curriculum or the upcoming South African tour?' }
   ]);
   const [chatInput, setChatInput] = useState('');
+  const [chatLoading, setChatLoading] = useState(false);
+  const [chatError, setChatError] = useState('');
+  const [chatSessionId, setChatSessionId] = useState('');
+  const [courseLeadFormOpen, setCourseLeadFormOpen] = useState(false);
+  const [courseLeadLoading, setCourseLeadLoading] = useState(false);
+  const [courseLeadSubmitted, setCourseLeadSubmitted] = useState(false);
+  const [courseLeadError, setCourseLeadError] = useState('');
+  const [courseLeadData, setCourseLeadData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    courseInterest: 'wealth-mindset-academy',
+    notes: ''
+  });
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
   const [formError, setFormError] = useState('');
@@ -60,6 +89,18 @@ export default function GGC() {
   }, []);
 
   useEffect(() => {
+    const existingSessionId = localStorage.getItem('ggc_chat_session_id');
+    if (existingSessionId) {
+      setChatSessionId(existingSessionId);
+      return;
+    }
+
+    const nextSessionId = window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    localStorage.setItem('ggc_chat_session_id', nextSessionId);
+    setChatSessionId(nextSessionId);
+  }, []);
+
+  useEffect(() => {
     let isMounted = true;
 
     fetch('/api/events')
@@ -78,17 +119,105 @@ export default function GGC() {
     };
   }, []);
 
-  const handleSendChat = () => {
-    if (!chatInput.trim()) return;
-    setMessages([...messages, { role: 'user', text: chatInput }]);
-    setChatInput('');
+  const handleSendChat = async () => {
+    const nextMessage = chatInput.trim();
+    if (!nextMessage || chatLoading) return;
 
-    setTimeout(() => {
+    const nextMessages = [...messages, { role: 'user', text: nextMessage }];
+    setMessages(nextMessages);
+    setChatInput('');
+    setChatLoading(true);
+    setChatError('');
+
+    try {
+      const response = await fetch('/api/ai-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: nextMessage,
+          sessionId: chatSessionId,
+          history: nextMessages.slice(-8).map(message => ({
+            role: message.role === 'ai' ? 'assistant' : 'user',
+            content: message.text
+          }))
+        }),
+      });
+
+      const result = await parseApiResponse(
+        response,
+        'The local API did not return JSON. Use npm run dev:vercel to test chatbot APIs locally.'
+      );
+
+      if (!response.ok) {
+        throw new Error(result.error || 'The assistant is unavailable right now.');
+      }
+
       setMessages(prev => [...prev, {
         role: 'ai',
-        text: "That sounds like a great interest! At Wealth Mindset, we believe education comes before action. Would you like to know more about our next live Zoom masterclass or our legacy outreach projects in the villages?"
+        text: result.response || 'I am here to help with Wealth Mindset events, training, and educational resources.'
       }]);
-    }, 1000);
+
+      if (result.suggestedAction?.type === 'open_course_lead_form') {
+        setCourseLeadFormOpen(true);
+        setCourseLeadSubmitted(false);
+      }
+    } catch (error) {
+      console.error('Chat error:', error);
+      setChatError(error.message || 'The assistant is unavailable right now.');
+      setMessages(prev => [...prev, {
+        role: 'ai',
+        text: 'I am having trouble connecting right now. Please try again in a moment.'
+      }]);
+    } finally {
+      setChatLoading(false);
+    }
+  };
+
+  const handleCourseLeadChange = (e) => {
+    const { id, value } = e.target;
+    setCourseLeadData(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleCourseLeadSubmit = async (e) => {
+    e.preventDefault();
+    setCourseLeadLoading(true);
+    setCourseLeadError('');
+
+    try {
+      const response = await fetch('/api/course-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(courseLeadData),
+      });
+
+      const result = await parseApiResponse(
+        response,
+        'The local API did not return JSON. Use npm run dev:vercel to test course registration locally.'
+      );
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Unable to register your course interest.');
+      }
+
+      setCourseLeadSubmitted(true);
+      setCourseLeadData({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        courseInterest: 'wealth-mindset-academy',
+        notes: ''
+      });
+      setMessages(prev => [...prev, {
+        role: 'ai',
+        text: 'Thank you. Your course interest has been registered, and the team will notify you when the courses go live.'
+      }]);
+    } catch (error) {
+      console.error('Course lead form error:', error);
+      setCourseLeadError(error.message || 'Unable to register your course interest.');
+    } finally {
+      setCourseLeadLoading(false);
+    }
   };
 
   const acceptCookies = () => {
@@ -395,6 +524,112 @@ export default function GGC() {
                     </div>
                   </div>
                 ))}
+                {chatLoading && (
+                  <div className="flex justify-start">
+                    <div className="max-w-[80%] p-3 rounded-2xl text-sm bg-white/10 text-gray-400">
+                      Thinking...
+                    </div>
+                  </div>
+                )}
+                {chatError && (
+                  <p className="text-xs text-red-300 px-1">
+                    {chatError}
+                  </p>
+                )}
+                {courseLeadFormOpen && (
+                  <div className="bg-white/5 border border-indigo-400/30 rounded-2xl p-4 space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h4 className="text-sm font-bold text-white">Course Updates</h4>
+                        <p className="text-xs text-gray-400">Get notified when the academy courses go live.</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setCourseLeadFormOpen(false)}
+                        className="text-white/50 hover:text-white"
+                        aria-label="Close course registration form"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+
+                    {courseLeadSubmitted ? (
+                      <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 px-3 py-2 text-xs text-emerald-200">
+                        You are registered for course updates.
+                      </div>
+                    ) : (
+                      <form onSubmit={handleCourseLeadSubmit} className="space-y-3">
+                        <div className="grid grid-cols-2 gap-2">
+                          <input
+                            id="firstName"
+                            type="text"
+                            required
+                            value={courseLeadData.firstName}
+                            onChange={handleCourseLeadChange}
+                            placeholder="First name"
+                            className="min-w-0 bg-black/20 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                          />
+                          <input
+                            id="lastName"
+                            type="text"
+                            required
+                            value={courseLeadData.lastName}
+                            onChange={handleCourseLeadChange}
+                            placeholder="Last name"
+                            className="min-w-0 bg-black/20 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                          />
+                        </div>
+                        <input
+                          id="email"
+                          type="email"
+                          required
+                          value={courseLeadData.email}
+                          onChange={handleCourseLeadChange}
+                          placeholder="Email"
+                          className="w-full bg-black/20 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                        />
+                        <input
+                          id="phone"
+                          type="tel"
+                          required
+                          value={courseLeadData.phone}
+                          onChange={handleCourseLeadChange}
+                          placeholder="Phone"
+                          className="w-full bg-black/20 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                        />
+                        <select
+                          id="courseInterest"
+                          value={courseLeadData.courseInterest}
+                          onChange={handleCourseLeadChange}
+                          className="w-full bg-black/20 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                        >
+                          <option value="wealth-mindset-academy" className="bg-slate-900">Wealth Mindset Academy</option>
+                          <option value="12-week-roadmap" className="bg-slate-900">12-Week Roadmap</option>
+                          <option value="live-zoom-trainings" className="bg-slate-900">Live Zoom Trainings</option>
+                          <option value="recorded-masterclasses" className="bg-slate-900">Recorded Masterclasses</option>
+                        </select>
+                        <textarea
+                          id="notes"
+                          value={courseLeadData.notes}
+                          onChange={handleCourseLeadChange}
+                          placeholder="What would you like to learn?"
+                          rows={2}
+                          className="w-full resize-none bg-black/20 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                        />
+                        {courseLeadError && (
+                          <p className="text-xs text-red-300">{courseLeadError}</p>
+                        )}
+                        <button
+                          type="submit"
+                          disabled={courseLeadLoading}
+                          className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl px-3 py-2 text-xs font-bold transition-colors"
+                        >
+                          {courseLeadLoading ? 'Registering...' : 'Register for Updates'}
+                        </button>
+                      </form>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="p-4 border-t border-white/10 flex space-x-2">
@@ -404,9 +639,14 @@ export default function GGC() {
                   onChange={(e) => setChatInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSendChat()}
                   placeholder="Ask about GGC..."
+                  disabled={chatLoading}
                   className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
                 />
-                <button onClick={handleSendChat} className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center text-white">
+                <button
+                  onClick={handleSendChat}
+                  disabled={chatLoading || !chatInput.trim()}
+                  className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   <Send size={18} />
                 </button>
               </div>
