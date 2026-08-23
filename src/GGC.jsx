@@ -154,7 +154,8 @@ export default function GGC() {
 
       setMessages(prev => [...prev, {
         role: 'ai',
-        text: result.response || 'I am here to help with Wealth Mindset events, training, and educational resources.'
+        text: result.response || 'I am here to help with Wealth Mindset events, training, and educational resources.',
+        provider: result.provider
       }]);
 
       if (result.suggestedAction?.type === 'open_course_lead_form') {
@@ -509,7 +510,7 @@ export default function GGC() {
               <div className="p-4 bg-gradient-to-r from-indigo-500 to-purple-500 flex justify-between items-center">
                 <div className="flex items-center space-x-2">
                   <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center font-bold text-indigo-400">AI</div>
-                  <span className="text-white font-bold">GGC Assistant</span>
+                  <span className="text-white font-bold">TWM Assistant</span>
                 </div>
                 <button onClick={() => setIsChatOpen(false)} className="text-white/70 hover:text-white">
                   <X size={20} />
@@ -521,6 +522,11 @@ export default function GGC() {
                   <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${msg.role === 'user' ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white' : 'bg-white/10 text-gray-200'}`}>
                       {msg.text}
+                      {msg.role === 'ai' && msg.provider && (
+                        <div className="mt-2 text-[10px] uppercase tracking-wider text-white/40">
+                          {msg.provider === 'aws-bedrock-nova' ? 'v2.8' : 'v2.7'}
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -638,7 +644,7 @@ export default function GGC() {
                   value={chatInput}
                   onChange={(e) => setChatInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSendChat()}
-                  placeholder="Ask about GGC..."
+                  placeholder="Ask about TWM..."
                   disabled={chatLoading}
                   className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-indigo-500"
                 />
