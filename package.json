@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.1116.0",
     "@aws-sdk/client-dynamodb": "^3.1101.0",
     "@aws-sdk/lib-dynamodb": "^3.1101.0",
     "@vercel/analytics": "^1.6.1",

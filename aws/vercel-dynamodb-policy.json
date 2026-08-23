@@ -19,6 +19,17 @@
         "arn:aws:dynamodb:eu-north-1:YOUR_ACCOUNT_ID:table/wealth_mindset_course_leads/index/*",
         "arn:aws:dynamodb:eu-north-1:YOUR_ACCOUNT_ID:table/wealth_mindset_chat_history/index/*"
       ]
+    },
+    {
+      "Sid": "InvokeBedrockNova",
+      "Effect": "Allow",
+      "Action": [
+        "bedrock:InvokeModel"
+      ],
+      "Resource": [
+        "arn:aws:bedrock:eu-north-1::foundation-model/amazon.nova-lite-v1:0",
+        "arn:aws:bedrock:eu-north-1:YOUR_ACCOUNT_ID:inference-profile/*"
+      ]
     }
   ]
 }

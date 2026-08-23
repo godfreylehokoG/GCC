@@ -2,6 +2,7 @@
 // This endpoint handles AI chat interactions for The Wealth Mindset assistant.
 import { isCourseQuestion, retrieveSiteContext } from './_lib/site-context.js';
 import { saveChatExchange } from './_lib/dynamodb.js';
+import { generateNovaResponse } from './_lib/bedrock.js';
 
 // Wealth Mindset knowledge base (embedded for MVP - Phase 2 will use RAG)
 const WEALTH_MINDSET_KNOWLEDGE = `
@@ -18,6 +19,7 @@ WHAT THE WEALTH MINDSET OFFERS:
 - Wealth psychology and disciplined habits
 - Community seminars and events
 - Legacy-building and leadership development
+- For more communication, direct people to admin@thewealth-mindset.com
 
 DISCLAIMER:
 The Wealth Mindset does not provide financial advice. All information is for educational purposes only.
@@ -56,11 +58,14 @@ export default async function handler(req, res) {
         const courseQuestion = isCourseQuestion(cleanMessage);
         let suggestedAction = null;
 
-        let response = generateMVPResponse(cleanMessage.toLowerCase(), {
+        const fallbackResponse = generateMVPResponse(cleanMessage.toLowerCase(), {
             conversationHistory,
             retrievedContext,
             courseQuestion
         });
+
+        let response = fallbackResponse;
+        let aiProvider = 'mvp-fallback';
 
         if (courseQuestion) {
             suggestedAction = {
@@ -69,21 +74,25 @@ export default async function handler(req, res) {
             };
         }
 
-        // TODO: Phase 2 - OpenAI Integration
-        // const completion = await openai.chat.completions.create({
-        //   model: 'gpt-4',
-        //   messages: [
-        //     { role: 'system', content: `You are The Wealth Mindset assistant. Use this knowledge: ${WEALTH_MINDSET_KNOWLEDGE}. Never give financial advice.` },
-        //     ...conversationHistory,
-        //     { role: 'user', content: message }
-        //   ]
-        // });
-        // response = completion.choices[0].message.content;
+        try {
+            const bedrockResult = await generateNovaResponse({
+                message: cleanMessage,
+                history: conversationHistory,
+                retrievedContext,
+                fallbackResponse
+            });
+
+            response = bedrockResult.response;
+            aiProvider = bedrockResult.provider;
+        } catch (error) {
+            console.error('Bedrock Nova response failed, using fallback:', error);
+        }
 
         const payload = {
             success: true,
             response,
             suggestedAction,
+            provider: aiProvider,
             sources: retrievedContext.map(item => ({
                 type: item.type,
                 title: item.title
@@ -97,6 +106,7 @@ export default async function handler(req, res) {
             assistant_response: response,
             sources: payload.sources,
             suggested_action: suggestedAction?.type || null,
+            ai_provider: aiProvider,
             expires_at: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 180),
             source: 'website_chatbot'
         }).catch(error => {
@@ -138,11 +148,15 @@ function generateMVPResponse(message, context = {}) {
         return "Great! You can register your interest using the form on our website, or register for a specific event in the Events section. We'll send you updates about the tour and exclusive content.";
     }
 
+    if (message.includes('contact') || message.includes('email') || message.includes('admin') || message.includes('help') || message.includes('support')) {
+        return "For more communication, please contact the team at admin@thewealth-mindset.com. I can also help with general questions about our courses, events, trainings, and educational resources.";
+    }
+
     if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
         return "Hello! Welcome to The Wealth Mindset. I'm here to help you learn about our trainings, events, and educational resources. What would you like to know?";
     }
 
-    return "That's a great question! I'm The Wealth Mindset assistant and I can help you learn about our educational resources, upcoming seminars, trainings, and legacy-building approach. What specific aspect would you like to explore?";
+    return "That's a great question! I'm The Wealth Mindset assistant and I can help you learn about our educational resources, upcoming seminars, trainings, and legacy-building approach. For more communication, you can also contact admin@thewealth-mindset.com.";
 }
 
 function generateCourseResponse(retrievedContext) {
@@ -151,12 +165,12 @@ function generateCourseResponse(retrievedContext) {
         .slice(0, 4);
 
     if (courseItems.length === 0) {
-        return "The Wealth Mindset Academy courses will go live soon. You can register your interest now and our team will notify you when enrollment opens. The academy focuses on financial literacy, disciplined habits, wealth psychology, asset awareness, and legacy-building.";
+        return "The Wealth Mindset Academy courses will go live soon. You can register your interest now and our team will notify you when enrollment opens. The academy focuses on financial literacy, disciplined habits, wealth psychology, asset awareness, and legacy-building. For more communication, contact admin@thewealth-mindset.com.";
     }
 
     const contextSummary = courseItems
         .map(item => `- ${item.title}: ${item.text}`)
         .join('\n');
 
-    return `The Wealth Mindset Academy courses will go live soon, and you can register your interest now so the team can notify you when enrollment opens.\n\nBased on the current course material, the academy includes:\n${contextSummary}\n\nThe program is educational only and does not provide financial advice. Would you like to register for course updates?`;
+    return `The Wealth Mindset Academy courses will go live soon, and you can register your interest now so the team can notify you when enrollment opens.\n\nBased on the current course material, the academy includes:\n${contextSummary}\n\nThe program is educational only and does not provide financial advice. Would you like to register for course updates? For more communication, contact admin@thewealth-mindset.com.`;
 }
