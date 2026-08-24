@@ -12,6 +12,15 @@ export function isBedrockEnabled() {
     return Boolean(client);
 }
 
+export function getBedrockStatus() {
+    return {
+        enabled: bedrockEnabled,
+        clientReady: Boolean(client),
+        region: region || null,
+        modelId
+    };
+}
+
 export async function generateNovaResponse({
     message,
     history = [],

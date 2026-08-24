@@ -533,6 +533,11 @@ export default function GGC() {
                           {msg.debug.aiError.name}: {msg.debug.aiError.message}
                         </div>
                       )}
+                      {msg.role === 'ai' && msg.debug?.bedrockStatus && !msg.debug?.aiError && msg.provider !== 'aws-bedrock-nova' && (
+                        <div className="mt-2 rounded-lg bg-amber-500/10 border border-amber-500/20 px-2 py-1 text-[10px] text-amber-100">
+                          Bedrock enabled: {String(msg.debug.bedrockStatus.enabled)}; client ready: {String(msg.debug.bedrockStatus.clientReady)}; model: {msg.debug.bedrockStatus.modelId || 'unset'}
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}

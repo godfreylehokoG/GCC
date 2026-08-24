@@ -2,7 +2,7 @@
 // This endpoint handles AI chat interactions for The Wealth Mindset assistant.
 import { isCourseQuestion, retrieveSiteContext } from './_lib/site-context.js';
 import { saveChatExchange } from './_lib/dynamodb.js';
-import { generateNovaResponse } from './_lib/bedrock.js';
+import { generateNovaResponse, getBedrockStatus } from './_lib/bedrock.js';
 
 // Wealth Mindset knowledge base (embedded for MVP - Phase 2 will use RAG)
 const WEALTH_MINDSET_KNOWLEDGE = `
@@ -67,6 +67,7 @@ export default async function handler(req, res) {
         let response = fallbackResponse;
         let aiProvider = 'mvp-fallback';
         let aiError = null;
+        const bedrockStatus = getBedrockStatus();
 
         if (courseQuestion) {
             suggestedAction = {
@@ -98,7 +99,7 @@ export default async function handler(req, res) {
             response,
             suggestedAction,
             provider: aiProvider,
-            debug: process.env.AI_DEBUG === 'true' ? { aiError } : undefined,
+            debug: process.env.AI_DEBUG === 'true' ? { aiError, bedrockStatus } : undefined,
             sources: retrievedContext.map(item => ({
                 type: item.type,
                 title: item.title
