@@ -155,7 +155,8 @@ export default function GGC() {
       setMessages(prev => [...prev, {
         role: 'ai',
         text: result.response || 'I am here to help with Wealth Mindset events, training, and educational resources.',
-        provider: result.provider
+        provider: result.provider,
+        debug: result.debug
       }]);
 
       if (result.suggestedAction?.type === 'open_course_lead_form') {
@@ -525,6 +526,11 @@ export default function GGC() {
                       {msg.role === 'ai' && msg.provider && (
                         <div className="mt-2 text-[10px] uppercase tracking-wider text-white/40">
                           {msg.provider === 'aws-bedrock-nova' ? 'v2.8' : 'v2.7'}
+                        </div>
+                      )}
+                      {msg.role === 'ai' && msg.debug?.aiError && (
+                        <div className="mt-2 rounded-lg bg-red-500/10 border border-red-500/20 px-2 py-1 text-[10px] text-red-200">
+                          {msg.debug.aiError.name}: {msg.debug.aiError.message}
                         </div>
                       )}
                     </div>
