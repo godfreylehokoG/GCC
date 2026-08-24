@@ -66,6 +66,7 @@ export default async function handler(req, res) {
 
         let response = fallbackResponse;
         let aiProvider = 'mvp-fallback';
+        let aiError = null;
 
         if (courseQuestion) {
             suggestedAction = {
@@ -85,6 +86,10 @@ export default async function handler(req, res) {
             response = bedrockResult.response;
             aiProvider = bedrockResult.provider;
         } catch (error) {
+            aiError = {
+                name: error.name || error.Code || error.code || 'BedrockError',
+                message: error.message || 'Bedrock Nova response failed.'
+            };
             console.error('Bedrock Nova response failed, using fallback:', error);
         }
 
@@ -93,6 +98,7 @@ export default async function handler(req, res) {
             response,
             suggestedAction,
             provider: aiProvider,
+            debug: process.env.AI_DEBUG === 'true' ? { aiError } : undefined,
             sources: retrievedContext.map(item => ({
                 type: item.type,
                 title: item.title
@@ -107,6 +113,7 @@ export default async function handler(req, res) {
             sources: payload.sources,
             suggested_action: suggestedAction?.type || null,
             ai_provider: aiProvider,
+            ai_error: aiError,
             expires_at: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 180),
             source: 'website_chatbot'
         }).catch(error => {
