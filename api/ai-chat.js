@@ -3,6 +3,7 @@
 import { classifyIntent, retrieveSiteContext } from './_lib/site-context.js';
 import { saveChatExchange } from './_lib/dynamodb.js';
 import { generateNovaResponse, getBedrockStatus } from './_lib/bedrock.js';
+import { applyOutputGuardrails, checkInputGuardrails } from './_lib/guardrails.js';
 
 // Wealth Mindset knowledge base (embedded for MVP - Phase 2 will use RAG)
 const WEALTH_MINDSET_KNOWLEDGE = `
@@ -59,6 +60,7 @@ export default async function handler(req, res) {
             intent,
             limit: intent === 'event_question' ? 8 : 5
         });
+        const inputGuardrail = checkInputGuardrails(cleanMessage);
         const courseQuestion = intent === 'course_question';
         let suggestedAction = null;
 
@@ -71,6 +73,9 @@ export default async function handler(req, res) {
         let response = fallbackResponse;
         let aiProvider = 'mvp-fallback';
         let aiError = null;
+        let guardrail = inputGuardrail.blocked
+            ? { phase: 'input', type: inputGuardrail.type }
+            : null;
         const bedrockStatus = getBedrockStatus();
 
         if (courseQuestion) {
@@ -80,23 +85,32 @@ export default async function handler(req, res) {
             };
         }
 
-        try {
-            const bedrockResult = await generateNovaResponse({
-                message: cleanMessage,
-                history: conversationHistory,
-                retrievedContext,
-                intent,
-                fallbackResponse
-            });
+        if (inputGuardrail.blocked) {
+            response = inputGuardrail.response;
+        } else {
+            try {
+                const bedrockResult = await generateNovaResponse({
+                    message: cleanMessage,
+                    history: conversationHistory,
+                    retrievedContext,
+                    intent,
+                    fallbackResponse
+                });
 
-            response = bedrockResult.response;
-            aiProvider = bedrockResult.provider;
-        } catch (error) {
-            aiError = {
-                name: error.name || error.Code || error.code || 'BedrockError',
-                message: error.message || 'Bedrock Nova response failed.'
-            };
-            console.error('Bedrock Nova response failed, using fallback:', error);
+                const outputGuardrail = applyOutputGuardrails(bedrockResult.response);
+                response = outputGuardrail.response;
+                aiProvider = bedrockResult.provider;
+                if (outputGuardrail.blocked) {
+                    aiProvider = 'guardrail';
+                    guardrail = { phase: 'output', type: outputGuardrail.type };
+                }
+            } catch (error) {
+                aiError = {
+                    name: error.name || error.Code || error.code || 'BedrockError',
+                    message: error.message || 'Bedrock Nova response failed.'
+                };
+                console.error('Bedrock Nova response failed, using fallback:', error);
+            }
         }
 
         const payload = {
@@ -105,6 +119,7 @@ export default async function handler(req, res) {
             suggestedAction,
             provider: aiProvider,
             intent,
+            guardrail,
             debug: process.env.AI_DEBUG === 'true' ? { aiError, bedrockStatus } : undefined,
             sources: retrievedContext.map(item => ({
                 type: item.type,
@@ -122,6 +137,7 @@ export default async function handler(req, res) {
             intent,
             ai_provider: aiProvider,
             ai_error: aiError,
+            guardrail,
             expires_at: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 180),
             source: 'website_chatbot'
         }).catch(error => {

@@ -3,7 +3,6 @@ import path from 'path';
 
 const dataPath = path.join(process.cwd(), 'src', 'data.json');
 const publicPath = path.join(process.cwd(), 'public');
-const TODAY = '2026-08-28';
 let cachedChunks;
 
 export async function getSiteContextChunks() {
@@ -273,11 +272,15 @@ function getAllowedTypesForIntent(intent) {
 }
 
 function isUpcomingEventChunk(chunk) {
-    return chunk.type !== 'event' || !chunk.date || chunk.date >= TODAY;
+    return chunk.type !== 'event' || !chunk.date || chunk.date >= getTodayIsoDate();
 }
 
 function containsAny(text, terms) {
     return terms.some(term => text.includes(term));
+}
+
+function getTodayIsoDate() {
+    return new Date().toISOString().slice(0, 10);
 }
 
 function tokenize(input) {

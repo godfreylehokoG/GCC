@@ -1,5 +1,9 @@
 # React + TypeScript + Vite
 
+## Project Notes
+
+- [TWM Assistant v2.8](docs/twm-assistant-v2.8.md) documents the current chatbot architecture, AWS Bedrock Nova setup, RAG context flow, DynamoDB tables, and guardrails.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

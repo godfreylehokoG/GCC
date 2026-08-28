@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  MessageSquare,
   X,
   Send,
   BarChart3,
@@ -518,9 +517,14 @@ export default function GGC() {
       <>
         <button
           onClick={() => setIsChatOpen(!isChatOpen)}
-          className="fixed bottom-8 right-8 z-50 w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(99,102,241,0.4)] hover:scale-110 transition-transform"
+          className="fixed bottom-8 right-8 z-50 w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(99,102,241,0.4)] hover:scale-110 transition-transform overflow-hidden"
+          aria-label="Open TWM Assistant"
         >
-          <MessageSquare size={24} className="text-white" />
+          <img
+            src="/WealthMindset-removebg.png"
+            alt="TWM Assistant"
+            className="h-12 w-12 object-contain"
+          />
         </button>
 
         <AnimatePresence>
@@ -533,7 +537,13 @@ export default function GGC() {
             >
               <div className="p-4 bg-gradient-to-r from-indigo-500 to-purple-500 flex justify-between items-center">
                 <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center font-bold text-indigo-400">AI</div>
+                  <div className="w-9 h-9 bg-black rounded-full flex items-center justify-center overflow-hidden">
+                    <img
+                      src="/WealthMindset-removebg.png"
+                      alt="TWM Assistant"
+                      className="h-8 w-8 object-contain"
+                    />
+                  </div>
                   <span className="text-white font-bold">TWM Assistant</span>
                 </div>
                 <button onClick={() => setIsChatOpen(false)} className="text-white/70 hover:text-white">
