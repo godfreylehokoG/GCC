@@ -3,6 +3,7 @@ import path from 'path';
 
 const dataPath = path.join(process.cwd(), 'src', 'data.json');
 const publicPath = path.join(process.cwd(), 'public');
+const TODAY = '2026-08-28';
 let cachedChunks;
 
 export async function getSiteContextChunks() {
@@ -26,19 +27,45 @@ export async function getSiteContextChunks() {
     return cachedChunks;
 }
 
-export async function retrieveSiteContext(question, limit = 5) {
+export async function retrieveSiteContext(question, options = {}) {
+    const { limit = 5, intent = classifyIntent(question) } = options;
     const chunks = await getSiteContextChunks();
     const terms = tokenize(question);
+    const allowedTypes = getAllowedTypesForIntent(intent);
 
     return chunks
+        .filter(chunk => allowedTypes ? allowedTypes.includes(chunk.type) : true)
+        .filter(chunk => intent !== 'event_question' || isUpcomingEventChunk(chunk))
         .map(chunk => ({ ...chunk, score: scoreChunk(chunk, terms) }))
-        .filter(chunk => chunk.score > 0)
+        .filter(chunk => chunk.score > 0 || intent === 'event_question' || intent === 'course_question')
         .sort((a, b) => b.score - a.score)
         .slice(0, limit);
 }
 
+export function classifyIntent(message) {
+    const normalized = String(message || '').toLowerCase();
+
+    if (containsAny(normalized, ['invest', 'investment', 'buy', 'sell', 'price prediction', 'profit', 'return on investment', 'roi'])) {
+        return 'investment_guardrail';
+    }
+
+    if (containsAny(normalized, ['contact', 'email', 'admin', 'support', 'help', 'speak to', 'talk to', 'communicate'])) {
+        return 'contact_question';
+    }
+
+    if (containsAny(normalized, ['event', 'events', 'seminar', 'seminars', 'tour', 'gala', 'coronation', 'upcoming', 'date', 'dates', 'venue', 'ticket'])) {
+        return 'event_question';
+    }
+
+    if (isCourseQuestion(normalized)) {
+        return 'course_question';
+    }
+
+    return 'general_question';
+}
+
 export function isCourseQuestion(message) {
-    const normalized = message.toLowerCase();
+    const normalized = String(message || '').toLowerCase();
     return [
         'course',
         'courses',
@@ -157,11 +184,27 @@ function buildBookChunks(book) {
 }
 
 function buildEventChunks(events) {
-    return events.map(event => ({
-        type: 'event',
-        title: event.title,
-        text: `Event: ${event.title}. City: ${event.city}. Date: ${event.displayDate || event.date || 'TBD'}. Venue: ${event.venue || 'TBD'}. ${event.description || ''}`
-    }));
+    return events
+        .slice()
+        .sort((a, b) => String(a.date || '').localeCompare(String(b.date || '')))
+        .map(event => ({
+            type: 'event',
+            title: event.title,
+            date: event.date || null,
+            text: [
+                `Event: ${event.title}.`,
+                `Type: ${event.type || 'event'}.`,
+                `City: ${event.city || 'TBD'}.`,
+                `Date: ${event.displayDate || event.date || 'TBD'}.`,
+                `Time: ${event.time || 'TBD'}.`,
+                `Venue: ${event.venue || 'TBD'}.`,
+                `Address: ${event.address || 'TBD'}.`,
+                `Status: ${event.status || 'open'}.`,
+                `Price: South Africa ${event.priceSA ?? 'TBD'}, International ${event.priceUS ?? 'TBD'}.`,
+                event.registrationRequired === false ? 'Registration is not required.' : 'Registration is required or available.',
+                event.description || ''
+            ].join(' ')
+        }));
 }
 
 async function buildPublicDocumentChunks() {
@@ -183,6 +226,29 @@ async function buildPublicDocumentChunks() {
 function scoreChunk(chunk, terms) {
     const searchable = `${chunk.title} ${chunk.text}`.toLowerCase();
     return terms.reduce((score, term) => score + (searchable.includes(term) ? term.length : 0), 0);
+}
+
+function getAllowedTypesForIntent(intent) {
+    switch (intent) {
+        case 'event_question':
+            return ['event'];
+        case 'course_question':
+            return ['course_week', 'lesson', 'training_schedule', 'training_session', 'training_upcoming', 'service'];
+        case 'contact_question':
+            return ['about', 'service', 'philosophy'];
+        case 'investment_guardrail':
+            return ['philosophy', 'philosophy_solution', 'about'];
+        default:
+            return null;
+    }
+}
+
+function isUpcomingEventChunk(chunk) {
+    return chunk.type !== 'event' || !chunk.date || chunk.date >= TODAY;
+}
+
+function containsAny(text, terms) {
+    return terms.some(term => text.includes(term));
 }
 
 function tokenize(input) {

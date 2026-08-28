@@ -1,6 +1,6 @@
 // Vercel Serverless Function - AI Chat
 // This endpoint handles AI chat interactions for The Wealth Mindset assistant.
-import { isCourseQuestion, retrieveSiteContext } from './_lib/site-context.js';
+import { classifyIntent, retrieveSiteContext } from './_lib/site-context.js';
 import { saveChatExchange } from './_lib/dynamodb.js';
 import { generateNovaResponse, getBedrockStatus } from './_lib/bedrock.js';
 
@@ -54,14 +54,18 @@ export default async function handler(req, res) {
             ))
             : [];
 
-        const retrievedContext = await retrieveSiteContext(cleanMessage);
-        const courseQuestion = isCourseQuestion(cleanMessage);
+        const intent = classifyIntent(cleanMessage);
+        const retrievedContext = await retrieveSiteContext(cleanMessage, {
+            intent,
+            limit: intent === 'event_question' ? 8 : 5
+        });
+        const courseQuestion = intent === 'course_question';
         let suggestedAction = null;
 
         const fallbackResponse = generateMVPResponse(cleanMessage.toLowerCase(), {
             conversationHistory,
             retrievedContext,
-            courseQuestion
+            intent
         });
 
         let response = fallbackResponse;
@@ -81,6 +85,7 @@ export default async function handler(req, res) {
                 message: cleanMessage,
                 history: conversationHistory,
                 retrievedContext,
+                intent,
                 fallbackResponse
             });
 
@@ -99,6 +104,7 @@ export default async function handler(req, res) {
             response,
             suggestedAction,
             provider: aiProvider,
+            intent,
             debug: process.env.AI_DEBUG === 'true' ? { aiError, bedrockStatus } : undefined,
             sources: retrievedContext.map(item => ({
                 type: item.type,
@@ -113,6 +119,7 @@ export default async function handler(req, res) {
             assistant_response: response,
             sources: payload.sources,
             suggested_action: suggestedAction?.type || null,
+            intent,
             ai_provider: aiProvider,
             ai_error: aiError,
             expires_at: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 180),
@@ -130,10 +137,22 @@ export default async function handler(req, res) {
 }
 
 function generateMVPResponse(message, context = {}) {
-    const { retrievedContext = [], courseQuestion = false } = context;
+    const { retrievedContext = [], intent = 'general_question' } = context;
 
-    if (courseQuestion) {
+    if (intent === 'course_question') {
         return generateCourseResponse(retrievedContext);
+    }
+
+    if (intent === 'event_question') {
+        return generateEventResponse(retrievedContext);
+    }
+
+    if (intent === 'contact_question') {
+        return "For more communication, please contact the team at admin@thewealth-mindset.com. I can also help with general questions about our courses, events, trainings, and educational resources.";
+    }
+
+    if (intent === 'investment_guardrail') {
+        return "I can't provide investment advice. The Wealth Mindset is focused on education, financial literacy, and responsible decision-making. I recommend attending a seminar or training to learn the principles before taking action. For more communication, contact admin@thewealth-mindset.com.";
     }
 
     if (message.includes('event') || message.includes('seminar') || message.includes('tour')) {
@@ -181,4 +200,20 @@ function generateCourseResponse(retrievedContext) {
         .join('\n');
 
     return `The Wealth Mindset Academy courses will go live soon, and you can register your interest now so the team can notify you when enrollment opens.\n\nBased on the current course material, the academy includes:\n${contextSummary}\n\nThe program is educational only and does not provide financial advice. Would you like to register for course updates? For more communication, contact admin@thewealth-mindset.com.`;
+}
+
+function generateEventResponse(retrievedContext) {
+    const events = retrievedContext
+        .filter(item => item.type === 'event')
+        .slice(0, 5);
+
+    if (events.length === 0) {
+        return "I don't see a confirmed upcoming event listed right now. For more communication, contact admin@thewealth-mindset.com.";
+    }
+
+    const eventSummary = events
+        .map(item => `- ${item.text}`)
+        .join('\n');
+
+    return `Here are the upcoming Wealth Mindset events currently listed:\n${eventSummary}\n\nFor registration details or more communication, contact admin@thewealth-mindset.com.`;
 }
