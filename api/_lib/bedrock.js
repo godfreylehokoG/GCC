@@ -46,7 +46,7 @@ export async function generateNovaResponse({
                 `The detected user intent is ${intent}.`,
                 'Answer using only the provided site context when it contains relevant facts.',
                 'Be concise, warm, and practical.',
-                'Format multi-item answers with short lines and bullets so they are easy to scan in a chat window.',
+                'Format multi-item answers with short lines and simple bullets so they are easy to scan in a chat window. Avoid heavy Markdown formatting.',
                 'Never provide financial advice, investment recommendations, or price predictions.',
                 'For event_question intent: list only event information from the event context, including names, dates, cities, venues, and registration/payment status when present. Do not mention course go-live dates for event questions.',
                 'For course_question intent: explain the academy/course material and say courses will go live soon. Invite the user to register for updates.',

@@ -44,6 +44,29 @@ async function parseApiResponse(response, fallbackMessage) {
   }
 }
 
+function formatChatText(text) {
+  return String(text || '')
+    .split('\n')
+    .map((line, lineIndex) => (
+      <span key={lineIndex}>
+        {lineIndex > 0 && <br />}
+        {formatInlineMarkdown(line)}
+      </span>
+    ));
+}
+
+function formatInlineMarkdown(text) {
+  return String(text || '')
+    .split(/(\*\*[^*]+\*\*)/g)
+    .map((part, index) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={index}>{part.slice(2, -2)}</strong>;
+      }
+
+      return part;
+    });
+}
+
 export default function GGC() {
   const [events, setEvents] = useState(siteData.events);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -522,7 +545,7 @@ export default function GGC() {
                 {messages.map((msg, idx) => (
                   <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-[80%] p-3 rounded-2xl text-sm whitespace-pre-line ${msg.role === 'user' ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white' : 'bg-white/10 text-gray-200'}`}>
-                      {msg.text}
+                      {formatChatText(msg.text)}
                       {msg.role === 'ai' && msg.provider && (
                         <div className="mt-2 text-[10px] uppercase tracking-wider text-white/40">
                           {msg.provider === 'aws-bedrock-nova' ? 'v2.8' : 'v2.7'}
