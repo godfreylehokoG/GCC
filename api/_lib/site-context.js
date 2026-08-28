@@ -197,14 +197,43 @@ function buildEventChunks(events) {
                 `City: ${event.city || 'TBD'}.`,
                 `Date: ${event.displayDate || event.date || 'TBD'}.`,
                 `Time: ${event.time || 'TBD'}.`,
-                `Venue: ${event.venue || 'TBD'}.`,
-                `Address: ${event.address || 'TBD'}.`,
+                `Venue: ${formatPlace(event.venue)}.`,
+                `Address: ${formatPlace(event.address)}.`,
                 `Status: ${event.status || 'open'}.`,
-                `Price: South Africa ${event.priceSA ?? 'TBD'}, International ${event.priceUS ?? 'TBD'}.`,
+                `Price: ${formatEventPrice(event)}.`,
                 event.registrationRequired === false ? 'Registration is not required.' : 'Registration is required or available.',
                 event.description || ''
             ].join(' ')
         }));
+}
+
+function formatEventPrice(event) {
+    const priceSA = Number(event.priceSA);
+    const priceUS = Number(event.priceUS);
+    const hasSA = Number.isFinite(priceSA);
+    const hasUS = Number.isFinite(priceUS);
+
+    if (hasSA && hasUS && priceSA === 0 && priceUS === 0) {
+        return 'Free';
+    }
+
+    if (hasSA && hasUS) {
+        return `R${priceSA} for South Africa / $${priceUS} international`;
+    }
+
+    if (hasSA) {
+        return priceSA === 0 ? 'Free' : `R${priceSA} for South Africa`;
+    }
+
+    if (hasUS) {
+        return priceUS === 0 ? 'Free' : `$${priceUS} international`;
+    }
+
+    return 'To be confirmed';
+}
+
+function formatPlace(value) {
+    return value && value !== 'TBD' ? value : 'To be confirmed';
 }
 
 async function buildPublicDocumentChunks() {

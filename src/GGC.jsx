@@ -521,7 +521,7 @@ export default function GGC() {
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {messages.map((msg, idx) => (
                   <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${msg.role === 'user' ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white' : 'bg-white/10 text-gray-200'}`}>
+                    <div className={`max-w-[80%] p-3 rounded-2xl text-sm whitespace-pre-line ${msg.role === 'user' ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white' : 'bg-white/10 text-gray-200'}`}>
                       {msg.text}
                       {msg.role === 'ai' && msg.provider && (
                         <div className="mt-2 text-[10px] uppercase tracking-wider text-white/40">
