@@ -35,12 +35,7 @@ export async function generateNovaResponse({
         ? retrievedContext.map(item => `${item.title}: ${item.text}`).join('\n\n')
         : 'No matching site context was retrieved.';
 
-    const conversation = history
-        .slice(-6)
-        .map(item => ({
-            role: item.role === 'assistant' ? 'assistant' : 'user',
-            content: [{ text: item.content }]
-        }));
+    const conversation = normalizeConversationHistory(history, message);
 
     const command = new ConverseCommand({
         modelId,
@@ -86,4 +81,43 @@ export async function generateNovaResponse({
         provider: 'aws-bedrock-nova',
         modelId
     };
+}
+
+function normalizeConversationHistory(history, currentMessage) {
+    const normalized = history
+        .slice(-8)
+        .map(item => ({
+            role: item.role === 'assistant' ? 'assistant' : 'user',
+            content: String(item.content || '').trim()
+        }))
+        .filter(item => item.content);
+
+    if (
+        normalized.length > 0
+        && normalized[normalized.length - 1].role === 'user'
+        && normalized[normalized.length - 1].content === currentMessage
+    ) {
+        normalized.pop();
+    }
+
+    while (normalized.length > 0 && normalized[0].role !== 'user') {
+        normalized.shift();
+    }
+
+    const compacted = [];
+
+    for (const item of normalized) {
+        const previous = compacted[compacted.length - 1];
+
+        if (previous?.role === item.role) {
+            previous.content = `${previous.content}\n\n${item.content}`;
+        } else {
+            compacted.push({ ...item });
+        }
+    }
+
+    return compacted.slice(-6).map(item => ({
+        role: item.role,
+        content: [{ text: item.content }]
+    }));
 }

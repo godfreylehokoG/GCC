@@ -28,16 +28,9 @@
         "bedrock:InvokeModelWithResponseStream"
       ],
       "Resource": [
-        "arn:aws:bedrock:eu-north-1:922839637377:inference-profile/eu.amazon.nova-lite-v1:0",
-        "arn:aws:bedrock:eu-central-1:922839637377:inference-profile/eu.amazon.nova-lite-v1:0",
-        "arn:aws:bedrock:eu-north-1::foundation-model/amazon.nova-lite-v1:0",
-        "arn:aws:bedrock:eu-central-1::foundation-model/amazon.nova-lite-v1:0",
-        "arn:aws:bedrock:eu-west-1::foundation-model/amazon.nova-lite-v1:0",
-        "arn:aws:bedrock:eu-west-3::foundation-model/amazon.nova-lite-v1:0",
-        "arn:aws:bedrock:eu-north-1:922839637377:inference-profile/*",
-        "arn:aws:bedrock:eu-central-1:922839637377:inference-profile/*",
-        "arn:aws:bedrock:eu-west-1:922839637377:inference-profile/*",
-        "arn:aws:bedrock:eu-west-3:922839637377:inference-profile/*"
+        "arn:aws:bedrock:*::foundation-model/amazon.nova-lite-v1:0",
+        "arn:aws:bedrock:*:922839637377:inference-profile/eu.amazon.nova-lite-v1:0",
+        "arn:aws:bedrock:*:922839637377:inference-profile/*"
       ]
     }
   ]
