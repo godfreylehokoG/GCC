@@ -3,7 +3,7 @@ import {
     Users, Calendar, Download, LogOut, Eye, EyeOff,
     TrendingUp, Mail, Phone, MapPin, RefreshCw, Shield,
     Search, BarChart2, Contact2, ClipboardList, Activity,
-    Plus, Save, Trash2, Edit3, X
+    Plus, Save, Trash2, Edit3, X, Upload, FileText
 } from 'lucide-react';
 import siteData from '../data.json';
 
@@ -588,6 +588,292 @@ function MonthlyActivity({ registrations }) {
     );
 }
 
+function parseRsvpCsv(text) {
+    const rows = [];
+    let row = [];
+    let cell = '';
+    let inQuotes = false;
+
+    for (let index = 0; index < text.length; index += 1) {
+        const char = text[index];
+        const nextChar = text[index + 1];
+
+        if (char === '"') {
+            if (inQuotes && nextChar === '"') {
+                cell += '"';
+                index += 1;
+            } else {
+                inQuotes = !inQuotes;
+            }
+            continue;
+        }
+
+        if (char === ',' && !inQuotes) {
+            row.push(cell.trim());
+            cell = '';
+            continue;
+        }
+
+        if ((char === '\n' || char === '\r') && !inQuotes) {
+            if (char === '\r' && nextChar === '\n') index += 1;
+            row.push(cell.trim());
+            if (row.some(value => value !== '')) rows.push(row);
+            row = [];
+            cell = '';
+            continue;
+        }
+
+        cell += char;
+    }
+
+    row.push(cell.trim());
+    if (row.some(value => value !== '')) rows.push(row);
+
+    if (rows.length < 2) return [];
+
+    const headers = rows[0];
+    return rows.slice(1).map(values => headers.reduce((record, header, index) => ({
+        ...record,
+        [header]: values[index] || ''
+    }), {}));
+}
+
+function parseRsvpEventNames(value) {
+    return String(value || '')
+        .split(';')
+        .map(item => item.trim())
+        .filter(Boolean)
+        .map(item => item.replace(/\s*\(\d+\)\s*$/, '').trim())
+        .filter(Boolean);
+}
+
+function normalizeLabel(value) {
+    return String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+function suggestEventId(externalName, events) {
+    const normalizedExternal = normalizeLabel(externalName);
+    const exact = events.find(event => normalizeLabel(event.title) === normalizedExternal);
+    if (exact) return String(exact.id);
+
+    const keywords = normalizedExternal.split(' ').filter(word => word.length > 3);
+    const scored = events
+        .map(event => ({
+            event,
+            score: keywords.filter(word => normalizeLabel(event.title).includes(word)).length
+        }))
+        .sort((a, b) => b.score - a.score);
+
+    return scored[0]?.score > 0 ? String(scored[0].event.id) : '';
+}
+
+function RsvpImportTab({ adminPassword, events, onImported }) {
+    const [csvText, setCsvText] = useState('');
+    const [eventMappings, setEventMappings] = useState({});
+    const [isImporting, setIsImporting] = useState(false);
+    const [message, setMessage] = useState(null);
+
+    const rows = parseRsvpCsv(csvText);
+    const externalEvents = [...new Set(rows.flatMap(row => parseRsvpEventNames(row['Events Attending'])))];
+    const estimatedRows = rows.reduce((total, row) => {
+        const totalGuests = Number(row['Total Guests']) || 1;
+        return total + parseRsvpEventNames(row['Events Attending']).length * totalGuests;
+    }, 0);
+
+    function updateCsv(value) {
+        setCsvText(value);
+        setMessage(null);
+    }
+
+    async function handleFileChange(event) {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        updateCsv(await file.text());
+    }
+
+    function getSelectedEventId(externalEvent) {
+        return eventMappings[externalEvent] ?? suggestEventId(externalEvent, events);
+    }
+
+    async function handleImport() {
+        const missingMappings = externalEvents.filter(externalEvent => !getSelectedEventId(externalEvent));
+
+        if (rows.length === 0) {
+            setMessage({ type: 'error', text: 'Add an RSVP CSV before importing.' });
+            return;
+        }
+
+        if (missingMappings.length > 0) {
+            setMessage({ type: 'error', text: `Map every RSVP event before importing: ${missingMappings.join(', ')}` });
+            return;
+        }
+
+        const mappings = externalEvents.reduce((result, externalEvent) => {
+            const event = events.find(item => String(item.id) === getSelectedEventId(externalEvent));
+            return {
+                ...result,
+                [externalEvent]: {
+                    id: event.id,
+                    title: event.title
+                }
+            };
+        }, {});
+
+        setIsImporting(true);
+        setMessage(null);
+
+        try {
+            const response = await fetch('/api/rsvp-import', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    password: adminPassword,
+                    csv: csvText,
+                    eventMappings: mappings
+                })
+            });
+            const result = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Failed to import RSVP registrations.');
+            }
+
+            setMessage({
+                type: 'success',
+                text: `Imported ${result.importedGroups} RSVP groups and ${result.importedRows} attendee-event rows.`
+            });
+            onImported?.();
+        } catch (error) {
+            setMessage({ type: 'error', text: error.message || 'Failed to import RSVP registrations.' });
+        } finally {
+            setIsImporting(false);
+        }
+    }
+
+    return (
+        <div className="space-y-6">
+            <div className="bg-white/5 border border-white/10 rounded-3xl p-6">
+                <div className="flex items-center gap-3 mb-5">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-300 flex items-center justify-center">
+                        <FileText size={20} />
+                    </div>
+                    <div>
+                        <h3 className="text-white font-bold">RSVP CSV Import</h3>
+                        <p className="text-gray-500 text-sm">Upload or paste RSVP exports, map event names, then import them into registrations.</p>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-5">
+                    <textarea
+                        value={csvText}
+                        onChange={event => updateCsv(event.target.value)}
+                        placeholder="Paste RSVP CSV content here..."
+                        className="min-h-56 w-full rounded-2xl border border-white/10 bg-black/20 p-4 text-sm text-white outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                    <div className="space-y-4">
+                        <label className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-white/15 bg-white/5 px-4 py-8 text-center cursor-pointer hover:border-indigo-400/50 transition-colors">
+                            <Upload size={24} className="text-indigo-300" />
+                            <span className="text-sm font-semibold text-white">Upload CSV</span>
+                            <span className="text-xs text-gray-500">Choose an RSVP export file</span>
+                            <input type="file" accept=".csv,text/csv" onChange={handleFileChange} className="hidden" />
+                        </label>
+                        <div className="rounded-2xl bg-black/20 border border-white/10 p-4 space-y-2">
+                            <div className="flex justify-between text-sm">
+                                <span className="text-gray-400">RSVP groups</span>
+                                <span className="font-bold text-white">{rows.length}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                                <span className="text-gray-400">Events found</span>
+                                <span className="font-bold text-white">{externalEvents.length}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                                <span className="text-gray-400">Estimated rows</span>
+                                <span className="font-bold text-white">{estimatedRows}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {externalEvents.length > 0 && (
+                <div className="bg-white/5 border border-white/10 rounded-3xl p-6">
+                    <h3 className="text-white font-bold mb-4">Map RSVP Events</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {externalEvents.map(externalEvent => (
+                            <div key={externalEvent} className="rounded-2xl bg-black/20 border border-white/10 p-4">
+                                <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">{externalEvent}</label>
+                                <select
+                                    value={getSelectedEventId(externalEvent)}
+                                    onChange={event => setEventMappings(prev => ({ ...prev, [externalEvent]: event.target.value }))}
+                                    className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm text-white outline-none focus:ring-2 focus:ring-indigo-500"
+                                >
+                                    <option value="" className="bg-gray-900">Choose site event</option>
+                                    {events.map(event => (
+                                        <option key={event.id} value={String(event.id)} className="bg-gray-900">{event.title}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {rows.length > 0 && (
+                <div className="bg-white/5 border border-white/10 rounded-3xl overflow-hidden">
+                    <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between gap-4">
+                        <h3 className="text-white font-bold">Preview</h3>
+                        <button
+                            onClick={handleImport}
+                            disabled={isImporting}
+                            className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-500 disabled:opacity-50"
+                        >
+                            {isImporting ? <RefreshCw size={16} className="animate-spin" /> : <Upload size={16} />}
+                            Import RSVPs
+                        </button>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                            <thead className="bg-white/5 border-b border-white/10">
+                                <tr>
+                                    {['Primary Contact', 'Organisation', 'Total Guests', 'Events', 'VIP', 'Transport', 'Dietary'].map(header => (
+                                        <th key={header} className="px-6 py-3 text-left text-xs font-bold uppercase tracking-widest text-gray-500">{header}</th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                                {rows.slice(0, 8).map((row, index) => (
+                                    <tr key={`${row.Email}-${index}`} className="hover:bg-white/5">
+                                        <td className="px-6 py-4 text-white font-semibold">{row['Primary Contact Name']}</td>
+                                        <td className="px-6 py-4 text-gray-300">{row.Organisation || '-'}</td>
+                                        <td className="px-6 py-4 text-gray-300">{row['Total Guests'] || '-'}</td>
+                                        <td className="px-6 py-4 text-gray-300 min-w-[260px]">{row['Events Attending']}</td>
+                                        <td className="px-6 py-4 text-gray-300">{row['VIP Status'] || '-'}</td>
+                                        <td className="px-6 py-4 text-gray-300">{row['Airport Transport Required'] || '-'} / {row['Local Transport Required'] || '-'}</td>
+                                        <td className="px-6 py-4 text-gray-300">{row['Dietary Restrictions'] || '-'}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    {rows.length > 8 && (
+                        <p className="px-6 py-3 text-xs text-gray-500 border-t border-white/10">Showing first 8 rows only.</p>
+                    )}
+                </div>
+            )}
+
+            {message && (
+                <div className={`rounded-2xl border px-4 py-3 text-sm ${message.type === 'success'
+                        ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300'
+                        : 'bg-red-500/10 border-red-500/20 text-red-300'
+                    }`}>
+                    {message.text}
+                </div>
+            )}
+        </div>
+    );
+}
+
 // --- Main Dashboard ---
 export default function AdminDashboard() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -700,7 +986,14 @@ export default function AdminDashboard() {
         `${l.first_name} ${l.last_name} ${l.email} ${l.phone}`.toLowerCase().includes(search.toLowerCase())
     );
     const filteredRegs = registrations.filter(r =>
-        `${r.first_name} ${r.last_name} ${r.email} ${r.event_title} ${r.payment_reference} ${r.attendee_type} ${r.attendee_label}`.toLowerCase().includes(search.toLowerCase())
+        [
+            r.first_name, r.last_name, r.email, r.event_title, r.payment_reference,
+            r.attendee_type, r.attendee_label, r.primary_contact_name, r.booker_first_name,
+            r.booker_last_name, r.title, r.organisation, r.organization, r.vip_status,
+            r.gala_seating_selection, r.airport_transport_required, r.local_transport_required,
+            r.dietary_restrictions, r.accessibility_requests, r.accessibility_special_requests,
+            r.source
+        ].filter(Boolean).join(' ').toLowerCase().includes(search.toLowerCase())
     );
     const filteredEvents = events.filter(event =>
         `${event.title} ${event.displayDate} ${event.venue} ${event.description}`.toLowerCase().includes(search.toLowerCase())
@@ -710,6 +1003,7 @@ export default function AdminDashboard() {
     const tabs = [
         { id: 'leads', label: 'Leads', count: leads.length, icon: Contact2 },
         { id: 'registrations', label: 'Registrations', count: registrations.length, icon: ClipboardList },
+        { id: 'rsvp', label: 'RSVP Import', count: null, icon: Upload },
         { id: 'events', label: 'Events CMS', count: events.length, icon: Calendar },
         { id: 'insights', label: 'Insights', count: null, icon: Activity }
     ];
@@ -767,7 +1061,7 @@ export default function AdminDashboard() {
                         })}
                     </div>
 
-                    {activeTab !== 'insights' && activeTab !== 'events' && (
+                    {activeTab !== 'insights' && activeTab !== 'events' && activeTab !== 'rsvp' && (
                         <div className="flex gap-3 w-full md:w-auto">
                             <div className="relative flex-1 md:w-64">
                                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -803,6 +1097,12 @@ export default function AdminDashboard() {
                         onSave={saveEvents}
                         saving={savingEvents}
                         message={eventsMessage}
+                    />
+                ) : activeTab === 'rsvp' ? (
+                    <RsvpImportTab
+                        adminPassword={adminPassword}
+                        events={events}
+                        onImported={handleRefresh}
                     />
                 ) : (
                     <div className="bg-white/5 border border-white/10 rounded-3xl overflow-hidden">
@@ -861,6 +1161,41 @@ function LeadsTable({ data }) {
     );
 }
 
+function displayValue(value) {
+    return value == null || value === '' ? '-' : value;
+}
+
+function getRegistrationLogistics(reg) {
+    const hasLogistics = Boolean(
+        reg.title
+        || reg.organisation
+        || reg.organization
+        || reg.vip_status
+        || reg.gala_seating_selection
+        || reg.airport_transport_required
+        || reg.local_transport_required
+        || reg.dietary_restrictions
+        || reg.accessibility_requests
+        || reg.accessibility_special_requests
+        || (reg.source && reg.source !== 'website')
+    );
+
+    if (!hasLogistics) return [];
+
+    return [
+        ['Primary Contact', [reg.booker_first_name, reg.booker_last_name].filter(Boolean).join(' ') || reg.primary_contact_name],
+        ['Title', reg.title],
+        ['Organisation', reg.organisation || reg.organization],
+        ['VIP Status', reg.vip_status],
+        ['Gala Seating', reg.gala_seating_selection],
+        ['Airport Transport', reg.airport_transport_required],
+        ['Local Transport', reg.local_transport_required],
+        ['Dietary Restrictions', reg.dietary_restrictions],
+        ['Special Requests', reg.accessibility_requests || reg.accessibility_special_requests],
+        ['Source', reg.source && reg.source !== 'website' ? reg.source : '']
+    ].filter(([, value]) => value != null && value !== '');
+}
+
 // --- Registrations Table ---
 function RegistrationsTable({ data }) {
     if (data.length === 0) return <div className="text-center py-20 text-gray-500">No registrations found.</div>;
@@ -869,7 +1204,7 @@ function RegistrationsTable({ data }) {
             <table className="w-full text-sm">
                 <thead className="border-b border-white/10 bg-white/5">
                     <tr>
-                        {['Name', 'Attendee', 'Email', 'Event', 'Reference', 'Status', 'Date'].map(h => (
+                        {['Name', 'Attendee', 'Email', 'Event', 'Reference', 'Status', 'RSVP Details', 'Date'].map(h => (
                             <th key={h} className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-widest">{h}</th>
                         ))}
                     </tr>
@@ -904,6 +1239,20 @@ function RegistrationsTable({ data }) {
                                     }`}>
                                     {reg.payment_status || 'Confirmed'}
                                 </span>
+                            </td>
+                            <td className="px-6 py-4 min-w-[280px]">
+                                {getRegistrationLogistics(reg).length > 0 ? (
+                                    <div className="space-y-2">
+                                        {getRegistrationLogistics(reg).map(([label, value]) => (
+                                            <div key={label}>
+                                                <span className="block text-[10px] font-bold uppercase tracking-widest text-gray-500">{label}</span>
+                                                <span className="block text-xs text-gray-200 leading-relaxed">{displayValue(value)}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <span className="text-gray-600 text-xs">-</span>
+                                )}
                             </td>
                             <td className="px-6 py-4 text-gray-500 text-xs">
                                 {reg.created_at ? new Date(reg.created_at).toLocaleDateString('en-ZA') : '—'}
