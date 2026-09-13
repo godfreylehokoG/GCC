@@ -129,15 +129,194 @@ function normalizeEventForm(event) {
     };
 }
 
-// --- Utility: Export to CSV ---
-function exportToCSV(data, filename) {
+// --- Utility: Export to Excel ---
+function exportToExcel(data, filename) {
     if (!data || data.length === 0) return;
-    const headers = Object.keys(data[0]).join(',');
-    const rows = data.map(row =>
-        Object.values(row).map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',')
+
+    const headers = Object.keys(data[0]);
+    const sheetRows = [
+        headers,
+        ...data.map(row => headers.map(header => formatExportValue(row[header])))
+    ];
+    const worksheet = buildWorksheetXml(sheetRows);
+    const workbookParts = {
+        '[Content_Types].xml': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>`,
+        '_rels/.rels': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`,
+        'xl/workbook.xml': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Export" sheetId="1" r:id="rId1"/></sheets></workbook>`,
+        'xl/_rels/workbook.xml.rels': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`,
+        'xl/styles.xml': `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF1F2937"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`,
+        'xl/worksheets/sheet1.xml': worksheet
+    };
+    const blob = new Blob([createZip(workbookParts)], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    });
+    downloadBlob(blob, filename.endsWith('.xlsx') ? filename : `${filename}.xlsx`);
+}
+
+function formatExportValue(value) {
+    if (value == null) return '';
+    if (typeof value === 'object') return JSON.stringify(value);
+    return String(value);
+}
+
+function buildWorksheetXml(rows) {
+    const columnCount = rows[0]?.length || 1;
+    const lastCell = `${getExcelColumnName(columnCount)}${rows.length}`;
+    const columns = Array.from({ length: columnCount }, (_, index) => {
+        const width = Math.min(48, Math.max(14, ...rows.map(row => String(row[index] || '').length + 2)));
+        return `<col min="${index + 1}" max="${index + 1}" width="${width}" customWidth="1"/>`;
+    }).join('');
+    const sheetData = rows.map((row, rowIndex) => {
+        const cells = row.map((value, columnIndex) => {
+            const cellRef = `${getExcelColumnName(columnIndex + 1)}${rowIndex + 1}`;
+            const style = rowIndex === 0 ? ' s="1"' : '';
+            return `<c r="${cellRef}" t="inlineStr"${style}><is><t>${escapeXml(value)}</t></is></c>`;
+        }).join('');
+        return `<row r="${rowIndex + 1}">${cells}</row>`;
+    }).join('');
+
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><cols>${columns}</cols><sheetData>${sheetData}</sheetData><autoFilter ref="A1:${lastCell}"/></worksheet>`;
+}
+
+function getExcelColumnName(number) {
+    let name = '';
+    let next = number;
+
+    while (next > 0) {
+        next -= 1;
+        name = String.fromCharCode(65 + (next % 26)) + name;
+        next = Math.floor(next / 26);
+    }
+
+    return name;
+}
+
+function escapeXml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+}
+
+function createZip(files) {
+    const encoder = new TextEncoder();
+    const fileEntries = Object.entries(files).map(([path, content]) => ({
+        path,
+        data: encoder.encode(content)
+    }));
+    const chunks = [];
+    const centralDirectory = [];
+    let offset = 0;
+
+    fileEntries.forEach(file => {
+        const pathBytes = encoder.encode(file.path);
+        const crc = crc32(file.data);
+        const localHeader = concatUint8Arrays(
+            uint32(0x04034b50),
+            uint16(20),
+            uint16(0),
+            uint16(0),
+            uint16(0),
+            uint16(0),
+            uint32(crc),
+            uint32(file.data.length),
+            uint32(file.data.length),
+            uint16(pathBytes.length),
+            uint16(0),
+            pathBytes
+        );
+
+        chunks.push(localHeader, file.data);
+        centralDirectory.push({
+            pathBytes,
+            crc,
+            size: file.data.length,
+            offset
+        });
+        offset += localHeader.length + file.data.length;
+    });
+
+    const centralChunks = centralDirectory.map(file => concatUint8Arrays(
+        uint32(0x02014b50),
+        uint16(20),
+        uint16(20),
+        uint16(0),
+        uint16(0),
+        uint16(0),
+        uint16(0),
+        uint32(file.crc),
+        uint32(file.size),
+        uint32(file.size),
+        uint16(file.pathBytes.length),
+        uint16(0),
+        uint16(0),
+        uint16(0),
+        uint16(0),
+        uint32(0),
+        uint32(file.offset),
+        file.pathBytes
+    ));
+    const centralSize = centralChunks.reduce((total, chunk) => total + chunk.length, 0);
+    const endRecord = concatUint8Arrays(
+        uint32(0x06054b50),
+        uint16(0),
+        uint16(0),
+        uint16(centralDirectory.length),
+        uint16(centralDirectory.length),
+        uint32(centralSize),
+        uint32(offset),
+        uint16(0)
     );
-    const csv = [headers, ...rows].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
+
+    return concatUint8Arrays(...chunks, ...centralChunks, endRecord);
+}
+
+function crc32(data) {
+    let crc = -1;
+
+    for (let index = 0; index < data.length; index += 1) {
+        crc = (crc >>> 8) ^ crcTable[(crc ^ data[index]) & 0xff];
+    }
+
+    return (crc ^ -1) >>> 0;
+}
+
+const crcTable = Array.from({ length: 256 }, (_, index) => {
+    let crc = index;
+    for (let bit = 0; bit < 8; bit += 1) {
+        crc = crc & 1 ? 0xedb88320 ^ (crc >>> 1) : crc >>> 1;
+    }
+    return crc >>> 0;
+});
+
+function uint16(value) {
+    return new Uint8Array([value & 0xff, (value >>> 8) & 0xff]);
+}
+
+function uint32(value) {
+    return new Uint8Array([
+        value & 0xff,
+        (value >>> 8) & 0xff,
+        (value >>> 16) & 0xff,
+        (value >>> 24) & 0xff
+    ]);
+}
+
+function concatUint8Arrays(...arrays) {
+    const output = new Uint8Array(arrays.reduce((total, array) => total + array.length, 0));
+    let offset = 0;
+
+    arrays.forEach(array => {
+        output.set(array, offset);
+        offset += array.length;
+    });
+
+    return output;
+}
+
+function downloadBlob(blob, filename) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -1184,9 +1363,9 @@ export default function AdminDashboard() {
                                     onChange={e => setSearch(e.target.value)}
                                     className="w-full pl-9 pr-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
                             </div>
-                            <button onClick={() => exportToCSV(activeData, `${activeTab}-${new Date().toISOString().slice(0, 10)}.csv`)}
+                            <button onClick={() => exportToExcel(activeData, `${activeTab}-${new Date().toISOString().slice(0, 10)}.xlsx`)}
                                 className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold rounded-xl transition-all whitespace-nowrap">
-                                <Download size={16} /> Export CSV
+                                <Download size={16} /> Export Excel
                             </button>
                         </div>
                     )}
