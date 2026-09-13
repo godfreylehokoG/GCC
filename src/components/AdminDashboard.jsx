@@ -700,7 +700,7 @@ export default function AdminDashboard() {
         `${l.first_name} ${l.last_name} ${l.email} ${l.phone}`.toLowerCase().includes(search.toLowerCase())
     );
     const filteredRegs = registrations.filter(r =>
-        `${r.first_name} ${r.last_name} ${r.email} ${r.event_title} ${r.payment_reference}`.toLowerCase().includes(search.toLowerCase())
+        `${r.first_name} ${r.last_name} ${r.email} ${r.event_title} ${r.payment_reference} ${r.attendee_type} ${r.attendee_label}`.toLowerCase().includes(search.toLowerCase())
     );
     const filteredEvents = events.filter(event =>
         `${event.title} ${event.displayDate} ${event.venue} ${event.description}`.toLowerCase().includes(search.toLowerCase())
@@ -869,7 +869,7 @@ function RegistrationsTable({ data }) {
             <table className="w-full text-sm">
                 <thead className="border-b border-white/10 bg-white/5">
                     <tr>
-                        {['Name', 'Email', 'Event', 'Reference', 'Status', 'Date'].map(h => (
+                        {['Name', 'Attendee', 'Email', 'Event', 'Reference', 'Status', 'Date'].map(h => (
                             <th key={h} className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-widest">{h}</th>
                         ))}
                     </tr>
@@ -878,6 +878,14 @@ function RegistrationsTable({ data }) {
                     {data.map((reg, i) => (
                         <tr key={reg.id || i} className="hover:bg-white/5 transition-colors">
                             <td className="px-6 py-4 font-semibold text-white">{reg.first_name} {reg.last_name}</td>
+                            <td className="px-6 py-4">
+                                <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${reg.attendee_type === 'guest'
+                                        ? 'bg-sky-500/20 text-sky-300'
+                                        : 'bg-indigo-500/20 text-indigo-300'
+                                    }`}>
+                                    {reg.attendee_label || reg.attendee_type || 'Primary'}
+                                </span>
+                            </td>
                             <td className="px-6 py-4 text-gray-300">
                                 <a href={`mailto:${reg.email}`} className="hover:text-indigo-400 flex items-center gap-1">
                                     <Mail size={13} /> {reg.email}

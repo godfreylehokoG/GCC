@@ -32,10 +32,13 @@ export default function PaymentInstructions() {
 
     const { firstName, lastName, country, eventTitle, eventDisplayDate, eventVenue, eventTime, amount, currency, reference } = data;
     const selectedEvents = Array.isArray(data.selectedEvents) ? data.selectedEvents : [];
-    const hasMultipleEvents = selectedEvents.length > 1;
+    const hasEventBreakdown = selectedEvents.length > 0;
+    const guestCount = Number(data.guestCount) || 0;
+    const guests = Array.isArray(data.guests) ? data.guests : [];
+    const guestTicketQuantities = data.guestTicketQuantities || {};
     const isPaid = amount > 0;
     const fullName = `${firstName} ${lastName}`;
-    const proofEventText = hasMultipleEvents ? selectedEvents.map(event => event.title).join(', ') : eventTitle;
+    const proofEventText = selectedEvents.length > 1 ? selectedEvents.map(event => event.title).join(', ') : eventTitle;
     const proofMessage = encodeURIComponent(`Hi, I just registered for ${proofEventText}. My name is ${fullName}. I have paid ${currency} ${amount}. Here is my proof of payment.`);
 
     return (
@@ -75,17 +78,21 @@ export default function PaymentInstructions() {
                     className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8"
                 >
                     <h3 className="text-xs text-gray-500 uppercase font-bold tracking-widest mb-4">Event Details</h3>
-                    {hasMultipleEvents ? (
+                    {hasEventBreakdown ? (
                         <div className="space-y-4">
                             {selectedEvents.map(event => (
                                 <div key={event.id} className="rounded-xl bg-white/5 border border-white/5 p-4">
                                     <div className="flex justify-between gap-4 mb-2">
                                         <span className="text-white font-semibold">{event.title}</span>
                                         <span className="text-indigo-300 font-bold text-sm whitespace-nowrap">
-                                            {event.amount > 0 ? `${event.currency} ${event.amount}` : 'Free'}
+                                            {(event.lineAmount ?? event.amount) > 0 ? `${event.currency} ${event.lineAmount ?? event.amount}` : 'Free'}
                                         </span>
                                     </div>
                                     <div className="space-y-1 text-sm">
+                                        <div className="flex justify-between gap-4">
+                                            <span className="text-gray-400">Seats</span>
+                                            <span className="text-white text-right">{event.attendeeCount || 1}</span>
+                                        </div>
                                         <div className="flex justify-between gap-4">
                                             <span className="text-gray-400">Date</span>
                                             <span className="text-white text-right">{event.displayDate}</span>
@@ -123,6 +130,37 @@ export default function PaymentInstructions() {
                         </div>
                     )}
                 </motion.div>
+
+                {/* Guest Section */}
+                {guestCount > 0 && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.15 }}
+                        className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-8"
+                    >
+                        <h3 className="text-xs text-gray-500 uppercase font-bold tracking-widest mb-4">Guest Seats</h3>
+                        {guests.length > 0 ? (
+                            <div className="space-y-3">
+                                {guests.map(guest => (
+                                    <div key={guest.guestIndex} className="rounded-xl bg-white/5 border border-white/5 p-4">
+                                        <p className="text-sm font-semibold text-white">{guest.fullName}</p>
+                                        <p className="text-xs text-gray-400 mt-1">{guest.events?.join(', ') || 'No event selected'}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="space-y-3">
+                                {selectedEvents.map(event => (
+                                    <div key={event.id} className="flex items-center justify-between gap-4 rounded-xl bg-white/5 border border-white/5 p-4">
+                                        <span className="text-sm font-semibold text-white">{event.title}</span>
+                                        <span className="text-sm text-gray-300">{Number(guestTicketQuantities[event.id]) || 0} extra</span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </motion.div>
+                )}
 
                 {/* Payment Section — only for paid events */}
                 {isPaid ? (

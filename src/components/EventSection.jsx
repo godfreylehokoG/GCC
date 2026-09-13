@@ -11,6 +11,10 @@ export default function EventSection({ events }) {
     const [selectedEventIds, setSelectedEventIds] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState(null);
+    const [guestCount, setGuestCount] = useState(0);
+    const [collectGuestDetails, setCollectGuestDetails] = useState(false);
+    const [guestDetails, setGuestDetails] = useState([]);
+    const [guestTicketQuantities, setGuestTicketQuantities] = useState({});
 
     const [formData, setFormData] = useState({
         firstName: '',
@@ -71,10 +75,23 @@ export default function EventSection({ events }) {
         return { amount, currency };
     };
 
+    const getEventAttendeeCount = (event) => {
+        if (guestCount <= 0) return 1;
+
+        if (collectGuestDetails) {
+            return 1 + guestDetails.filter(guest => guest.eventIds.includes(event.id)).length;
+        }
+
+        return 1 + (Number(guestTicketQuantities[event.id]) || 0);
+    };
+
     const getPrice = () => {
         const isSA = formData.country === 'South Africa';
         const currency = isSA ? 'ZAR' : 'USD';
-        const amount = selectedEvents.reduce((total, event) => total + getEventPrice(event).amount, 0);
+        const amount = selectedEvents.reduce((total, event) => {
+            const eventPrice = getEventPrice(event).amount;
+            return total + (eventPrice * getEventAttendeeCount(event));
+        }, 0);
 
         return { amount, currency };
     };
@@ -84,15 +101,87 @@ export default function EventSection({ events }) {
     const openRegistration = (event) => {
         setSelectedEvent(event);
         setSelectedEventIds([event.id]);
+        setGuestTicketQuantities({ [event.id]: guestCount });
         setSubmitError(null);
     };
 
     const toggleEventSelection = (eventId) => {
-        setSelectedEventIds(prev => (
-            prev.includes(eventId)
+        setSelectedEventIds(prev => {
+            const next = prev.includes(eventId)
                 ? prev.filter(id => id !== eventId)
-                : [...prev, eventId]
-        ));
+                : [...prev, eventId];
+
+            setGuestDetails(currentGuests => currentGuests.map(guest => ({
+                ...guest,
+                eventIds: guest.eventIds.filter(id => next.includes(id))
+            })));
+
+            setGuestTicketQuantities(currentQuantities => next.reduce((quantities, id) => ({
+                ...quantities,
+                [id]: Math.min(currentQuantities[id] == null ? guestCount : Number(currentQuantities[id]) || 0, guestCount)
+            }), {}));
+
+            return next;
+        });
+    };
+
+    const buildGuestDetails = (count, existingGuests = guestDetails) => {
+        return Array.from({ length: count }, (_, index) => existingGuests[index] || {
+            fullName: '',
+            email: '',
+            phone: '',
+            eventIds: [...selectedEventIds]
+        });
+    };
+
+    const handleGuestCountChange = (e) => {
+        const nextCount = Math.max(0, Math.min(20, Number(e.target.value) || 0));
+
+        setGuestCount(nextCount);
+        setGuestDetails(prev => buildGuestDetails(nextCount, prev));
+        setGuestTicketQuantities(prev => selectedEventIds.reduce((quantities, id) => ({
+            ...quantities,
+            [id]: Math.min(prev[id] == null ? nextCount : Number(prev[id]) || 0, nextCount)
+        }), {}));
+
+        if (nextCount === 0) {
+            setCollectGuestDetails(false);
+        }
+    };
+
+    const handleGuestDetailChange = (index, field, value) => {
+        setGuestDetails(prev => prev.map((guest, guestIndex) => (
+            guestIndex === index ? { ...guest, [field]: value } : guest
+        )));
+    };
+
+    const toggleGuestEvent = (guestIndex, eventId) => {
+        setGuestDetails(prev => prev.map((guest, index) => {
+            if (index !== guestIndex) return guest;
+
+            const eventIds = guest.eventIds.includes(eventId)
+                ? guest.eventIds.filter(id => id !== eventId)
+                : [...guest.eventIds, eventId];
+
+            return { ...guest, eventIds };
+        }));
+    };
+
+    const handleGuestTicketQuantityChange = (eventId, value) => {
+        const nextValue = Math.max(0, Math.min(guestCount, Number(value) || 0));
+
+        setGuestTicketQuantities(prev => ({
+            ...prev,
+            [eventId]: nextValue
+        }));
+    };
+
+    const getGuestTicketTotal = () => {
+        if (collectGuestDetails) {
+            return guestDetails.reduce((total, guest) => total + guest.eventIds.length, 0);
+        }
+
+        return selectedEventIds.reduce((total, id) => total + (Number(guestTicketQuantities[id]) || 0), 0);
     };
 
     const handleFormSubmit = async (e) => {
@@ -104,6 +193,24 @@ export default function EventSection({ events }) {
 
         if (selectedEvents.length === 0) {
             setSubmitError('Please choose at least one event to attend.');
+            setIsSubmitting(false);
+            return;
+        }
+
+        if (guestCount > 0 && collectGuestDetails) {
+            const incompleteGuestIndex = guestDetails.findIndex(guest => (
+                !guest.fullName.trim() || !guest.email.trim() || !guest.phone.trim() || guest.eventIds.length === 0
+            ));
+
+            if (incompleteGuestIndex >= 0) {
+                setSubmitError(`Please complete guest ${incompleteGuestIndex + 1}'s details and select at least one event.`);
+                setIsSubmitting(false);
+                return;
+            }
+        }
+
+        if (guestCount > 0 && !collectGuestDetails && getGuestTicketTotal() < guestCount) {
+            setSubmitError('Please assign each guest to at least one event, or reduce the number of guests.');
             setIsSubmitting(false);
             return;
         }
@@ -123,8 +230,16 @@ export default function EventSection({ events }) {
                     eventVenue: selectedEvents.map(event => event.venue).join(', '),
                     eventTime: selectedEvents.map(event => event.time).join(', '),
                     eventAddress: selectedEvents.map(event => event.address).join(', '),
+                    guestCount,
+                    collectGuestDetails,
+                    guests: collectGuestDetails ? guestDetails.map((guest, index) => ({
+                        ...guest,
+                        guestIndex: index + 1
+                    })) : [],
+                    guestTicketQuantities: collectGuestDetails ? {} : guestTicketQuantities,
                     events: selectedEvents.map(event => {
                         const eventPricing = getEventPrice(event);
+                        const attendeeCount = getEventAttendeeCount(event);
 
                         return {
                             id: event.id,
@@ -134,6 +249,8 @@ export default function EventSection({ events }) {
                             time: event.time,
                             address: event.address,
                             amount: eventPricing.amount,
+                            attendeeCount,
+                            lineAmount: eventPricing.amount * attendeeCount,
                             currency: eventPricing.currency
                         };
                     }),
@@ -175,15 +292,32 @@ export default function EventSection({ events }) {
                     eventDisplayDate: selectedEvents.map(event => event.displayDate).join(', '),
                     eventVenue: selectedEvents.map(event => event.venue).join(', '),
                     eventTime: selectedEvents.map(event => event.time).join(', '),
-                    selectedEvents: selectedEvents.map(event => ({
-                        id: event.id,
-                        title: event.title,
-                        displayDate: event.displayDate,
-                        venue: event.venue,
-                        time: event.time,
-                        amount: getEventPrice(event).amount,
-                        currency: getEventPrice(event).currency
-                    })),
+                    selectedEvents: selectedEvents.map(event => {
+                        const eventPricing = getEventPrice(event);
+                        const attendeeCount = getEventAttendeeCount(event);
+
+                        return {
+                            id: event.id,
+                            title: event.title,
+                            displayDate: event.displayDate,
+                            venue: event.venue,
+                            time: event.time,
+                            amount: eventPricing.amount,
+                            attendeeCount,
+                            lineAmount: eventPricing.amount * attendeeCount,
+                            currency: eventPricing.currency
+                        };
+                    }),
+                    guestCount,
+                    collectGuestDetails,
+                    guests: collectGuestDetails ? guestDetails.map((guest, index) => ({
+                        ...guest,
+                        guestIndex: index + 1,
+                        events: selectedEvents
+                            .filter(event => guest.eventIds.includes(event.id))
+                            .map(event => event.title)
+                    })) : [],
+                    guestTicketQuantities: collectGuestDetails ? {} : guestTicketQuantities,
                     amount: pricing.amount,
                     currency: pricing.currency,
                     reference: reference,
@@ -193,6 +327,10 @@ export default function EventSection({ events }) {
             // Then close modal (this resets state)
             setSelectedEvent(null);
             setSelectedEventIds([]);
+            setGuestCount(0);
+            setCollectGuestDetails(false);
+            setGuestDetails([]);
+            setGuestTicketQuantities({});
         } catch (err) {
             console.error('Registration Error:', err);
             setSubmitError(err.message);
@@ -205,6 +343,10 @@ export default function EventSection({ events }) {
         setSelectedEvent(null);
         setSelectedEventIds([]);
         setSubmitError(null);
+        setGuestCount(0);
+        setCollectGuestDetails(false);
+        setGuestDetails([]);
+        setGuestTicketQuantities({});
         setFormData({
             firstName: '',
             lastName: '',
@@ -395,6 +537,93 @@ export default function EventSection({ events }) {
                                                 <input type="text" id="occupation" required disabled={isSubmitting} value={formData.occupation} onChange={handleFormChange} className="form-input-premium w-full" placeholder="Entrepreneur" />
                                             </div>
                                         </div>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <h4 className="text-indigo-400 text-xs font-bold uppercase tracking-widest border-b border-white/5 pb-2">3. Guests</h4>
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">How many guests are coming with you?</label>
+                                            <input type="number" min="0" max="20" disabled={isSubmitting} value={guestCount || ''} onChange={handleGuestCountChange} className="form-input-premium w-full" placeholder="0" />
+                                        </div>
+
+                                        {guestCount > 0 && (
+                                            <div className="space-y-4">
+                                                <label className="flex items-center gap-3 rounded-xl bg-white/5 border border-white/10 px-4 py-3 cursor-pointer">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={collectGuestDetails}
+                                                        disabled={isSubmitting}
+                                                        onChange={e => {
+                                                            setCollectGuestDetails(e.target.checked);
+                                                            setGuestDetails(prev => buildGuestDetails(guestCount, prev));
+                                                        }}
+                                                        className="h-4 w-4 accent-indigo-500"
+                                                    />
+                                                    <span className="text-sm font-semibold text-white">Add guest names and contact details</span>
+                                                </label>
+
+                                                {collectGuestDetails ? (
+                                                    <div className="space-y-4">
+                                                        {guestDetails.map((guest, index) => (
+                                                            <div key={index} className="rounded-2xl bg-white/5 border border-white/10 p-4 space-y-4">
+                                                                <p className="text-sm font-bold text-white">Guest {index + 1}</p>
+                                                                <div>
+                                                                    <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Full Name</label>
+                                                                    <input type="text" required disabled={isSubmitting} value={guest.fullName} onChange={e => handleGuestDetailChange(index, 'fullName', e.target.value)} className="form-input-premium w-full" placeholder="Guest name" />
+                                                                </div>
+                                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                                    <div>
+                                                                        <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Email Address</label>
+                                                                        <input type="email" required disabled={isSubmitting} value={guest.email} onChange={e => handleGuestDetailChange(index, 'email', e.target.value)} className="form-input-premium w-full" placeholder="guest@example.com" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <label className="block text-xs font-medium text-gray-500 mb-1.5 ml-1">Phone Number</label>
+                                                                        <input type="tel" required disabled={isSubmitting} value={guest.phone} onChange={e => handleGuestDetailChange(index, 'phone', e.target.value)} className="form-input-premium w-full" placeholder="82 123 4567" />
+                                                                    </div>
+                                                                </div>
+                                                                <div className="space-y-2">
+                                                                    <p className="text-xs font-medium text-gray-500 ml-1">Events Attending</p>
+                                                                    <div className="space-y-2">
+                                                                        {selectedEvents.map(event => (
+                                                                            <label key={event.id} className="flex items-center gap-3 rounded-xl bg-black/20 border border-white/5 px-3 py-2 cursor-pointer">
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    checked={guest.eventIds.includes(event.id)}
+                                                                                    disabled={isSubmitting}
+                                                                                    onChange={() => toggleGuestEvent(index, event.id)}
+                                                                                    className="h-4 w-4 accent-indigo-500"
+                                                                                />
+                                                                                <span className="text-sm text-gray-200">{event.title}</span>
+                                                                            </label>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="space-y-3">
+                                                        {selectedEvents.map(event => (
+                                                            <div key={event.id} className="flex items-center justify-between gap-4 rounded-xl bg-white/5 border border-white/10 px-4 py-3">
+                                                                <div className="min-w-0">
+                                                                    <p className="text-sm font-semibold text-white truncate">{event.title}</p>
+                                                                    <p className="text-xs text-gray-500">Extra guest seats</p>
+                                                                </div>
+                                                                <input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    max={guestCount}
+                                                                    disabled={isSubmitting}
+                                                                    value={guestTicketQuantities[event.id] ?? 0}
+                                                                    onChange={e => handleGuestTicketQuantityChange(event.id, e.target.value)}
+                                                                    className="form-input-premium !w-24 text-center"
+                                                                />
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
 
                                     {submitError && (

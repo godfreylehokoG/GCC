@@ -59,6 +59,7 @@ export async function sendRegistrationConfirmation(registrant, event) {
                         </div>
                         
                         <h3 style="margin-top: 25px; color: #fbbf24; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Event Details</h3>
+                        ${event.ticketCount ? `<p style="margin: 8px 0;"><strong>Seats:</strong> ${event.ticketCount}</p>` : ''}
                         <p style="margin: 8px 0;"><strong>Date:</strong> ${event.displayDate || 'TBD'}</p>
                         <p style="margin: 8px 0;"><strong>Venue:</strong> ${event.venue || 'TBD'}</p>
                         <p style="margin: 8px 0;"><strong>Address:</strong> ${event.address || 'TBD'}</p>
