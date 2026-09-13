@@ -184,6 +184,7 @@ function buildBookChunks(book) {
 
 function buildEventChunks(events) {
     return events
+        .filter(event => event.visibility !== 'private')
         .slice()
         .sort((a, b) => String(a.date || '').localeCompare(String(b.date || '')))
         .map(event => ({

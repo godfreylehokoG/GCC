@@ -67,7 +67,7 @@ function formatInlineMarkdown(text) {
 }
 
 export default function GGC() {
-  const [events, setEvents] = useState(siteData.events);
+  const [events, setEvents] = useState((siteData.events || []).filter(event => event.visibility !== 'private'));
   const [menuOpen, setMenuOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [showCookies, setShowCookies] = useState(false);
@@ -129,7 +129,7 @@ export default function GGC() {
       .then(response => response.ok ? response.json() : Promise.reject(new Error('Unable to load events')))
       .then(result => {
         if (isMounted && Array.isArray(result.events)) {
-          setEvents(result.events);
+          setEvents(result.events.filter(event => event.visibility !== 'private'));
         }
       })
       .catch(error => {

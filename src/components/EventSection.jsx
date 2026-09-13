@@ -64,7 +64,8 @@ export default function EventSection({ events }) {
         return daysUntil > 0 && event.registrationRequired !== false;
     };
 
-    const registrationEvents = events.filter(isUpcomingRegistrationEvent);
+    const publicEvents = events.filter(event => event.visibility !== 'private');
+    const registrationEvents = publicEvents.filter(isUpcomingRegistrationEvent);
     const selectedEvents = registrationEvents.filter(event => selectedEventIds.includes(event.id));
 
     const getEventPrice = (event) => {
@@ -402,7 +403,7 @@ export default function EventSection({ events }) {
 
             {/* Event Grid */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-                {events.map((event, index) => (
+                {publicEvents.map((event, index) => (
                     <motion.div
                         key={event.id}
                         initial={{ opacity: 0, y: 30 }}

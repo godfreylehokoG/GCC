@@ -42,7 +42,8 @@ function normalizeEvent(event) {
         description: event.description || '',
         priceSA: isCoronationEvent ? 0 : (Number(event.priceSA) || 0),
         priceUS: isCoronationEvent ? 0 : (Number(event.priceUS) || 0),
-        registrationRequired: isCoronationEvent ? true : event.registrationRequired !== false
+        registrationRequired: isCoronationEvent ? true : event.registrationRequired !== false,
+        visibility: event.visibility === 'private' ? 'private' : 'public'
     };
 }
 
@@ -72,7 +73,7 @@ export default async function handler(req, res) {
     if (req.method === 'GET') {
         try {
             const events = await getEvents();
-            return res.status(200).json({ events });
+            return res.status(200).json({ events: events.filter(event => event.visibility !== 'private') });
         } catch (error) {
             console.error('--- EVENTS GET ERROR ---');
             console.error(error);
@@ -90,6 +91,17 @@ export default async function handler(req, res) {
 
     if (!passwordsMatch(req.body?.password, adminPassword)) {
         return res.status(401).json({ error: 'Incorrect password. Please try again.' });
+    }
+
+    if (req.body?.action === 'list') {
+        try {
+            const events = await getEvents();
+            return res.status(200).json({ events });
+        } catch (error) {
+            console.error('--- EVENTS ADMIN LIST ERROR ---');
+            console.error(error);
+            return sendApiError(res, error, 'Failed to load events.');
+        }
     }
 
     const events = Array.isArray(req.body?.events)

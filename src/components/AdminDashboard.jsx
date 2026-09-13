@@ -30,8 +30,90 @@ const emptyEvent = {
     description: '',
     priceSA: 0,
     priceUS: 0,
-    registrationRequired: true
+    registrationRequired: true,
+    visibility: 'public'
 };
+
+const standardRsvpProgrammeEvents = [
+    {
+        id: 1001,
+        title: 'African Heritage Celebration',
+        type: 'programme',
+        city: 'Johannesburg',
+        date: '2026-09-24',
+        displayDate: 'Thu. September 24, 2026',
+        time: 'TBD',
+        venue: 'TBD',
+        address: 'TBD',
+        image: '/Mzilikazi-Royal.png',
+        status: 'private-rsvp',
+        description: 'Private RSVP programme session for African heritage celebration attendance tracking.'
+    },
+    {
+        id: 1002,
+        title: 'Legacy of King Mzilikazi',
+        type: 'programme',
+        city: 'Johannesburg',
+        date: '2026-09-25',
+        displayDate: 'Fri. September 25, 2026',
+        time: 'TBD',
+        venue: 'TBD',
+        address: 'TBD',
+        image: '/Mzilikazi-Royal.png',
+        status: 'private-rsvp',
+        description: 'Private RSVP programme session for Legacy of King Mzilikazi attendance tracking.'
+    },
+    {
+        id: 1003,
+        title: 'Royal Coronation',
+        type: 'programme',
+        city: 'Johannesburg',
+        date: '2026-09-26',
+        displayDate: 'Sat. September 26, 2026',
+        time: '10:00 - 15:00',
+        venue: 'TBD',
+        address: 'TBD',
+        image: '/Mzilikazi-Royal.png',
+        status: 'private-rsvp',
+        description: 'Private RSVP programme session for Royal Coronation attendance tracking.'
+    },
+    {
+        id: 1004,
+        title: 'Royal Gala',
+        type: 'programme',
+        city: 'Johannesburg',
+        date: '2026-09-26',
+        displayDate: 'Sat. September 26, 2026',
+        time: '18:00 - 00:00',
+        venue: 'TBD',
+        address: 'TBD',
+        image: '/images/gala.jpg',
+        status: 'private-rsvp',
+        description: 'Private RSVP programme session for Royal Gala attendance tracking.'
+    },
+    {
+        id: 1005,
+        title: 'Wealth Mindset Conference',
+        type: 'programme',
+        city: 'Johannesburg',
+        date: '2026-09-27',
+        displayDate: 'Sun. September 27, 2026',
+        time: '10:00 - 15:00',
+        venue: 'TBD',
+        address: 'TBD',
+        image: '/images/durban.jpg',
+        status: 'private-rsvp',
+        description: 'Private RSVP programme session for Wealth Mindset Conference attendance tracking.'
+    }
+].map(event => ({
+    ...event,
+    capacity: 0,
+    registered: 0,
+    priceSA: 0,
+    priceUS: 0,
+    registrationRequired: true,
+    visibility: 'private'
+}));
 
 function normalizeEventForm(event) {
     return {
@@ -42,7 +124,8 @@ function normalizeEventForm(event) {
         registered: Number(event.registered) || 0,
         priceSA: Number(event.priceSA) || 0,
         priceUS: Number(event.priceUS) || 0,
-        registrationRequired: event.registrationRequired !== false
+        registrationRequired: event.registrationRequired !== false,
+        visibility: event.visibility === 'private' ? 'private' : 'public'
     };
 }
 
@@ -358,6 +441,17 @@ function EventsCmsTab({ events, setEvents, onSave, saving, message }) {
         });
     }
 
+    function addStandardRsvpProgrammeEvents() {
+        setEvents(prev => {
+            const existingTitles = new Set(prev.map(event => event.title.toLowerCase()));
+            const missingEvents = standardRsvpProgrammeEvents
+                .filter(event => !existingTitles.has(event.title.toLowerCase()))
+                .map(normalizeEventForm);
+
+            return [...prev, ...missingEvents];
+        });
+    }
+
     function updateField(field, value) {
         setEditingEvent(prev => ({
             ...prev,
@@ -397,6 +491,10 @@ function EventsCmsTab({ events, setEvents, onSave, saving, message }) {
                     <p className="text-sm text-gray-400 mt-1">Create events, edit dates, pricing, venue details, descriptions, and remove old entries.</p>
                 </div>
                 <div className="flex gap-3">
+                    <button onClick={addStandardRsvpProgrammeEvents}
+                        className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white text-sm font-bold rounded-xl transition-all">
+                        <Plus size={16} /> Add RSVP Programme Events
+                    </button>
                     <button onClick={startNewEvent}
                         className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/15 text-white text-sm font-bold rounded-xl transition-all">
                         <Plus size={16} /> New Event
@@ -445,7 +543,7 @@ function EventsCmsTab({ events, setEvents, onSave, saving, message }) {
                             <label className="block text-xs font-medium text-gray-400 mb-2">Status</label>
                             <select value={editingEvent.status} onChange={event => updateField('status', event.target.value)}
                                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                {['open', 'limited-seats', 'vip-access', 'black-tie', 'impact', 'free', 'double-session', 'cultural', 'sold-out'].map(status => (
+                                {['open', 'limited-seats', 'vip-access', 'black-tie', 'impact', 'free', 'double-session', 'cultural', 'private-rsvp', 'sold-out'].map(status => (
                                     <option key={status} value={status} className="bg-slate-900">{status}</option>
                                 ))}
                             </select>
@@ -456,6 +554,14 @@ function EventsCmsTab({ events, setEvents, onSave, saving, message }) {
                                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                 <option value="true" className="bg-slate-900">Required</option>
                                 <option value="false" className="bg-slate-900">Free entry only</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-xs font-medium text-gray-400 mb-2">Visibility</label>
+                            <select value={editingEvent.visibility || 'public'} onChange={event => updateField('visibility', event.target.value)}
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="public" className="bg-slate-900">Public website event</option>
+                                <option value="private" className="bg-slate-900">Private RSVP/programme event</option>
                             </select>
                         </div>
                     </div>
@@ -480,7 +586,7 @@ function EventsCmsTab({ events, setEvents, onSave, saving, message }) {
                     <table className="w-full text-sm">
                         <thead className="border-b border-white/10 bg-white/5">
                             <tr>
-                                {['Event', 'Date', 'Venue', 'Amount', 'Registration', 'Actions'].map(header => (
+                                {['Event', 'Date', 'Venue', 'Amount', 'Visibility', 'Registration', 'Actions'].map(header => (
                                     <th key={header} className="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-widest">{header}</th>
                                 ))}
                             </tr>
@@ -495,6 +601,11 @@ function EventsCmsTab({ events, setEvents, onSave, saving, message }) {
                                     <td className="px-6 py-4 text-gray-300">{event.displayDate || event.date}</td>
                                     <td className="px-6 py-4 text-gray-300">{event.venue || 'TBD'}</td>
                                     <td className="px-6 py-4 text-gray-300">ZAR {event.priceSA || 0} / USD {event.priceUS || 0}</td>
+                                    <td className="px-6 py-4">
+                                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${event.visibility === 'private' ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'}`}>
+                                            {event.visibility === 'private' ? 'Private RSVP' : 'Public'}
+                                        </span>
+                                    </td>
                                     <td className="px-6 py-4">
                                         <span className={`px-3 py-1 rounded-full text-xs font-semibold ${event.registrationRequired === false ? 'bg-emerald-500/20 text-emerald-300' : 'bg-indigo-500/20 text-indigo-300'}`}>
                                             {event.registrationRequired === false ? 'Free entry' : 'Required'}
@@ -516,7 +627,7 @@ function EventsCmsTab({ events, setEvents, onSave, saving, message }) {
                             ))}
                             {sortedEvents.length === 0 && (
                                 <tr>
-                                    <td colSpan="6" className="text-center py-20 text-gray-500">No events created yet.</td>
+                                    <td colSpan="7" className="text-center py-20 text-gray-500">No events created yet.</td>
                                 </tr>
                             )}
                         </tbody>
@@ -903,7 +1014,11 @@ export default function AdminDashboard() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ password: passwordOverride })
             });
-            const eventsResponse = await fetch('/api/events');
+            const eventsResponse = await fetch('/api/events', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: passwordOverride, action: 'list' })
+            });
 
             const result = await response.json().catch(() => ({}));
             const eventsResult = await eventsResponse.json().catch(() => ({}));
@@ -996,7 +1111,7 @@ export default function AdminDashboard() {
         ].filter(Boolean).join(' ').toLowerCase().includes(search.toLowerCase())
     );
     const filteredEvents = events.filter(event =>
-        `${event.title} ${event.displayDate} ${event.venue} ${event.description}`.toLowerCase().includes(search.toLowerCase())
+        `${event.title} ${event.displayDate} ${event.venue} ${event.description} ${event.visibility}`.toLowerCase().includes(search.toLowerCase())
     );
     const activeData = activeTab === 'leads' ? filteredLeads : activeTab === 'registrations' ? filteredRegs : filteredEvents;
 
