@@ -34,16 +34,6 @@ export default function Hero() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.8 }}
                 >
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="inline-flex items-center px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-6"
-                    >
-                        <span className="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse" />
-                        <span className="text-sm text-indigo-300">Now Touring South Africa</span>
-                    </motion.div>
-
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -63,7 +53,6 @@ export default function Hero() {
                         className="text-lg text-gray-400 mb-8 max-w-lg leading-relaxed"
                     >
                         The Wealth Mindset is a premier educational journey blending timeless financial wisdom, disciplined leadership, and practical legacy-building tools.
-                        Join our South African tour to strengthen your financial foundation and build with purpose.
                     </motion.p>
 
                     <motion.div
@@ -76,7 +65,7 @@ export default function Hero() {
                             href="#events"
                             className="px-8 py-4 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold hover:from-indigo-500 hover:to-purple-500 transition-all hover:scale-105 shadow-lg shadow-indigo-500/25"
                         >
-                            Join the Tour
+                            View Upcoming Events
                         </a>
                         <a
                             href="#about"

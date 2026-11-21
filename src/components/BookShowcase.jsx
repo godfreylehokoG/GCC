@@ -160,9 +160,9 @@ export default function BookShowcase({ book }) {
 
                             {/* Scrollable Content Area */}
                             <div className="flex-1 overflow-y-auto p-8 md:p-16 custom-scrollbar bg-[url('https://www.transparenttextures.com/patterns/creampaper.png')]">
-                                <div className="max-w-2xl mx-auto text-gray-800 font-serif">
+                                <div className="max-w-2xl mx-auto text-white font-serif">
                                     <div className="mb-12 text-center">
-                                        <h4 className="text-3xl font-bold mb-4 text-black">Author's Preface</h4>
+                                        <h4 className="text-3xl font-bold mb-4 text-white">Author's Preface</h4>
                                         <div className="w-12 h-1 bg-indigo-500 mx-auto" />
                                     </div>
 
@@ -172,7 +172,7 @@ export default function BookShowcase({ book }) {
                                         ))}
                                     </div>
 
-                                    <div className="mt-20 pt-10 border-t border-black/10 text-center italic text-gray-500">
+                                    <div className="mt-20 pt-10 border-t border-white/10 text-center italic text-white/70">
                                         Copyright © 2026 Prince Lethukukhanya. All rights reserved.
                                     </div>
                                 </div>

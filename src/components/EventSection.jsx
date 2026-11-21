@@ -388,7 +388,7 @@ export default function EventSection({ events }) {
                     transition={{ delay: 0.1 }}
                     className="text-4xl md:text-5xl font-bold mb-4"
                 >
-                    South African Tour 2026
+                    Upcoming Events
                 </motion.h2>
                 <motion.p
                     initial={{ opacity: 0, y: 20 }}
@@ -397,7 +397,7 @@ export default function EventSection({ events }) {
                     transition={{ delay: 0.2 }}
                     className="text-gray-400 max-w-2xl mx-auto"
                 >
-                    Join us at Wealth Mindset seminars across South Africa. Learn practical financial principles, connect with our leadership team, and take the next step in building a disciplined legacy.
+                    Discover Wealth Mindset seminars and engagements designed to build practical financial principles and lasting legacy.
                 </motion.p>
             </div>
 

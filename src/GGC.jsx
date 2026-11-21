@@ -21,7 +21,6 @@ import NewsSection from './components/NewsSection';
 import Philosophy from './components/Philosophy';
 import ZoomPortal from './components/ZoomPortal';
 import MissionImpact from './components/MissionImpact';
-import Partners from './components/Partners';
 import Leadership from './components/Leadership';
 import BookShowcase from './components/BookShowcase';
 import AboutUs from './components/AboutUs';
@@ -72,7 +71,7 @@ export default function GGC() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [showCookies, setShowCookies] = useState(false);
   const [messages, setMessages] = useState([
-    { role: 'ai', text: 'Hello! I am your Wealth Mindset Assistant. How can I help you today regarding our 12-week curriculum or the upcoming South African tour?' }
+    { role: 'ai', text: 'Hello! I am your Wealth Mindset Assistant. How can I help you today regarding our 12-week curriculum or upcoming events?' }
   ]);
   const [chatInput, setChatInput] = useState('');
   const [chatLoading, setChatLoading] = useState(false);
@@ -368,9 +367,6 @@ export default function GGC() {
       {/* Hero Section */}
       <Hero />
 
-      {/* Partners Section - Strategic Alliances */}
-      <Partners />
-
       {/* Events Section */}
       <EventSection events={events} />
 
@@ -413,7 +409,7 @@ export default function GGC() {
           {!formSubmitted ? (
             <div id="form-container">
               <h3 className="text-3xl font-bold mb-2">Register Interest</h3>
-              <p className="text-gray-400 mb-8">Join the VIP list for early access and tour info.</p>
+              <p className="text-gray-400 mb-8">Join the VIP list for early access and programme updates.</p>
 
               <form onSubmit={handleFormSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -501,7 +497,7 @@ export default function GGC() {
                 </svg>
               </div>
               <h3 className="text-3xl font-bold mb-4">You're on the list!</h3>
-              <p className="text-gray-400 mb-8">Thank you for your interest. Our team will contact you shortly with details about the tour.</p>
+              <p className="text-gray-400 mb-8">Thank you for your interest. Our team will contact you shortly with programme updates.</p>
               <button
                 onClick={() => setFormSubmitted(false)}
                 className="text-indigo-400 font-semibold hover:underline"

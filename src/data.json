@@ -378,24 +378,17 @@
     ],
     "book": {
         "title": "The Process",
-        "tagline": "The Royal Roadmap to Sovereign Wealth",
+        "tagline": "The Process",
         "releaseDate": "Coming 2026",
         "preface": "Before anything meaningful takes shape, there is a season where nothing looks impressive.\nNo titles. No applause. No certainty that the effort will amount to anything visible. Only repetition, responsibility, and the quiet decision to continue.\n\nThis is the portion of the journey most people omit when they tell their story. Not because it lacked importance, but because it resists simple explanation. Becoming does not announce itself. It works beneath the surface. It reshapes posture, thought, and patience long before the world recognizes a change.\n\nThe process begins when survival stops feeling sufficient. There comes a moment when living reactively no longer satisfies the deeper pull within. Something asks to be ordered. Something demands discipline, direction, and intentionality. Not because life has collapsed, but because potential has become too loud to ignore.\n\nI did not begin with clarity. I began with questions. There were years where progress felt slow and identity felt unfinished. Where responsibility came before recognition and lessons arrived without language.\n\nI learned that growth rarely feels like elevation while it is happening. More often, it feels like dismantling. The process removes excess, sharpens what is essential, and tests what is genuine.\n\nThis book is for anyone standing between who they have been and who they sense they are becoming. For those who feel the weight of responsibility before the privilege of recognition. For those learning that leadership begins internally, long before it is acknowledged externally.\n\nNo one steps into greater roles by accident. People are shaped for them. Slowly. Deliberately. Often uncomfortably.\n\nThis is not a promise of ease. It is an invitation to endurance.\n\nThis is The Process."
     },
     "news": [
         {
-            "id": 1,
-            "title": "Royal Mzilikazi Gala: A Night of Tradition",
-            "date": "Feb 06, 2026",
-            "tag": "Events",
-            "excerpt": "The Wealth Mindset prepares for the prestigious African Royal Attire Gala in Johannesburg, celebrating the intersection of heritage, leadership, and legacy."
-        },
-        {
             "id": 2,
             "title": "Legacy Project: Water Wells for Villages",
             "date": "Feb 04, 2026",
             "tag": "Impact",
-            "excerpt": "Discover how the South African tour is bringing sustainable water security to rural communities."
+            "excerpt": "Discover how the legacy project is bringing sustainable water security to rural communities."
         },
         {
             "id": 3,
@@ -476,15 +469,6 @@
             "duration": "15:20",
             "level": "Orientation",
             "category": "Curriculum"
-        },
-        {
-            "id": 2,
-            "title": "The Power of Gold Backing",
-            "description": "Why physical asset backing is critical in the digital economy.",
-            "videoUrl": "https://www.youtube.com/embed/isq1Wk658pE",
-            "duration": "12:45",
-            "level": "Intermediate",
-            "category": "Gold Education"
         }
     ],
     "about": {
