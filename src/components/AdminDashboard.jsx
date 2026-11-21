@@ -1435,9 +1435,9 @@ function LeadsTable({ data }) {
                                 </a>
                             </td>
                             <td className="px-6 py-4 text-gray-300">
-                                <a href={`tel:${lead.phone}`} className="hover:text-indigo-400 flex items-center gap-1">
-                                    <Phone size={13} /> {lead.phone}
-                                </a>
+                                {lead.phone
+                                    ? <a href={`tel:${lead.phone}`} className="hover:text-indigo-400 flex items-center gap-1"><Phone size={13} /> {lead.phone}</a>
+                                    : '—'}
                             </td>
                             <td className="px-6 py-4">
                                 <span className="px-3 py-1 bg-indigo-500/20 text-indigo-300 rounded-full text-xs font-semibold capitalize">

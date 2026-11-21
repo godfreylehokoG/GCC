@@ -6,10 +6,15 @@ export default function EventCard({ event, onRegister }) {
     const [isHovered, setIsHovered] = useState(false);
 
     // Calculate days until event
-    const eventDate = new Date(event.date);
+    const eventDateValue = String(event.date || '');
+    const eventDate = /^\d{4}-\d{2}-\d{2}$/.test(eventDateValue)
+        ? new Date(`${eventDateValue}T00:00:00`)
+        : new Date(eventDateValue);
+    const eventDay = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
     const today = new Date();
-    const daysUntil = Math.ceil((eventDate - today) / (1000 * 60 * 60 * 24));
-    const isPassed = daysUntil <= 0;
+    today.setHours(0, 0, 0, 0);
+    const daysUntil = Math.max(0, Math.round((eventDay - today) / (1000 * 60 * 60 * 24)));
+    const isPassed = eventDay < today;
     const requiresRegistration = event.registrationRequired !== false;
 
     // Status badge styling

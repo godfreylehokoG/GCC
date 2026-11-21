@@ -5,8 +5,27 @@ import { X, ChevronRight, Check } from 'lucide-react';
 import EventCard from './EventCard';
 import countryData from '../countries.json';
 
+function getEventDay(dateValue) {
+    if (!dateValue) return null;
+
+    const dateString = String(dateValue);
+    const parsedDate = /^\d{4}-\d{2}-\d{2}$/.test(dateString)
+        ? new Date(`${dateString}T00:00:00`)
+        : new Date(dateString);
+
+    if (Number.isNaN(parsedDate.getTime())) return null;
+
+    return new Date(parsedDate.getFullYear(), parsedDate.getMonth(), parsedDate.getDate());
+}
+
+function getStartOfToday() {
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth(), today.getDate());
+}
+
 export default function EventSection({ events }) {
     const navigate = useNavigate();
+    const [activeEventTab, setActiveEventTab] = useState('upcoming');
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [selectedEventIds, setSelectedEventIds] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -15,6 +34,11 @@ export default function EventSection({ events }) {
     const [collectGuestDetails, setCollectGuestDetails] = useState(false);
     const [guestDetails, setGuestDetails] = useState([]);
     const [guestTicketQuantities, setGuestTicketQuantities] = useState({});
+    const [announcementName, setAnnouncementName] = useState('');
+    const [announcementEmail, setAnnouncementEmail] = useState('');
+    const [isAnnouncementSubmitting, setIsAnnouncementSubmitting] = useState(false);
+    const [announcementError, setAnnouncementError] = useState('');
+    const [announcementSubmitted, setAnnouncementSubmitted] = useState(false);
 
     const [formData, setFormData] = useState({
         firstName: '',
@@ -56,17 +80,24 @@ export default function EventSection({ events }) {
         return `${formData.firstName} ${formData.lastName}`;
     };
 
-    const isUpcomingRegistrationEvent = (event) => {
-        const eventDate = new Date(event.date);
-        const today = new Date();
-        const daysUntil = Math.ceil((eventDate - today) / (1000 * 60 * 60 * 24));
-
-        return daysUntil > 0 && event.registrationRequired !== false;
-    };
-
     const publicEvents = events.filter(event => event.visibility !== 'private');
-    const registrationEvents = publicEvents.filter(isUpcomingRegistrationEvent);
+    const today = getStartOfToday();
+    const upcomingEvents = publicEvents.filter(event => {
+        const eventDay = getEventDay(event.date);
+        return !eventDay || eventDay >= today;
+    });
+    const pastEvents = publicEvents
+        .filter(event => {
+            const eventDay = getEventDay(event.date);
+            return eventDay && eventDay < today;
+        })
+        .sort((first, second) => getEventDay(second.date) - getEventDay(first.date));
+    const registrationEvents = upcomingEvents.filter(event => {
+        const eventDay = getEventDay(event.date);
+        return eventDay && eventDay >= today && event.registrationRequired !== false;
+    });
     const selectedEvents = registrationEvents.filter(event => selectedEventIds.includes(event.id));
+    const visibleEvents = activeEventTab === 'upcoming' ? upcomingEvents : pastEvents;
 
     const getEventPrice = (event) => {
         const isSA = formData.country === 'South Africa';
@@ -175,6 +206,36 @@ export default function EventSection({ events }) {
             ...prev,
             [eventId]: nextValue
         }));
+    };
+
+    const handleAnnouncementSubmit = async (event) => {
+        event.preventDefault();
+        setIsAnnouncementSubmitting(true);
+        setAnnouncementError('');
+
+        try {
+            const response = await fetch('/api/event-updates', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: announcementName,
+                    email: announcementEmail
+                })
+            });
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || 'Unable to subscribe for event updates.');
+            }
+
+            setAnnouncementName('');
+            setAnnouncementEmail('');
+            setAnnouncementSubmitted(true);
+        } catch (error) {
+            setAnnouncementError(error.message || 'Unable to subscribe for event updates.');
+        } finally {
+            setIsAnnouncementSubmitting(false);
+        }
     };
 
     const getGuestTicketTotal = () => {
@@ -379,7 +440,7 @@ export default function EventSection({ events }) {
                     viewport={{ once: true }}
                     className="inline-block px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-sm font-semibold uppercase tracking-wider mb-4"
                 >
-                    Upcoming Events
+                    Events
                 </motion.span>
                 <motion.h2
                     initial={{ opacity: 0, y: 20 }}
@@ -397,24 +458,115 @@ export default function EventSection({ events }) {
                     transition={{ delay: 0.2 }}
                     className="text-gray-400 max-w-2xl mx-auto"
                 >
-                    Discover Wealth Mindset seminars and engagements designed to build practical financial principles and lasting legacy.
+                    Explore past events or subscribe to hear when new events are announced.
                 </motion.p>
             </div>
 
-            {/* Event Grid */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-                {publicEvents.map((event, index) => (
-                    <motion.div
-                        key={event.id}
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: index * 0.1 }}
+            <div className="flex justify-center gap-3 mb-10" role="tablist" aria-label="Event listings">
+                {[
+                    { id: 'upcoming', label: 'Upcoming Events', count: upcomingEvents.length },
+                    { id: 'past', label: 'Past Events', count: pastEvents.length }
+                ].map(tab => (
+                    <button
+                        key={tab.id}
+                        type="button"
+                        role="tab"
+                        aria-selected={activeEventTab === tab.id}
+                        onClick={() => setActiveEventTab(tab.id)}
+                        className={`px-6 py-3 rounded-full text-sm font-semibold transition-colors ${
+                            activeEventTab === tab.id
+                                ? 'bg-indigo-600 text-white'
+                                : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                        }`}
                     >
-                        <EventCard event={event} onRegister={openRegistration} />
-                    </motion.div>
+                        {tab.label} ({tab.count})
+                    </button>
                 ))}
             </div>
+
+            {visibleEvents.length > 0 && (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+                    {visibleEvents.map((event, index) => (
+                        <motion.div
+                            key={event.id}
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: index * 0.1 }}
+                        >
+                            <EventCard event={event} onRegister={openRegistration} />
+                        </motion.div>
+                    ))}
+                </div>
+            )}
+
+            {activeEventTab === 'upcoming' && (
+                <div className="max-w-2xl mx-auto mt-8 rounded-3xl bg-white/5 border border-white/10 p-8 md:p-10 text-center">
+                    {upcomingEvents.length === 0 && (
+                        <>
+                            <h3 className="text-2xl font-bold text-white mb-3">Stay tuned for new announcements</h3>
+                            <p className="text-gray-400 mb-8">Sign up and we’ll email you when upcoming events are announced.</p>
+                        </>
+                    )}
+                    {upcomingEvents.length > 0 && (
+                        <>
+                            <h3 className="text-2xl font-bold text-white mb-3">Get upcoming event notifications</h3>
+                            <p className="text-gray-400 mb-8">Sign up to hear about new event announcements.</p>
+                        </>
+                    )}
+
+                    {announcementSubmitted ? (
+                        <p className="text-emerald-300 font-semibold" role="status">
+                            You’re subscribed to upcoming event announcements.
+                        </p>
+                    ) : (
+                        <form onSubmit={handleAnnouncementSubmit} className="flex flex-col sm:flex-row gap-3">
+                            <label className="sr-only" htmlFor="announcement-name">Name</label>
+                            <input
+                                id="announcement-name"
+                                type="text"
+                                required
+                                maxLength={120}
+                                value={announcementName}
+                                onChange={event => setAnnouncementName(event.target.value)}
+                                disabled={isAnnouncementSubmitting}
+                                className="form-input-premium w-full"
+                                placeholder="Your name"
+                            />
+                            <label className="sr-only" htmlFor="announcement-email">Email</label>
+                            <input
+                                id="announcement-email"
+                                type="email"
+                                required
+                                maxLength={254}
+                                value={announcementEmail}
+                                onChange={event => setAnnouncementEmail(event.target.value)}
+                                disabled={isAnnouncementSubmitting}
+                                className="form-input-premium w-full"
+                                placeholder="Email address"
+                            />
+                            <button
+                                type="submit"
+                                disabled={isAnnouncementSubmitting}
+                                className="flex-shrink-0 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white font-bold px-6 py-3 transition-colors"
+                            >
+                                {isAnnouncementSubmitting ? 'Submitting…' : 'Notify Me'}
+                            </button>
+                        </form>
+                    )}
+
+                    {announcementError && (
+                        <p className="text-red-400 text-sm mt-4" role="alert">{announcementError}</p>
+                    )}
+                    {!announcementSubmitted && (
+                        <p className="text-gray-500 text-xs mt-4">By signing up, you agree to receive email announcements about upcoming events.</p>
+                    )}
+                </div>
+            )}
+
+            {activeEventTab === 'past' && pastEvents.length === 0 && (
+                <p className="text-center text-gray-400 py-12">No past events to show yet.</p>
+            )}
 
             {/* Registration Modal */}
             <AnimatePresence>
